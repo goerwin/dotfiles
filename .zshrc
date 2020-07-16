@@ -4,6 +4,7 @@
 # Path to your oh-my-zsh installation.
 ZSH=$HOME/.oh-my-zsh
 
+TEXT_EDITOR='code'
 HOME_DIRS=(
   $HOME
   '/mnt/c/Users/erwin.gaitan/'
@@ -114,7 +115,7 @@ function customClearScreen() {
 
 function notes() {
   for homeDir in $HOME_DIRS; do
-    [ -d "$homeDir/Dropbox/notes" ] && code "$homeDir/Dropbox/notes"
+    [ -d "$homeDir/Dropbox/notes" ] && $TEXT_EDITOR "$homeDir/Dropbox/notes"
   done
 }
 
@@ -178,7 +179,7 @@ alias npmug='npm uninstall -g'
 alias npmupdateg='npm update -g'
 # backup npm global
 alias npmbackup='npmlsg > ~/Dropbox/MacOS/backups/npmpackages.txt'
-alias npmopenbackup='s ~/Dropbox/MacOS/backups/npmpackages.txt'
+alias npmopenbackup='$TEXT_EDITOR ~/Dropbox/MacOS/backups/npmpackages.txt'
 
 # Open
 alias o='open'
@@ -214,13 +215,7 @@ alias youtubemp4='youtube-dl -f mp4'
 alias youtubea=youtubem4a
 alias youtubev=youtubebestvideo
 
-# Markdown files
-alias notes='s ~/Dropbox/notes'
-alias notesideas='s ~/Dropbox/notes/ideas.md'
-alias notestodo='s ~/Dropbox/notes/todo.md'
-alias notesmysql='s ~/Dropbox/notes/mysql.md'
-
 # crontab
 alias crontabupdate='crontab ~/Dropbox/MacOS/tasks/_crontab'
-alias crontabedit='s ~/Dropbox/MacOS/tasks/_crontab'
+alias crontabedit='$TEXT_EDITOR ~/Dropbox/MacOS/tasks/_crontab'
 alias crontablogs='cat /tmp/crontabstdout.log ; echo "$(tput setaf 1)\n===========\n$(tput sgr0)" ; cat /tmp/crontabstderr.log'
