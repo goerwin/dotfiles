@@ -133,8 +133,10 @@ function notes() {
 function open() {
   if command -v explorer.exe &>/dev/null; then
     explorer.exe ${@}
+  elif command -v open &>/dev/null; then
+    command open $@
   else
-    open $@
+    echo "Open not found"
   fi
 }
 
