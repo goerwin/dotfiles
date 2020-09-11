@@ -18,6 +18,8 @@
     "FTPIndex": 0,
     "OverrideCustomUploader": false,
     "CustomUploaderIndex": 0,
+    "OverrideScreenshotsFolder": false,
+    "ScreenshotsFolder": "",
     "UseDefaultGeneralSettings": true,
     "GeneralSettings": {
       "PlaySoundAfterCapture": true,
@@ -48,11 +50,12 @@
             },
             {
               "$type": "ShareX.ImageEffectsLib.DrawText, ShareX.ImageEffectsLib",
+              "Text": "Text watermark",
               "Placement": "BottomRight",
               "Offset": "0, 0",
               "AutoHide": true,
-              "Text": "Text watermark",
               "TextFont": "Arial, 11.25pt",
+              "TextRenderingMode": "SystemDefault",
               "TextColor": "White",
               "DrawTextShadow": true,
               "TextShadowColor": "Black",
@@ -65,9 +68,6 @@
               "DrawBackground": true,
               "BackgroundColor": "10, 110, 230",
               "UseGradient": true,
-              "GradientType": "Vertical",
-              "BackgroundColor2": "0, 30, 80",
-              "UseCustomGradient": true,
               "Gradient": {
                 "Type": "Vertical",
                 "Colors": [
@@ -254,7 +254,6 @@
         "UserArgs": "",
         "UseCustomCommands": false,
         "CustomCommands": "-rtbufsize 150M -f dshow -framerate 30 -i video=\"screen-capture-recorder\":audio=\"Microphone Array (Realtek Audio)\" -c:v libx264 -r 30 -preset ultrafast -tune zerolatency -crf 28 -pix_fmt yuv420p -movflags +faststart -c:a aac -ac 2 -b:a 128k -y \"output.mp4\"",
-        "ShowError": true,
         "x264_Preset": "ultrafast",
         "x264_CRF": 28,
         "VPx_bitrate": 3000,
@@ -281,6 +280,7 @@
       "ScreenRecordDuration": 3.0,
       "ScreenRecordTwoPassEncoding": false,
       "ScreenRecordAskConfirmationOnAbort": false,
+      "ScreenRecordTransparentRegion": false,
       "ScrollingCaptureOptions": {
         "TrimLeftEdge": 0,
         "TrimTopEdge": 0,
@@ -358,12 +358,15 @@
         "IndentationText": "|___",
         "AddEmptyLineAfterFolders": false,
         "UseCustomCSSFile": false,
+        "DisplayPath": false,
+        "DisplayPathLimited": false,
         "CustomCSSFilePath": "",
         "UseAttribute": true,
         "CreateParseableJson": true
       },
       "ImageCombinerOptions": {
         "Orientation": "Vertical",
+        "Alignment": "LeftOrTop",
         "Space": 0
       },
       "VideoConverterOptions": {
@@ -401,6 +404,7 @@
     },
     "UseDefaultAdvancedSettings": true,
     "AdvancedSettings": {
+      "CapturePath": null,
       "ProcessImagesDuringFileUpload": false,
       "ProcessImagesDuringClipboardUpload": false,
       "UseAfterCaptureTasksDuringFileUpload": true,
@@ -408,13 +412,10 @@
       "AutoClearClipboard": false,
       "UseCustomCaptureSound": false,
       "CustomCaptureSoundPath": "",
-      "SpeechCapture": "",
       "UseCustomTaskCompletedSound": false,
       "CustomTaskCompletedSoundPath": "",
-      "SpeechTaskCompleted": "",
       "UseCustomErrorSound": false,
       "CustomErrorSoundPath": "",
-      "CapturePath": null,
       "RegionCaptureDisableAnnotation": false,
       "ImageExtensions": [
         "jpg",
@@ -560,7 +561,6 @@
   "CheckPreReleaseUpdates": false,
   "UseDarkTheme": true,
   "UseCustomTheme": true,
-  "ExperimentalCustomTheme": true,
   "Themes": [
     {
       "Name": "Dark",
@@ -755,7 +755,7 @@
     "ClipboardUploadWithContentViewer"
   ],
   "ActionsToolbarRunAtStartup": false,
-  "ActionsToolbarPosition": "1191, 696",
+  "ActionsToolbarPosition": "1169, 644",
   "ActionsToolbarLockPosition": false,
   "ActionsToolbarStayTopMost": true,
   "RecentColors": [
@@ -785,6 +785,7 @@
   "HotkeyRepeatLimit": 1000,
   "ShowClipboardContentViewer": true,
   "DefaultClipboardCopyImageFillBackground": true,
+  "UseAlternativeClipboardCopyImage": false,
   "RotateImageByExifOrientationData": true,
   "PNGStripColorSpaceInformation": false,
   "DisableUpload": false,
@@ -801,5 +802,5 @@
   "DropAlignment": "BottomRight",
   "DropOpacity": 100,
   "DropHoverOpacity": 255,
-  "ApplicationVersion": "13.1.0"
+  "ApplicationVersion": "13.2.1"
 }

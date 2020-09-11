@@ -1,1 +1,3 @@
 src/ShareX/**/*.exe
+src/ShareX/**/Backup
+src/ShareX/**/Logs

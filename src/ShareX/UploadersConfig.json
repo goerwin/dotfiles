@@ -1,4 +1,5 @@
 {
+  "DropboxURLType": "Default",
   "ImgurAccountType": "Anonymous",
   "ImgurDirectLink": true,
   "ImgurThumbnailType": "Medium_Thumbnail",
@@ -36,6 +37,7 @@
   "PhotobucketOAuthInfo": null,
   "PhotobucketAccountInfo": null,
   "GooglePhotosOAuth2Info": null,
+  "GooglePhotosUserInfo": null,
   "GooglePhotosAlbumID": "",
   "GooglePhotosIsPublic": false,
   "CheveretoUploader": {
@@ -65,14 +67,13 @@
   "HastebinCustomDomain": "https://hastebin.com",
   "HastebinSyntaxHighlighting": "hs",
   "HastebinUseFileExtension": true,
-  "OneTimeSecretAPIKey": "",
   "OneTimeSecretAPIUsername": "",
+  "OneTimeSecretAPIKey": "",
   "PastieIsPublic": false,
   "DropboxOAuth2Info": null,
   "DropboxUploadPath": "ShareX/%y/%mo",
   "DropboxAutoCreateShareableLink": true,
   "DropboxUseDirectLink": false,
-  "DropboxURLType": "Default",
   "FTPAccountList": [],
   "FTPSelectedImage": 0,
   "FTPSelectedText": 0,
@@ -93,6 +94,10 @@
   "GoogleDriveDirectLink": false,
   "GoogleDriveUseFolder": false,
   "GoogleDriveFolderID": "",
+  "GoogleDriveSelectedDrive": {
+    "id": "",
+    "name": "My drive"
+  },
   "PuushAPIKey": "",
   "SendSpaceAccountType": "Anonymous",
   "SendSpaceUsername": "",
@@ -108,6 +113,7 @@
     "parent": null
   },
   "BoxShare": true,
+  "BoxShareAccessLevel": "Open",
   "Ge_ttLogin": null,
   "LocalhostrEmail": "",
   "LocalhostrPassword": "",
@@ -195,6 +201,7 @@
   "SeafileIsLibraryEncrypted": false,
   "SeafileEncryptedLibraryPassword": "",
   "SeafileCreateShareableURL": true,
+  "SeafileCreateShareableURLRaw": false,
   "SeafileIgnoreInvalidCert": false,
   "SeafileShareDaysToExpire": 0,
   "SeafileSharePassword": "",
@@ -246,8 +253,8 @@
   "YourlsSignature": "",
   "YourlsUsername": "",
   "YourlsPassword": "",
-  "AdFlyAPIKEY": "",
   "AdFlyAPIUID": "",
+  "AdFlyAPIKEY": "",
   "PolrAPIHostname": "",
   "PolrAPIKey": "",
   "PolrIsSecret": false,
@@ -256,10 +263,11 @@
   "FirebaseDynamicLinkDomain": "",
   "FirebaseIsShort": false,
   "KuttSettings": {
-    "APIKey": null,
     "Host": "https://kutt.it",
+    "APIKey": null,
     "Password": null,
-    "Reuse": false
+    "Reuse": false,
+    "Domain": null
   },
   "TwitterOAuthInfoList": [],
   "TwitterSelectedAccount": -1,
@@ -271,5 +279,5 @@
   "CustomFileUploaderSelected": 0,
   "CustomURLShortenerSelected": 0,
   "CustomURLSharingServiceSelected": 0,
-  "ApplicationVersion": "13.1.0"
+  "ApplicationVersion": "13.2.1"
 }
