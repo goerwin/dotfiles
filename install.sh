@@ -11,7 +11,10 @@ if ! [ -d $destDir ]; then
   exit 1
 fi
 
-destDir=$(readlink -m $destDir) # absolute path
+destDir=$(
+  cd $destDir
+  pwd -P
+) # absolute path
 tmpDir=$(mktemp -d)
 
 git clone $repoUrl $tmpDir
