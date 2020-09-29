@@ -125,8 +125,10 @@ function customClearScreen() {
 }
 
 function notes() {
+  notesPath="Google Drive/Documents/notes"
+
   for homeDir in $HOME_DIRS; do
-    [ -d "$homeDir/Dropbox/notes" ] && $TEXT_EDITOR "$homeDir/Dropbox/notes"
+    [ -d "$homeDir/$notesPath" ] && $TEXT_EDITOR "$homeDir/$notesPath"
   done
 }
 
