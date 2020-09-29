@@ -1,5 +1,4 @@
 destDir=$1
-repoUrl="http://github.com/goerwin/dotfiles"
 
 if [[ $destDir == "" ]]; then
   echo "Specify directory DIR where to copy dotfiles"
@@ -15,20 +14,16 @@ destDir=$(
   cd $destDir
   pwd -P
 ) # absolute path
-tmpDir=$(mktemp -d)
-
-git clone $repoUrl $tmpDir
 
 echo -e "\nCopying files..."
 
-for entry in $(ls -a $tmpDir/src); do
+for entry in $(ls -a ./src); do
   if [ $entry != "." ] && [ $entry != ".." ]; then
-    cp -r $tmpDir/src/$entry $destDir
+    cp -r ./src/$entry $destDir
     echo "Copying $entry"
   fi
 done
 
-rm -rf $tmpDir
 echo "Files copied into $destDir"
 
 destDir=$1

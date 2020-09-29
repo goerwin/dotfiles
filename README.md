@@ -1,7 +1,7 @@
-To install or update your dotfiles in `<homeDir>`, run the following in the terminal
+Download the repo and copy all your dotfiles inside src into your `<homeDir>` using:
 
 ```sh
-$ curl -s https://raw.githubusercontent.com/goerwin/dotfiles/master/install.sh | bash -s <homeDir>
+$ bash <homeDir>
 ```
 
 To update ShareX config, `cd` into dotfiles repo, copy the ShareX folder into `src` folder. Example:
