@@ -4,6 +4,19 @@
   "%dotdotdotArray(_vimMode.json)",
   "%dotdotdotArray(_clicksMode.json)",
 
+  // Global
+
+  {
+    "keys": ["O"],
+    "when": { "Win": true, "Alt": true },
+    "fire": ["Win:down Left Ctrl:up Win:up Ctrl:down", null]
+  },
+  {
+    "keys": ["P"],
+    "when": { "Win": true, "Alt": true },
+    "fire": ["Win:down Right Ctrl:up Win:up Ctrl:down", null]
+  },
+
   // Google Chrome
 
   {
@@ -64,6 +77,7 @@
 
   { "keys": ["Ctrl"], "fire": ["Alt:down", "Alt:up"] },
   { "keys": ["Win"], "fire": [null, null] },
+
   {
     "keys": ["V"],
     "when": { "Caps": true, "Alt": true },
