@@ -40,7 +40,7 @@
   ["Caps:down K Caps:up", "Up"],
   ["Caps:down Alt:down H Alt:up Caps:up", "Ctrl Home Ctrl"],
   ["Caps:down Alt:down L Alt:up Caps:up", "Ctrl End Ctrl"],
-  ["Caps:down S:down H S:up Caps:up", "Shift:down Left Shift:up"],
+  ["Caps:down F:down H F:up Caps:up", "Shift:down Left Shift:up"],
 
   // VIM MODE: When Caps is not the first pressed key
   ["T:down Caps:down T:up Caps:up", "T"],
