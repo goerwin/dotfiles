@@ -260,5 +260,11 @@
     "keys": ["N"],
     "when": { "Win": true },
     "fire": ["Alt:down NP1 NP6 NP4 Alt:up", null]
+  },
+
+  {
+    "keys": ["M"],
+    "when": { "Win": true },
+    "fire": ["Alt:down 1 Alt:up", null]
   }
 ]
