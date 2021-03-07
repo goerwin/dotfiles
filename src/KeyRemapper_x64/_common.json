@@ -30,6 +30,11 @@
     "when": { "appName": "SC2_x64.exe", "Win": true },
     "fire": ["Alt:down currentKey Alt:up", null]
   },
+  {
+    "keys": ["D"],
+    "when": { "appName": "SC2_x64.exe", "Alt": true },
+    "fire": ["Ctrl:up Alt:down C Alt:up Ctrl:down", null]
+  },
 
   // Google Chrome
 
