@@ -6,15 +6,29 @@
 
   // Global
 
+  // NOTE: What's this for?
+  // {
+  //   "keys": ["O"],
+  //   "when": { "Win": true, "Alt": true },
+  //   "fire": ["Win:down Left Ctrl:up Win:up Ctrl:down", null]
+  // },
+  // {
+  //   "keys": ["P"],
+  //   "when": { "Win": true, "Alt": true },
+  //   "fire": ["Win:down Right Ctrl:up Win:up Ctrl:down", null]
+  // },
+
+  // Starcraft 2
+
   {
-    "keys": ["O"],
-    "when": { "Win": true, "Alt": true },
-    "fire": ["Win:down Left Ctrl:up Win:up Ctrl:down", null]
+    "keys": ["F1", "F2", "F3", "F4", "F10", "F11", "F12"],
+    "when": { "appName": "SC2_x64.exe" },
+    "fire": ["currentKey:down", "currentKey:up"]
   },
   {
-    "keys": ["P"],
-    "when": { "Win": true, "Alt": true },
-    "fire": ["Win:down Right Ctrl:up Win:up Ctrl:down", null]
+    "keys": ["1", "2", "3", "4"],
+    "when": { "appName": "SC2_x64.exe", "Win": true },
+    "fire": ["Alt:down currentKey Alt:up", null]
   },
 
   // Google Chrome
