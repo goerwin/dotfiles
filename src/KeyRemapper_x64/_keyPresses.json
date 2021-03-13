@@ -1,5 +1,5 @@
 [
-  { "repeat": 1, "inputKey": "Caps", "fire": "Esc" },
+  { "repeat": 1, "inputKey": "Caps", "fire": "Esc", "skipKeyBindings": true },
   { "repeat": 2, "inputKey": "Esc", "fire": "ToggleAppEnabled" },
   {
     "repeat": 2,
