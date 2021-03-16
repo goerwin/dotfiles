@@ -3,8 +3,7 @@
   "%dotdotdotArray(_altTabMode.json)",
   "%dotdotdotArray(_vimMode.json)",
   "%dotdotdotArray(_clicksMode.json)",
-
-  // Global
+  "%dotdotdotArray(_apps.json)",
 
   // NOTE: What's this for?
   // {
@@ -17,82 +16,6 @@
   //   "when": { "Win": true, "Alt": true },
   //   "fire": ["Win:down Right Ctrl:up Win:up Ctrl:down", null]
   // },
-
-  // Starcraft 2
-
-  {
-    "keys": ["F1", "F2", "F3", "F4", "F10", "F11", "F12"],
-    "when": { "appName": "SC2_x64.exe" },
-    "fire": ["currentKey:down", "currentKey:up"]
-  },
-  {
-    "keys": ["1", "2", "3", "4"],
-    "when": { "appName": "SC2_x64.exe", "Win": true },
-    "fire": ["Alt:down currentKey Alt:up", null]
-  },
-  {
-    "keys": ["D"],
-    "when": { "appName": "SC2_x64.exe", "Alt": true },
-    "fire": ["Ctrl:up Alt:down C Alt:up Ctrl:down", null]
-  },
-
-  // Google Chrome
-
-  {
-    "keys": ["F"],
-    "when": { "appName": "chrome.exe", "Alt": true, "Win": true },
-    "fire": ["Ctrl:up F11 Ctrl:down", null]
-  },
-  {
-    "keys": ["Enter"],
-    "when": { "appName": "chrome.exe", "Alt": true },
-    "fire": ["Ctrl:up Alt:down Enter Alt:up Ctrl:down", null]
-  },
-  {
-    "keys": ["H"],
-    "when": { "appName": "chrome.exe", "Alt": true, "Win": false },
-    "fire": ["Shift:down Tab Shift:up", null]
-  },
-  {
-    "keys": ["L"],
-    "when": { "appName": "chrome.exe", "Alt": true, "Win": false },
-    "fire": ["Tab", null]
-  },
-  {
-    "keys": ["Colon"],
-    "when": { "appName": "chrome.exe", "Alt": true },
-    "fire": ["L", null]
-  },
-  {
-    "keys": ["F3"],
-    "when": { "appName": "chrome.exe" },
-    "fire": ["Ctrl:down Shift:down Tab Shift:up Ctrl:up", null]
-  },
-  {
-    "keys": ["F4"],
-    "when": { "appName": "chrome.exe" },
-    "fire": ["Ctrl:down Tab Ctrl:up", null]
-  },
-  {
-    "keys": ["F5"],
-    "when": { "appName": "chrome.exe" },
-    "fire": ["Alt:down M Alt:up", null]
-  },
-  {
-    "keys": ["F6"],
-    "when": { "appName": "chrome.exe" },
-    "fire": ["Alt:down T Alt:up", null]
-  },
-
-  // Slack
-
-  {
-    "keys": ["P"],
-    "when": { "appName": "slack.exe", "Alt": true },
-    "fire": ["K", null]
-  },
-
-  // General
 
   { "keys": ["Ctrl"], "fire": ["Alt:down", "Alt:up"] },
   { "keys": ["Win"], "fire": [null, null] },
