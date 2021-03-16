@@ -87,10 +87,6 @@
     "fire": ["Ctrl:up Shift:down Home Shift:up Back Ctrl:down", null]
   },
   {
-    "keys": ["Esc"],
-    "fire": [null, null]
-  },
-  {
     "keys": ["Q"],
     "when": { "Alt": true },
     "fire": ["Ctrl:up Alt:down F4 Alt:up Ctrl:down", null]
