@@ -259,3 +259,5 @@ if isDir $ZSH_PATH/zsh-z; then
 else
   cloneGitRepo "https://github.com/agkozak/zsh-z.git" "zsh-z"
 fi
+
+# TODO: LS_COLORS
