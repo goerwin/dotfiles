@@ -25,4 +25,4 @@ for entry in $(ls -a ./src); do
 done
 
 echo "Files copied into $homeDir"
-echo "Success! You can source $homeDir/.zshrc or restart your terminal"
+echo "Success! source $homeDir/.zshrc or restart your terminal to apply changes"
