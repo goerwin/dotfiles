@@ -56,7 +56,7 @@
   {
     "keys": ["Space"],
     "when": { "Alt": true },
-    "fire": ["Win", null]
+    "fire": ["Ctrl:up Win", null]
   },
   {
     "keys": ["H", "L"],
