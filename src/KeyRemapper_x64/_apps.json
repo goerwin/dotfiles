@@ -17,6 +17,13 @@
     "fire": ["Ctrl:up Alt:down C Alt:up Ctrl:down", null]
   },
 
+  // Windows Terminal
+  {
+    "keys": ["1", "2", "3", "4"],
+    "when": { "appName": "WindowsTerminal.exe", "Win": true },
+    "fire": ["Alt:down currentKey Alt:up", null]
+  },
+
   // Google Chrome
 
   {
