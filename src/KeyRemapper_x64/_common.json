@@ -5,18 +5,6 @@
   "%dotdotdotArray(_clicksMode.json)",
   "%dotdotdotArray(_apps.json)",
 
-  // NOTE: What's this for?
-  // {
-  //   "keys": ["O"],
-  //   "when": { "Win": true, "Alt": true },
-  //   "fire": ["Win:down Left Ctrl:up Win:up Ctrl:down", null]
-  // },
-  // {
-  //   "keys": ["P"],
-  //   "when": { "Win": true, "Alt": true },
-  //   "fire": ["Win:down Right Ctrl:up Win:up Ctrl:down", null]
-  // },
-
   { "keys": ["Ctrl"], "fire": ["Alt:down", "Alt:up"] },
   { "keys": ["Win"], "fire": [null, null] },
 
@@ -67,19 +55,13 @@
   },
   {
     "keys": ["Space"],
-    "when": { "Win": true },
+    "when": { "Alt": true },
     "fire": ["Win", null]
   },
   {
     "keys": ["H", "L"],
     "when": { "Win": true },
     "fire": ["Alt:down vimArrowKey Alt:up", null]
-  },
-
-  {
-    "keys": ["Space"],
-    "when": { "Alt": true },
-    "fire": ["F12", null]
   },
   {
     "keys": ["Back"],
@@ -198,7 +180,6 @@
     "when": { "Win": true },
     "fire": ["Alt:down NP1 NP6 NP4 Alt:up", null]
   },
-
   {
     "keys": ["M"],
     "when": { "Win": true },
