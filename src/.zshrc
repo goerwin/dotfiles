@@ -30,8 +30,8 @@ unsetopt beep
 # Enable menu navigation with double tab
 zstyle ':completion:*' menu select
 
-# Tab completions
-autoload -U compinit && compinit
+# Case insensitive tab completion
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 #//////////////////////////
 # # Key Bindings
@@ -166,6 +166,7 @@ alias greset="git reset"
 alias gcheckout="git checkout"
 alias gch="git checkout"
 alias gch.="git checkout ."
+alias gd="git diff"
 alias gd.="git diff ."
 alias gdc="git diff --cached"
 alias gds="git diff --staged"
@@ -187,7 +188,11 @@ alias npmrsd="npm run start-dev"
 alias npmrt="npm run test"
 alias npmrb="npm run build"
 alias npmrbd="npm run build-dev"
-alias npmupdate="npx ncu --dep prod --dep dev --upgrade"
+alias npmcu="npx npm-check-updates"
+alias npmcuDev="npmcu --dep dev"
+alias npmcuDevUpgrade="npmcuDev -u"
+alias npmcuProd="npmcu --dep prod"
+alias npmcuProdUpgrade="npmcuProd -u"
 alias npmi="npm install"
 alias npmig="npm install -g"
 alias npmis="npm install --save"
@@ -257,6 +262,7 @@ fi
 # zsh-z
 if isDir $ZSH_PATH/zsh-z; then
   source "$ZSH_PATH/zsh-z/zsh-z.plugin.zsh"
+  autoload -U compinit && compinit # Tab completions
 else
   cloneGitRepo "https://github.com/agkozak/zsh-z.git" "zsh-z"
 fi
