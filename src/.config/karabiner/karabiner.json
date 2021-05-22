@@ -1162,6 +1162,16 @@
               "key_code": "left_shift"
             }
           ]
+        },
+        {
+          "from": {
+            "key_code": "right_command"
+          },
+          "to": [
+            {
+              "key_code": "left_command"
+            }
+          ]
         }
       ],
       "virtual_hid_keyboard": {
