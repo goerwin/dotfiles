@@ -749,14 +749,14 @@
             ]
           },
           {
-            "description": "Global - Cmd + J/K to PageDown/PageUp",
+            "description": "Global - Cmd[shift] + J/K to PageDown/PageUp",
             "manipulators": [
               {
                 "from": {
                   "key_code": "j",
                   "modifiers": {
                     "mandatory": ["left_command"],
-                    "optional": ["any"]
+                    "optional": ["left_shift"]
                   }
                 },
                 "to": [
@@ -771,12 +771,32 @@
                   "key_code": "k",
                   "modifiers": {
                     "mandatory": ["left_command"],
-                    "optional": ["any"]
+                    "optional": ["left_shift"]
                   }
                 },
                 "to": [
                   {
                     "key_code": "page_up"
+                  }
+                ],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Global - Alt + m to mute mic",
+            "manipulators": [
+              {
+                "from": {
+                  "key_code": "m",
+                  "modifiers": {
+                    "mandatory": ["left_option"]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "m",
+                    "modifiers": ["left_option", "left_command"]
                   }
                 ],
                 "type": "basic"
