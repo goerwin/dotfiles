@@ -2,7 +2,7 @@
   "global": {
     "check_for_updates_on_startup": true,
     "show_in_menu_bar": true,
-    "show_profile_name_in_menu_bar": false
+    "show_profile_name_in_menu_bar": true
   },
   "profiles": [
     {
@@ -535,9 +535,15 @@
                     "optional": ["caps_lock"]
                   }
                 },
-                "to": [
+                "to_after_key_up": [
                   {
                     "key_code": "caps_lock"
+                  }
+                ],
+                "to_if_held_down": [
+                  {
+                    "key_code": "left_shift",
+                    "halt": true
                   }
                 ],
                 "type": "basic"
@@ -1063,7 +1069,7 @@
           ]
         }
       ],
-      "name": "Default profile",
+      "name": "1",
       "parameters": {
         "delay_milliseconds_before_open_device": 1000
       },
@@ -1111,21 +1117,21 @@
         },
         {
           "from": {
-            "key_code": "right_shift"
-          },
-          "to": [
-            {
-              "key_code": "left_shift"
-            }
-          ]
-        },
-        {
-          "from": {
             "key_code": "right_command"
           },
           "to": [
             {
               "key_code": "left_command"
+            }
+          ]
+        },
+        {
+          "from": {
+            "key_code": "right_shift"
+          },
+          "to": [
+            {
+              "key_code": "left_shift"
             }
           ]
         }
