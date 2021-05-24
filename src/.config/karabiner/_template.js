@@ -677,6 +677,32 @@ console.log(
                 ],
               },
               {
+                description: 'App::iTerm - Cmd + O to clean console',
+                manipulators: [
+                  {
+                    conditions: [
+                      {
+                        bundle_identifiers: ['^com\\.googlecode\\.iterm2$'],
+                        type: 'frontmost_application_if',
+                      },
+                    ],
+                    from: {
+                      key_code: 'o',
+                      modifiers: {
+                        mandatory: ['left_command'],
+                      },
+                    },
+                    to: [
+                      {
+                        key_code: 'k',
+                        modifiers: ['left_command'],
+                      },
+                    ],
+                    type: 'basic',
+                  },
+                ],
+              },
+              {
                 description: 'App::Slack - Toggle full-screen',
                 manipulators: [
                   {
