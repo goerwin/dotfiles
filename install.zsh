@@ -10,6 +10,11 @@ if ! [ -d $homeDir ]; then
   exit 1
 fi
 
+# Generate karabiner.json from template automatically
+if command -v node &>/dev/null; then
+  node "src/.config/karabiner/_template.js" >"src/.config/karabiner/karabiner.json"
+fi
+
 homeDir=$(
   cd $homeDir
   pwd -P
