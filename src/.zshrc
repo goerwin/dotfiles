@@ -222,8 +222,6 @@ alias rmf="rm -rf"
 alias airport="sudo /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport"
 alias airportlswifi="airport -s"
 alias cls=clear
-alias ls='ls --color=auto'
-alias ll='ls -alF'
 
 # Youtube download youtube-dl
 alias youtube="youtube-dl"
