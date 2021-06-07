@@ -1314,7 +1314,7 @@ console.log(
                     to: [
                       {
                         key_code: 'tab',
-                        modifiers: ['left_control', 'left_shift'],
+                        modifiers: ['left_control'],
                       },
                     ],
                     type: 'basic',
