@@ -1188,7 +1188,73 @@ const profile1 = {
       switchProfileShortcuts,
     ],
   },
-  devices: [],
+  devices: [
+    {
+      // CM Storm keyboard
+      disable_built_in_keyboard_if_exists: false,
+      fn_function_keys: [],
+      identifiers: {
+        is_keyboard: true,
+        is_pointing_device: false,
+        product_id: 32,
+        vendor_id: 9494,
+      },
+      ignore: false,
+      manipulate_caps_lock_led: true,
+      simple_modifications: [
+        {
+          from: {
+            key_code: 'left_command',
+          },
+          to: [
+            {
+              key_code: 'left_option',
+            },
+          ],
+        },
+        {
+          from: {
+            key_code: 'left_option',
+          },
+          to: [
+            {
+              key_code: 'left_command',
+            },
+          ],
+        },
+        {
+          from: {
+            key_code: 'right_command',
+          },
+          to: [
+            {
+              key_code: 'left_option',
+            },
+          ],
+        },
+        {
+          from: {
+            key_code: 'right_option',
+          },
+          to: [
+            {
+              key_code: 'left_command',
+            },
+          ],
+        },
+        {
+          from: {
+            key_code: 'grave_accent_and_tilde',
+          },
+          to: [
+            {
+              key_code: 'grave_accent_and_tilde',
+            },
+          ],
+        },
+      ],
+    },
+  ],
   fn_function_keys: fnFuntionKeys,
   name: '1',
   parameters: {
