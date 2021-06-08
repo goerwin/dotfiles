@@ -9,51 +9,63 @@ node src/.config/karabiner/_template.js > src/.config/karabiner/karabiner.json
 const fnFuntionKeys = [
   {
     from: { key_code: 'f1' },
-    to: [{ consumer_key_code: 'display_brightness_decrement' }],
+    to: { key_code: 'f1' },
+    // to: [{ consumer_key_code: 'display_brightness_decrement' }],
   },
   {
     from: { key_code: 'f2' },
-    to: [{ consumer_key_code: 'display_brightness_increment' }],
+    to: { key_code: 'f2' },
+    // to: [{ consumer_key_code: 'display_brightness_increment' }],
   },
   {
     from: { key_code: 'f3' },
-    to: [{ apple_vendor_keyboard_key_code: 'mission_control' }],
+    to: { key_code: 'f3' },
+    // to: [{ apple_vendor_keyboard_key_code: 'mission_control' }],
   },
   {
     from: { key_code: 'f4' },
-    to: [{ apple_vendor_keyboard_key_code: 'spotlight' }],
+    to: { key_code: 'f4' },
+    // to: [{ apple_vendor_keyboard_key_code: 'spotlight' }],
   },
   {
     from: { key_code: 'f5' },
-    to: [{ consumer_key_code: 'dictation' }],
+    to: { key_code: 'f5' },
+    // to: [{ consumer_key_code: 'dictation' }],
   },
   {
     from: { key_code: 'f6' },
-    to: [{ key_code: 'f6' }],
+    to: { key_code: 'f6' },
+    // to: [{ key_code: 'f6' }],
   },
   {
     from: { key_code: 'f7' },
-    to: [{ consumer_key_code: 'rewind' }],
+    to: { key_code: 'f7' },
+    // to: [{ consumer_key_code: 'rewind' }],
   },
   {
     from: { key_code: 'f8' },
-    to: [{ consumer_key_code: 'play_or_pause' }],
+    to: { key_code: 'f8' },
+    // to: [{ consumer_key_code: 'play_or_pause' }],
   },
   {
     from: { key_code: 'f9' },
-    to: [{ consumer_key_code: 'fast_forward' }],
+    to: { key_code: 'f9' },
+    // to: [{ consumer_key_code: 'fast_forward' }],
   },
   {
     from: { key_code: 'f10' },
-    to: [{ consumer_key_code: 'mute' }],
+    to: { key_code: 'f10' },
+    // to: [{ consumer_key_code: 'mute' }],
   },
   {
     from: { key_code: 'f11' },
-    to: [{ consumer_key_code: 'volume_decrement' }],
+    to: { key_code: 'f11' },
+    // to: [{ consumer_key_code: 'volume_decrement' }],
   },
   {
     from: { key_code: 'f12' },
-    to: [{ consumer_key_code: 'volume_increment' }],
+    to: { key_code: 'f12' },
+    // to: [{ consumer_key_code: 'volume_increment' }],
   },
 ];
 
@@ -740,6 +752,32 @@ const profile1 = {
         ],
       },
       {
+        description: 'App::Starcraft2 - modifications',
+        manipulators: [
+          {
+            conditions: [
+              {
+                bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
+                type: 'frontmost_application_if',
+              },
+            ],
+            from: {
+              key_code: 'd',
+              modifiers: {
+                mandatory: ['left_command'],
+              },
+            },
+            to: [
+              {
+                key_code: 'c',
+                modifiers: ['left_option'],
+              },
+            ],
+            type: 'basic',
+          },
+        ],
+      },
+      {
         description: 'Global - Double Shift to CAPS',
         manipulators: [
           {
@@ -1051,9 +1089,15 @@ const profile1 = {
         ],
       },
       {
-        description: 'Global - Fn Keys',
+        description: 'Global - Function Keys',
         manipulators: [
           {
+            conditions: [
+              {
+                bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
+                type: 'frontmost_application_unless',
+              },
+            ],
             from: {
               key_code: 'f1',
             },
@@ -1065,6 +1109,12 @@ const profile1 = {
             type: 'basic',
           },
           {
+            conditions: [
+              {
+                bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
+                type: 'frontmost_application_unless',
+              },
+            ],
             from: {
               key_code: 'f1',
               modifiers: {
@@ -1080,6 +1130,12 @@ const profile1 = {
             type: 'basic',
           },
           {
+            conditions: [
+              {
+                bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
+                type: 'frontmost_application_unless',
+              },
+            ],
             from: {
               key_code: 'f2',
             },
@@ -1091,6 +1147,12 @@ const profile1 = {
             type: 'basic',
           },
           {
+            conditions: [
+              {
+                bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
+                type: 'frontmost_application_unless',
+              },
+            ],
             from: {
               key_code: 'f2',
               modifiers: {
@@ -1106,6 +1168,12 @@ const profile1 = {
             type: 'basic',
           },
           {
+            conditions: [
+              {
+                bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
+                type: 'frontmost_application_unless',
+              },
+            ],
             from: {
               key_code: 'f10',
             },

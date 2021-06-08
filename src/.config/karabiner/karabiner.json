@@ -665,6 +665,38 @@
             ]
           },
           {
+            "description": "App::Starcraft2 - modifications",
+            "manipulators": [
+              {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_if"
+                  }
+                ],
+                "from": {
+                  "key_code": "d",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_command"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "c",
+                    "modifiers": [
+                      "left_option"
+                    ]
+                  }
+                ],
+                "type": "basic"
+              }
+            ]
+          },
+          {
             "description": "Global - Double Shift to CAPS",
             "manipulators": [
               {
@@ -1024,9 +1056,17 @@
             ]
           },
           {
-            "description": "Global - Fn Keys",
+            "description": "Global - Function Keys",
             "manipulators": [
               {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_unless"
+                  }
+                ],
                 "from": {
                   "key_code": "f1"
                 },
@@ -1038,6 +1078,14 @@
                 "type": "basic"
               },
               {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_unless"
+                  }
+                ],
                 "from": {
                   "key_code": "f1",
                   "modifiers": {
@@ -1057,6 +1105,14 @@
                 "type": "basic"
               },
               {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_unless"
+                  }
+                ],
                 "from": {
                   "key_code": "f2"
                 },
@@ -1068,6 +1124,14 @@
                 "type": "basic"
               },
               {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_unless"
+                  }
+                ],
                 "from": {
                   "key_code": "f2",
                   "modifiers": {
@@ -1087,6 +1151,14 @@
                 "type": "basic"
               },
               {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_unless"
+                  }
+                ],
                 "from": {
                   "key_code": "f10"
                 },
@@ -1367,121 +1439,97 @@
           "from": {
             "key_code": "f1"
           },
-          "to": [
-            {
-              "consumer_key_code": "display_brightness_decrement"
-            }
-          ]
+          "to": {
+            "key_code": "f1"
+          }
         },
         {
           "from": {
             "key_code": "f2"
           },
-          "to": [
-            {
-              "consumer_key_code": "display_brightness_increment"
-            }
-          ]
+          "to": {
+            "key_code": "f2"
+          }
         },
         {
           "from": {
             "key_code": "f3"
           },
-          "to": [
-            {
-              "apple_vendor_keyboard_key_code": "mission_control"
-            }
-          ]
+          "to": {
+            "key_code": "f3"
+          }
         },
         {
           "from": {
             "key_code": "f4"
           },
-          "to": [
-            {
-              "apple_vendor_keyboard_key_code": "spotlight"
-            }
-          ]
+          "to": {
+            "key_code": "f4"
+          }
         },
         {
           "from": {
             "key_code": "f5"
           },
-          "to": [
-            {
-              "consumer_key_code": "dictation"
-            }
-          ]
+          "to": {
+            "key_code": "f5"
+          }
         },
         {
           "from": {
             "key_code": "f6"
           },
-          "to": [
-            {
-              "key_code": "f6"
-            }
-          ]
+          "to": {
+            "key_code": "f6"
+          }
         },
         {
           "from": {
             "key_code": "f7"
           },
-          "to": [
-            {
-              "consumer_key_code": "rewind"
-            }
-          ]
+          "to": {
+            "key_code": "f7"
+          }
         },
         {
           "from": {
             "key_code": "f8"
           },
-          "to": [
-            {
-              "consumer_key_code": "play_or_pause"
-            }
-          ]
+          "to": {
+            "key_code": "f8"
+          }
         },
         {
           "from": {
             "key_code": "f9"
           },
-          "to": [
-            {
-              "consumer_key_code": "fast_forward"
-            }
-          ]
+          "to": {
+            "key_code": "f9"
+          }
         },
         {
           "from": {
             "key_code": "f10"
           },
-          "to": [
-            {
-              "consumer_key_code": "mute"
-            }
-          ]
+          "to": {
+            "key_code": "f10"
+          }
         },
         {
           "from": {
             "key_code": "f11"
           },
-          "to": [
-            {
-              "consumer_key_code": "volume_decrement"
-            }
-          ]
+          "to": {
+            "key_code": "f11"
+          }
         },
         {
           "from": {
             "key_code": "f12"
           },
-          "to": [
-            {
-              "consumer_key_code": "volume_increment"
-            }
-          ]
+          "to": {
+            "key_code": "f12"
+          }
         }
       ],
       "name": "1",
@@ -2207,6 +2255,38 @@
             ]
           },
           {
+            "description": "App::Starcraft2 - modifications",
+            "manipulators": [
+              {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_if"
+                  }
+                ],
+                "from": {
+                  "key_code": "d",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_command"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "c",
+                    "modifiers": [
+                      "left_option"
+                    ]
+                  }
+                ],
+                "type": "basic"
+              }
+            ]
+          },
+          {
             "description": "Global - Double Shift to CAPS",
             "manipulators": [
               {
@@ -2566,9 +2646,17 @@
             ]
           },
           {
-            "description": "Global - Fn Keys",
+            "description": "Global - Function Keys",
             "manipulators": [
               {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_unless"
+                  }
+                ],
                 "from": {
                   "key_code": "f1"
                 },
@@ -2580,6 +2668,14 @@
                 "type": "basic"
               },
               {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_unless"
+                  }
+                ],
                 "from": {
                   "key_code": "f1",
                   "modifiers": {
@@ -2599,6 +2695,14 @@
                 "type": "basic"
               },
               {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_unless"
+                  }
+                ],
                 "from": {
                   "key_code": "f2"
                 },
@@ -2610,6 +2714,14 @@
                 "type": "basic"
               },
               {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_unless"
+                  }
+                ],
                 "from": {
                   "key_code": "f2",
                   "modifiers": {
@@ -2629,6 +2741,14 @@
                 "type": "basic"
               },
               {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.blizzard\\.starcraft2$"
+                    ],
+                    "type": "frontmost_application_unless"
+                  }
+                ],
                 "from": {
                   "key_code": "f10"
                 },
@@ -2971,121 +3091,97 @@
           "from": {
             "key_code": "f1"
           },
-          "to": [
-            {
-              "consumer_key_code": "display_brightness_decrement"
-            }
-          ]
+          "to": {
+            "key_code": "f1"
+          }
         },
         {
           "from": {
             "key_code": "f2"
           },
-          "to": [
-            {
-              "consumer_key_code": "display_brightness_increment"
-            }
-          ]
+          "to": {
+            "key_code": "f2"
+          }
         },
         {
           "from": {
             "key_code": "f3"
           },
-          "to": [
-            {
-              "apple_vendor_keyboard_key_code": "mission_control"
-            }
-          ]
+          "to": {
+            "key_code": "f3"
+          }
         },
         {
           "from": {
             "key_code": "f4"
           },
-          "to": [
-            {
-              "apple_vendor_keyboard_key_code": "spotlight"
-            }
-          ]
+          "to": {
+            "key_code": "f4"
+          }
         },
         {
           "from": {
             "key_code": "f5"
           },
-          "to": [
-            {
-              "consumer_key_code": "dictation"
-            }
-          ]
+          "to": {
+            "key_code": "f5"
+          }
         },
         {
           "from": {
             "key_code": "f6"
           },
-          "to": [
-            {
-              "key_code": "f6"
-            }
-          ]
+          "to": {
+            "key_code": "f6"
+          }
         },
         {
           "from": {
             "key_code": "f7"
           },
-          "to": [
-            {
-              "consumer_key_code": "rewind"
-            }
-          ]
+          "to": {
+            "key_code": "f7"
+          }
         },
         {
           "from": {
             "key_code": "f8"
           },
-          "to": [
-            {
-              "consumer_key_code": "play_or_pause"
-            }
-          ]
+          "to": {
+            "key_code": "f8"
+          }
         },
         {
           "from": {
             "key_code": "f9"
           },
-          "to": [
-            {
-              "consumer_key_code": "fast_forward"
-            }
-          ]
+          "to": {
+            "key_code": "f9"
+          }
         },
         {
           "from": {
             "key_code": "f10"
           },
-          "to": [
-            {
-              "consumer_key_code": "mute"
-            }
-          ]
+          "to": {
+            "key_code": "f10"
+          }
         },
         {
           "from": {
             "key_code": "f11"
           },
-          "to": [
-            {
-              "consumer_key_code": "volume_decrement"
-            }
-          ]
+          "to": {
+            "key_code": "f11"
+          }
         },
         {
           "from": {
             "key_code": "f12"
           },
-          "to": [
-            {
-              "consumer_key_code": "volume_increment"
-            }
-          ]
+          "to": {
+            "key_code": "f12"
+          }
         }
       ],
       "name": "2",
@@ -3285,121 +3381,97 @@
           "from": {
             "key_code": "f1"
           },
-          "to": [
-            {
-              "consumer_key_code": "display_brightness_decrement"
-            }
-          ]
+          "to": {
+            "key_code": "f1"
+          }
         },
         {
           "from": {
             "key_code": "f2"
           },
-          "to": [
-            {
-              "consumer_key_code": "display_brightness_increment"
-            }
-          ]
+          "to": {
+            "key_code": "f2"
+          }
         },
         {
           "from": {
             "key_code": "f3"
           },
-          "to": [
-            {
-              "apple_vendor_keyboard_key_code": "mission_control"
-            }
-          ]
+          "to": {
+            "key_code": "f3"
+          }
         },
         {
           "from": {
             "key_code": "f4"
           },
-          "to": [
-            {
-              "apple_vendor_keyboard_key_code": "spotlight"
-            }
-          ]
+          "to": {
+            "key_code": "f4"
+          }
         },
         {
           "from": {
             "key_code": "f5"
           },
-          "to": [
-            {
-              "consumer_key_code": "dictation"
-            }
-          ]
+          "to": {
+            "key_code": "f5"
+          }
         },
         {
           "from": {
             "key_code": "f6"
           },
-          "to": [
-            {
-              "key_code": "f6"
-            }
-          ]
+          "to": {
+            "key_code": "f6"
+          }
         },
         {
           "from": {
             "key_code": "f7"
           },
-          "to": [
-            {
-              "consumer_key_code": "rewind"
-            }
-          ]
+          "to": {
+            "key_code": "f7"
+          }
         },
         {
           "from": {
             "key_code": "f8"
           },
-          "to": [
-            {
-              "consumer_key_code": "play_or_pause"
-            }
-          ]
+          "to": {
+            "key_code": "f8"
+          }
         },
         {
           "from": {
             "key_code": "f9"
           },
-          "to": [
-            {
-              "consumer_key_code": "fast_forward"
-            }
-          ]
+          "to": {
+            "key_code": "f9"
+          }
         },
         {
           "from": {
             "key_code": "f10"
           },
-          "to": [
-            {
-              "consumer_key_code": "mute"
-            }
-          ]
+          "to": {
+            "key_code": "f10"
+          }
         },
         {
           "from": {
             "key_code": "f11"
           },
-          "to": [
-            {
-              "consumer_key_code": "volume_decrement"
-            }
-          ]
+          "to": {
+            "key_code": "f11"
+          }
         },
         {
           "from": {
             "key_code": "f12"
           },
-          "to": [
-            {
-              "consumer_key_code": "volume_increment"
-            }
-          ]
+          "to": {
+            "key_code": "f12"
+          }
         }
       ],
       "name": "No maps",
