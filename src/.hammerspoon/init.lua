@@ -7,60 +7,101 @@ function handleCustomSlotForWorkVideos()
         return width * 9 / 16
     end
 
-    local macOSTitleBarHeight = 28
     local desiredVideoWidth = 850
+    local macOSTitleBarHeight = 28
     local videoheight = getAspectRatioHeight(desiredVideoWidth) + macOSTitleBarHeight;
 
-    -- _________________
-    -- |       | - - - -
-    -- |       |   2
-    -- |   1   | - - - -
-    -- |       |   3
-    -- |       | - - - -
-    -- |       |
-    -- _________________
-    local slot1 = {
+    local slots = {{
         x = 0,
         y = screenFrame.y,
         w = screenFrame.w - desiredVideoWidth,
         h = screenFrame.h
-    };
-
-    local slot2 = {
+    }, {
+        x = screenFrame.w - desiredVideoWidth,
+        y = screenFrame.y,
+        w = desiredVideoWidth,
+        h = screenFrame.h
+    }, {
         x = screenFrame.w - desiredVideoWidth,
         y = screenFrame.y,
         w = desiredVideoWidth,
         h = videoheight
-    };
-
-    local slot3 = {
+    }, {
         x = screenFrame.w - desiredVideoWidth,
         y = screenFrame.y + videoheight,
         w = desiredVideoWidth,
+        h = screenFrame.h - videoheight
+    }, {
+        x = 0,
+        y = screenFrame.y,
+        w = screenFrame.w - desiredVideoWidth,
         h = videoheight
-    };
+    }, {
+        x = 0,
+        y = screenFrame.y + videoheight,
+        w = screenFrame.w - desiredVideoWidth,
+        h = screenFrame.h - videoheight
+    }}
 
     local windowManagement = hs.hotkey.modal.new('cmd-alt', 'p')
     local windowManagementAlert = nil
+    local idx = 1
 
     function windowManagement:entered()
-        windowManagementAlert = hs.alert('Custom mode (Press 1/2/3 to accomodate)', 'infinite')
+        windowManagementAlert = hs.alert('Custom mode (Press 1/2/3/4/5/6, left/right arrows or HL to accomodate)',
+            'infinite')
     end
 
     function windowManagement:exited()
         hs.alert.closeSpecific(windowManagementAlert)
     end
 
+    windowManagement:bind('', 'left', function()
+        idx = idx > 1 and idx - 1 or #slots
+        hs.window.focusedWindow():setFrame(slots[idx])
+    end)
+
+    windowManagement:bind('', 'h', function()
+        idx = idx > 1 and idx - 1 or #slots
+        hs.window.focusedWindow():setFrame(slots[idx])
+    end)
+
+    windowManagement:bind('', 'right', function()
+        idx = idx < #slots and idx + 1 or 1
+        hs.window.focusedWindow():setFrame(slots[idx])
+    end)
+
+    windowManagement:bind('', 'l', function()
+        idx = idx < #slots and idx + 1 or 1
+        hs.window.focusedWindow():setFrame(slots[idx])
+    end)
+
     windowManagement:bind('', '1', function()
-        hs.window.focusedWindow():setFrame(slot1)
+        hs.window.focusedWindow():setFrame(slots[1])
     end)
 
     windowManagement:bind('', '2', function()
-        hs.window.focusedWindow():setFrame(slot2)
+        hs.window.focusedWindow():setFrame(slots[2])
     end)
 
     windowManagement:bind('', '3', function()
-        hs.window.focusedWindow():setFrame(slot3)
+        hs.window.focusedWindow():setFrame(slots[3])
+    end)
+
+    windowManagement:bind('', '4', function()
+        hs.window.focusedWindow():setFrame(slots[4])
+    end)
+
+    windowManagement:bind('', '5', function()
+        hs.window.focusedWindow():setFrame(slots[5])
+    end)
+
+    windowManagement:bind('', '6', function()
+        hs.window.focusedWindow():setFrame(slots[6])
+    end)
+
+    windowManagement:bind('cmd-alt', 'p', function()
+        windowManagement:exit()
     end)
 
     windowManagement:bind('', 'escape', function()
