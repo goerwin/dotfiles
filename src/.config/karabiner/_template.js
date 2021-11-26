@@ -749,6 +749,7 @@ const profile1 = {
       from: { key_code: 'right_command' },
       to: [{ key_code: 'left_command' }],
     },
+    { from: { key_code: 'right_option' }, to: [{ key_code: 'left_option' }] },
     { from: { key_code: 'right_shift' }, to: [{ key_code: 'left_shift' }] },
   ],
   virtual_hid_keyboard: {
@@ -777,7 +778,7 @@ console.log(
             rules: [
               ...profile1.complex_modifications.rules,
               {
-                description: 'Global - Twitch Mode',
+                description: 'Global - EasyNavigation/Entertainment Mode',
                 manipulators: [
                   {
                     from: { key_code: 'up_arrow' },
@@ -789,6 +790,8 @@ console.log(
                     to: [{ key_code: 't', modifiers: ['left_option'] }],
                     type: 'basic',
                   },
+
+                  // tab navigation
                   {
                     from: { key_code: 'left_arrow' },
                     to: [
@@ -802,6 +805,34 @@ console.log(
                   {
                     from: { key_code: 'right_arrow' },
                     to: [{ key_code: 'tab', modifiers: ['left_control'] }],
+                    type: 'basic',
+                  },
+
+                  // window navigation
+                  {
+                    from: {
+                      key_code: 'left_arrow',
+                      modifiers: { mandatory: ['left_option'] },
+                    },
+                    to: [
+                      {
+                        key_code: 'grave_accent_and_tilde',
+                        modifiers: ['left_command'],
+                      },
+                    ],
+                    type: 'basic',
+                  },
+                  {
+                    from: {
+                      key_code: 'right_arrow',
+                      modifiers: { mandatory: ['left_option'] },
+                    },
+                    to: [
+                      {
+                        key_code: 'grave_accent_and_tilde',
+                        modifiers: ['left_command', 'left_shift'],
+                      },
+                    ],
                     type: 'basic',
                   },
                 ],
