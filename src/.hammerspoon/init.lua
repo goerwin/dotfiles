@@ -1,103 +1,134 @@
-function handleCustomSlotForWorkVideos()
+function handleCustomSlotsForWindows()
+    local rightWidths = {850, 800, 700, 650, 600, 550}
+    local rightWidthIdx = 1
     local focusedWin = hs.window.focusedWindow()
     local screen = focusedWin:screen()
     local screenFrame = screen:frame()
 
-    function getAspectRatioHeight(width)
-        return width * 9 / 16
+    function getSlots()
+        local macOSTitleBarHeight = 28
+        local rightSideWidth = rightWidths[rightWidthIdx]
+        local smallHeight = rightSideWidth * 9 / 16 + macOSTitleBarHeight;
+
+        return {{
+            x = 0,
+            y = screenFrame.y,
+            w = screenFrame.w - rightSideWidth,
+            h = screenFrame.h
+        }, {
+            x = screenFrame.w - rightSideWidth,
+            y = screenFrame.y,
+            w = rightSideWidth,
+            h = screenFrame.h
+        }, {
+            x = screenFrame.w - rightSideWidth,
+            y = screenFrame.y,
+            w = rightSideWidth,
+            h = smallHeight
+        }, {
+            x = screenFrame.w - rightSideWidth,
+            y = screenFrame.y + smallHeight,
+            w = rightSideWidth,
+            h = screenFrame.h - smallHeight
+        }, {
+            x = 0,
+            y = screenFrame.y,
+            w = screenFrame.w - rightSideWidth,
+            h = smallHeight
+        }, {
+            x = 0,
+            y = screenFrame.y + smallHeight,
+            w = screenFrame.w - rightSideWidth,
+            h = screenFrame.h - smallHeight
+        }}
     end
-
-    local desiredVideoWidth = 850
-    local macOSTitleBarHeight = 28
-    local videoheight = getAspectRatioHeight(desiredVideoWidth) + macOSTitleBarHeight;
-
-    local slots = {{
-        x = 0,
-        y = screenFrame.y,
-        w = screenFrame.w - desiredVideoWidth,
-        h = screenFrame.h
-    }, {
-        x = screenFrame.w - desiredVideoWidth,
-        y = screenFrame.y,
-        w = desiredVideoWidth,
-        h = screenFrame.h
-    }, {
-        x = screenFrame.w - desiredVideoWidth,
-        y = screenFrame.y,
-        w = desiredVideoWidth,
-        h = videoheight
-    }, {
-        x = screenFrame.w - desiredVideoWidth,
-        y = screenFrame.y + videoheight,
-        w = desiredVideoWidth,
-        h = screenFrame.h - videoheight
-    }, {
-        x = 0,
-        y = screenFrame.y,
-        w = screenFrame.w - desiredVideoWidth,
-        h = videoheight
-    }, {
-        x = 0,
-        y = screenFrame.y + videoheight,
-        w = screenFrame.w - desiredVideoWidth,
-        h = screenFrame.h - videoheight
-    }}
 
     local windowManagement = hs.hotkey.modal.new('cmd-alt', 'p')
     local windowManagementAlert = nil
-    local idx = 1
+    local curSlotIdx = 1
+
+    function showAlert()
+        local msg = table.concat({'Custom Slots for Windows',
+                                  'Press 1/2/3/4/5/6, left/right arrows or HL to accomodate',
+                                  '[Shift+]Space to go through rightWidths',
+                                  'leftWidth: ' .. math.floor(screenFrame.w - rightWidths[rightWidthIdx]) .. 'px',
+                                  'rightWidth: ' .. rightWidths[rightWidthIdx] .. 'px'}, '\n')
+
+        hs.alert.closeSpecific(windowManagementAlert, 0)
+        windowManagementAlert = hs.alert(msg, {
+            strokeColor = {
+                white = 0
+            },
+            textStyle = {
+                paragraphStyle = {
+                    alignment = 'center'
+                }
+            },
+            textSize = 20
+        }, 'infinite')
+
+    end
 
     function windowManagement:entered()
-        windowManagementAlert = hs.alert('Custom mode (Press 1/2/3/4/5/6, left/right arrows or HL to accomodate)',
-            'infinite')
+        showAlert()
     end
 
     function windowManagement:exited()
-        hs.alert.closeSpecific(windowManagementAlert)
+        hs.alert.closeSpecific(windowManagementAlert, 0)
     end
 
     windowManagement:bind('', 'left', function()
-        idx = idx > 1 and idx - 1 or #slots
-        hs.window.focusedWindow():setFrame(slots[idx])
+        curSlotIdx = curSlotIdx > 1 and curSlotIdx - 1 or #getSlots()
+        hs.window.focusedWindow():setFrame(getSlots()[curSlotIdx])
     end)
 
     windowManagement:bind('', 'h', function()
-        idx = idx > 1 and idx - 1 or #slots
-        hs.window.focusedWindow():setFrame(slots[idx])
+        curSlotIdx = curSlotIdx > 1 and curSlotIdx - 1 or #getSlots()
+        hs.window.focusedWindow():setFrame(getSlots()[curSlotIdx])
     end)
 
     windowManagement:bind('', 'right', function()
-        idx = idx < #slots and idx + 1 or 1
-        hs.window.focusedWindow():setFrame(slots[idx])
+        curSlotIdx = curSlotIdx < #getSlots() and curSlotIdx + 1 or 1
+        hs.window.focusedWindow():setFrame(getSlots()[curSlotIdx])
     end)
 
     windowManagement:bind('', 'l', function()
-        idx = idx < #slots and idx + 1 or 1
-        hs.window.focusedWindow():setFrame(slots[idx])
+        curSlotIdx = curSlotIdx < #getSlots() and curSlotIdx + 1 or 1
+        hs.window.focusedWindow():setFrame(getSlots()[curSlotIdx])
     end)
 
     windowManagement:bind('', '1', function()
-        hs.window.focusedWindow():setFrame(slots[1])
+        hs.window.focusedWindow():setFrame(getSlots()[1])
     end)
 
     windowManagement:bind('', '2', function()
-        hs.window.focusedWindow():setFrame(slots[2])
+        hs.window.focusedWindow():setFrame(getSlots()[2])
     end)
 
     windowManagement:bind('', '3', function()
-        hs.window.focusedWindow():setFrame(slots[3])
+        hs.window.focusedWindow():setFrame(getSlots()[3])
     end)
 
     windowManagement:bind('', '4', function()
-        hs.window.focusedWindow():setFrame(slots[4])
+        hs.window.focusedWindow():setFrame(getSlots()[4])
     end)
 
     windowManagement:bind('', '5', function()
-        hs.window.focusedWindow():setFrame(slots[5])
+        hs.window.focusedWindow():setFrame(getSlots()[5])
     end)
 
     windowManagement:bind('', '6', function()
-        hs.window.focusedWindow():setFrame(slots[6])
+        hs.window.focusedWindow():setFrame(getSlots()[6])
+    end)
+
+    windowManagement:bind('Shift', 'Space', function()
+        rightWidthIdx = rightWidthIdx > 1 and rightWidthIdx - 1 or #rightWidths
+        showAlert()
+    end)
+
+    windowManagement:bind('', 'Space', function()
+        rightWidthIdx = rightWidthIdx < #rightWidths and rightWidthIdx + 1 or 1
+        showAlert()
     end)
 
     windowManagement:bind('cmd-alt', 'p', function()
@@ -208,5 +239,5 @@ end
 -- end
 
 initWindowManagement()
-handleCustomSlotForWorkVideos()
+handleCustomSlotsForWindows()
 hs.alert.show('Config loaded')
