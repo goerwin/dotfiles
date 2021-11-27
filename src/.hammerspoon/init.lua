@@ -47,24 +47,36 @@ function handleCustomSlotsForWindows()
     local windowManagementAlert = nil
     local curSlotIdx = 1
 
+    function getWidths(dir)
+        local res = '[  '
+        for i, _ in pairs(rightWidths) do
+            local selected = i == rightWidthIdx and '* ' or '  '
+            local value = dir == 'left' and math.floor(screenFrame.w - rightWidths[i]) or rightWidths[i]
+            res = res .. value .. selected
+        end
+        return res .. ']'
+    end
+
     function showAlert()
-        local msg = table.concat({'Custom Slots for Windows',
-                                  'Press 1/2/3/4/5/6, left/right arrows or HL to accomodate',
-                                  '[Shift+]Space to go through rightWidths',
-                                  'leftWidth: ' .. math.floor(screenFrame.w - rightWidths[rightWidthIdx]) .. 'px',
-                                  'rightWidth: ' .. rightWidths[rightWidthIdx] .. 'px'}, '\n')
+        local msg = table.concat({'Custom Slots for Windows', 'Press 1/2/3/4/5/6, left/right arrows or HL to cycle',
+                                  '[Shift+]Space to go through sizes', 'left Width:  ' .. getWidths('left'),
+                                  'right Width: ' .. getWidths('right')}, '\n')
 
         hs.alert.closeSpecific(windowManagementAlert, 0)
         windowManagementAlert = hs.alert(msg, {
             strokeColor = {
                 white = 0
             },
+            fadeInDuration = 0,
             textStyle = {
+                font = {
+                    name = 'Monaco',
+                    size = 16
+                },
                 paragraphStyle = {
                     alignment = 'center'
                 }
-            },
-            textSize = 20
+            }
         }, 'infinite')
 
     end
