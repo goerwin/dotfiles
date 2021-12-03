@@ -413,7 +413,7 @@ const profile1 = {
         ],
       },
       {
-        description: 'App::Slack - Toggle full-screen',
+        description: 'App::Slack - Toggle full-screen', // TODO: WUT
         manipulators: [
           {
             conditions: [
