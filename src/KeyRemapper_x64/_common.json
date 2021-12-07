@@ -180,6 +180,8 @@
     "when": { "Win": true },
     "fire": ["Alt:down NP1 NP6 NP4 Alt:up", null]
   },
+
+  // TODO: MUTE
   {
     "keys": ["M"],
     "when": { "Win": true },

@@ -39,12 +39,12 @@
   {
     "keys": ["H"],
     "when": { "appName": "chrome.exe", "Alt": true, "Win": false },
-    "fire": ["Shift:down Tab Shift:up", null]
+    "fire": ["5", null]
   },
   {
     "keys": ["L"],
     "when": { "appName": "chrome.exe", "Alt": true, "Win": false },
-    "fire": ["Tab", null]
+    "fire": ["6", null]
   },
   {
     "keys": ["Colon"],
@@ -54,22 +54,27 @@
   {
     "keys": ["F3"],
     "when": { "appName": "chrome.exe" },
-    "fire": ["Ctrl:down Shift:down Tab Shift:up Ctrl:up", null]
+    "fire": ["Ctrl:down 5 Ctrl:up", null]
   },
   {
     "keys": ["F4"],
     "when": { "appName": "chrome.exe" },
-    "fire": ["Ctrl:down Tab Ctrl:up", null]
+    "fire": ["Ctrl:down 6 Ctrl:up", null]
   },
   {
     "keys": ["F5"],
     "when": { "appName": "chrome.exe" },
-    "fire": ["Alt:down M Alt:up", null]
+    "fire": ["Alt:down S Alt:up", null]
   },
   {
     "keys": ["F6"],
     "when": { "appName": "chrome.exe" },
     "fire": ["Alt:down T Alt:up", null]
+  },
+  {
+    "keys": ["S", "T"],
+    "when": { "appName": "chrome.exe", "Win": true },
+    "fire": ["Alt:down currentKey Alt:up"]
   },
 
   // Slack

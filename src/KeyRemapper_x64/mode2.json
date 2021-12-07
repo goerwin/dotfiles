@@ -6,17 +6,17 @@
     {
       "keys": ["Left"],
       "when": { "appName": "chrome.exe" },
-      "fire": ["Ctrl:down Shift:down Tab Shift:up Ctrl:up", null]
+      "fire": ["Ctrl:down 5 Ctrl:up", null]
     },
     {
       "keys": ["Right"],
       "when": { "appName": "chrome.exe" },
-      "fire": ["Ctrl:down Tab Ctrl:up", null]
+      "fire": ["Ctrl:down 6 Ctrl:up", null]
     },
     {
       "keys": ["Down"],
       "when": { "appName": "chrome.exe" },
-      "fire": ["Alt:down M Alt:up", null]
+      "fire": ["Alt:down S Alt:up", null]
     },
     {
       "keys": ["Up"],

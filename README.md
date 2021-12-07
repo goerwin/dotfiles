@@ -18,3 +18,7 @@ it work by going into "Security & Privacy" and clicking "Allow". At first, the "
 button was not appearing and I tried everything, the thing I think it worked was to
 create a file in `~/Library/LaunchAgents/com.local.KeyRemapping.plist`. Also, I started to
 download a MacOs update (it was in progress in the moment the "Allow" button appeared)
+
+## TODO:
+
+- [ ] Test 4 failing for KeyRemapper
