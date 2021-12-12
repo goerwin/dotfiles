@@ -1,7 +1,17 @@
-{
-  "CtrlR": "Win",
-  "PrtScr": "Win",
-  "AltR": "Alt",
-  "ShiftR": "Shift",
-  "NextToShiftL": "Shift"
-}
+// HID\\VID_0B05&PID_19B6&REV_0002&MI_02 = Zephyrus G14
+
+[
+  {
+    "from": "PrtScr",
+    "to": "Win",
+    "when": { "keyboard": "HID\\VID_0B05&PID_19B6&REV_0002&MI_02" }
+  },
+  {
+    "from": "NextToShiftL",
+    "to": "Shift",
+    "when": { "keyboard": "HID\\VID_0B05&PID_19B6&REV_0002&MI_02" }
+  },
+  { "from": "CtrlR", "to": "Win" },
+  { "from": "AltR", "to": "Alt" },
+  { "from": "ShiftR", "to": "Shift" }
+]
