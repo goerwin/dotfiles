@@ -60,6 +60,11 @@
   },
   {
     "keys": ["Back"],
+    "when": { "Alt": true },
+    "fire": ["Ctrl:up Shift:down Home Shift:up Back Ctrl:down", null]
+  },
+  {
+    "keys": ["Back"],
     "when": { "Win": true },
     "fire": ["Ctrl:down Back Ctrl:up", null]
   },
@@ -72,11 +77,6 @@
     "keys": ["H", "L"],
     "when": { "Win": true },
     "fire": ["Alt:down vimArrowKey Alt:up", null]
-  },
-  {
-    "keys": ["Back"],
-    "when": { "Alt": true },
-    "fire": ["Ctrl:up Shift:down Home Shift:up Back Ctrl:down", null]
   },
   {
     "keys": ["Q"],

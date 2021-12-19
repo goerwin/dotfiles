@@ -43,11 +43,13 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 # # Key Bindings
 #//////////////////////////
 
-bindkey -e
-bindkey "^[[1;9C" forward-word  # Ctrl + right
-bindkey "^[[1;9D" backward-word # Ctrl + left
-bindkey "^U" backward-kill-line # Ctrl + U
-bindkey "^H" backward-kill-word # Ctrl + Backspace
+# Text manipulation
+# bindkey -L to list all bindings
+# showkey -a to see keycodes
+bindkey '^[[1;5D' backward-word # Ctrl+leftArrow
+bindkey '^[[1;5C' forward-word # Ctrl+rightArrow
+bindkey "^[[1;2H" backward-kill-line # (windows: Shift+Home)
+bindkey "^H" backward-kill-word # (windows: Ctrl+Shift+H or Ctrl+Backspace)
 
 zle -N customClearScreen
 bindkey "^O" customClearScreen
