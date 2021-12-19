@@ -14,7 +14,7 @@
     "keys": ["Esc", "Enter"],
     "when": { "Alt": true, "isAltTabMode": true },
     "set": { "isAltTabMode": false },
-    "fire": ["currentKey Alt:up Ctrl:down", null]
+    "fire": ["currentKey:down Alt:up Ctrl:down", null]
   },
   {
     "keys": ["Q"],
