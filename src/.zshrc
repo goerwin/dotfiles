@@ -13,8 +13,14 @@ ZSH_PATH=$HOME/.zsh
 TEXT_EDITOR="code"
 HOME_DIRS=(
   $HOME
-  "/mnt/c/Users/erwin.gaitan/"
-  "/mnt/c/Users/goerwin/"
+  "/mnt/c/Users/erwin.gaitan"
+  "/mnt/c/Users/goerwin"
+)
+
+GOOGLE_DRIVE_POSSIBLE_PATHS=(
+  "/mnt/g/Mi unidad"
+  "G:/Mi unidad"
+  "Google Drive"
 )
 
 #//////////////////////////
@@ -97,10 +103,21 @@ function customClearScreen() {
 }
 
 function notes() {
-  notesPath="Google Drive/Documents/notes"
-
   for homeDir in $HOME_DIRS; do
-    isDir "$homeDir/$notesPath" && $TEXT_EDITOR "$homeDir/$notesPath"
+    for googleDrivePossiblePath in $GOOGLE_DRIVE_POSSIBLE_PATHS; do
+      notesFullPath="$homeDir/$googleDrivePossiblePath/Documents/notes"
+      notesFullPath2="$googleDrivePossiblePath/Documents/notes"
+
+      if isDir $notesFullPath; then
+        $TEXT_EDITOR $notesFullPath
+        break 2
+        break
+      elif isDir $notesFullPath2; then
+        $TEXT_EDITOR $notesFullPath2
+        break 2
+        break
+      fi
+    done
   done
 }
 
