@@ -1,4 +1,5 @@
-// HID\\VID_0B05&PID_19B6&REV_0002&MI_02 = Zephyrus G14
+// Keyboard Zephyrus G14: HID\\VID_0B05&PID_19B6&REV_0002&MI_02
+// Keyboard CM Storm: HID\\VID_2516&PID_0020&REV_0112&MI_00
 
 [
   {
@@ -11,6 +12,7 @@
     "to": "Shift",
     "when": { "keyboard": "HID\\VID_0B05&PID_19B6&REV_0002&MI_02" }
   },
+  { "from": "WinR", "to": "Win" },
   { "from": "CtrlR", "to": "Win" },
   { "from": "AltR", "to": "Alt" },
   { "from": "ShiftR", "to": "Shift" }

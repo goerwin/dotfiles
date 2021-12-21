@@ -16,12 +16,12 @@
     {
       "keys": ["Down"],
       "when": { "appName": "chrome.exe" },
-      "fire": ["Alt:down S Alt:up", null]
+      "fire": ["Alt:down T Alt:up", null]
     },
     {
       "keys": ["Up"],
       "when": { "appName": "chrome.exe" },
-      "fire": ["Alt:down T Alt:up", null]
+      "fire": ["Alt:down S Alt:up", null]
     }
   ]
 }
