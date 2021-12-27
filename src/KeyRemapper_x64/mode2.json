@@ -5,22 +5,22 @@
     "%dotdotdotArray(_common.json)",
     {
       "keys": ["Left"],
-      "when": { "appName": "chrome.exe" },
+      "when": { "appName": "chrome.exe", "Shift": false },
       "fire": ["Ctrl:down 5 Ctrl:up", null]
     },
     {
       "keys": ["Right"],
-      "when": { "appName": "chrome.exe" },
+      "when": { "appName": "chrome.exe", "Shift": false },
       "fire": ["Ctrl:down 6 Ctrl:up", null]
     },
     {
       "keys": ["Down"],
-      "when": { "appName": "chrome.exe" },
+      "when": { "appName": "chrome.exe", "Shift": false },
       "fire": ["Alt:down T Alt:up", null]
     },
     {
       "keys": ["Up"],
-      "when": { "appName": "chrome.exe" },
+      "when": { "appName": "chrome.exe", "Shift": false },
       "fire": ["Alt:down S Alt:up", null]
     }
   ]
