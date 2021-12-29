@@ -1,0 +1,25 @@
+{
+  "delayUntilRepeat": 300,
+  "keyRepeatInterval": 25,
+  "doubleClickSpeed": 500,
+  "keyPressesDelay": 200,
+  "remaps": "%array(_remaps.json)",
+  "keyPresses": "%array(_keyPresses.json)",
+  "keybindings": [
+    "%dotdotdotArray(_appKeybindings.json)",
+    "%dotdotdotArray(_vimMode.json)",
+    "%dotdotdotArray(_clicksMode.json)",
+    "%dotdotdotArray(_apps.json)",
+    "%dotdotdotArray(_globals.json)"
+  ],
+  "tests": [
+    ["Caps:down Caps:up", "Esc"],
+    ["Caps:down delay:100 Caps:up", "Esc"],
+    ["Caps:down delay:251 Caps:up", ""],
+    [
+      "Shift:down Caps:down Caps:up Shift:up",
+      "Shift:down Esc:down Esc:up Shift:up"
+    ],
+    ["Shift:down Caps:down delay:251 Caps:up Shift:up", "Shift:down Shift:up"]
+  ]
+}

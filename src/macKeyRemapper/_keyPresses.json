@@ -1,0 +1,9 @@
+[
+  { "repeat": 1, "inputKey": "F18", "fire": "Esc" },
+  {
+    "repeat": 2,
+    "inputKey": "Shift",
+    "fire": "Caps",
+    "skipKeyBindings": true
+  }
+]
