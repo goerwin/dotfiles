@@ -42,7 +42,12 @@
   },
   {
     "keys": ["I"],
-    "when": { "appName": "com.google.Chrome", "Cmd": true, "Shift": true },
+    "when": {
+      "appName": "com.google.Chrome",
+      "Cmd": true,
+      "Shift": true,
+      "Alt": true
+    },
     "fire": ["Shift:up Alt:down I Alt:up Shift:down", null]
   },
 
@@ -50,7 +55,7 @@
 
   {
     "keys": ["O"],
-    "when": { "appName": "com.googlecode.iterm2", "Cmd": true },
+    "when": { "appName": "com.googlecode.iterm2", "Cmd": true, "Alt": false },
     "fire": ["K", null]
   },
 
@@ -58,7 +63,11 @@
 
   {
     "keys": ["P"],
-    "when": { "appName": "com.tinyspeck.slackmacgap", "Cmd": true },
+    "when": {
+      "appName": "com.tinyspeck.slackmacgap",
+      "Cmd": true,
+      "Alt": false
+    },
     "fire": ["K", null]
   }
 ]

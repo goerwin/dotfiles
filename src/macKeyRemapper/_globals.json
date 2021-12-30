@@ -27,7 +27,7 @@
   // App exposé
   {
     "keys": ["J"],
-    "when": { "Cmd": true, "Alt": true },
+    "when": { "Cmd": true, "Alt": true, "Shift": false },
     "fire": ["Cmd:up Alt:up Ctrl:down Down Ctrl:up Cmd:down Alt:down", null]
   },
 
