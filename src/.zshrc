@@ -46,10 +46,10 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 # Text manipulation
 # bindkey -L to list all bindings
 # showkey -a to see keycodes
-bindkey '^[[1;5D' backward-word # Ctrl+leftArrow
-bindkey '^[[1;5C' forward-word # Ctrl+rightArrow
+bindkey '^[[1;5D' backward-word      # Ctrl+leftArrow
+bindkey '^[[1;5C' forward-word       # Ctrl+rightArrow
 bindkey "^[[1;2H" backward-kill-line # (windows: Shift+Home)
-bindkey "^H" backward-kill-word # (windows: Ctrl+Shift+H or Ctrl+Backspace)
+bindkey "^H" backward-kill-word      # (windows: Ctrl+Shift+H or Ctrl+Backspace)
 
 zle -N customClearScreen
 bindkey "^O" customClearScreen
@@ -289,3 +289,96 @@ else
 fi
 
 # TODO: LS_COLORS
+
+##############################
+# D1$N€Y
+##############################
+
+aws-account-list() {
+  echo "886979687859 : ETech Shared Services DevTools"
+  echo "125225864736 : Build & Delivery Engineering (Platform Systems Engineering-4736)"
+  echo "841052471418 : ETech Shared Services Atlassian (sedevsvc)"
+  echo "120533669058 : ETech Shared Services NonProd"
+  echo "286174615158 : ETech Shared Services Prod"
+  echo "431617356611 : Tcoe Tools - Parks"
+  echo "245425841826 : Tcoe Tools - EntTech (corp)"
+  echo "409768580306 : ETech Shared Services Atlassian Prod"
+}
+
+aws-sts-get-id() {
+  aws-account-list | grep $(aws sts get-caller-identity | jq --raw-output '.Account')
+}
+
+# if your SAML_ROLE is different by account just add to the functions below.
+
+# how to store password in Mac Keystore
+
+reset_asap_password() {
+  echo "run the following:"
+  echo "security delete-generic-password -a $AWS_HUBID -s hubid"
+  echo "security add-generic-password -a $AWS_HUBID -s hubid -w $1"
+}
+
+asap_shared_nonprod() {
+  export AWS_SAML_ACCOUNT=120533669058
+  unset AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_ACCESS_KEY_ID AWS_ACCESS_KEY AWS_PROFILE
+  eval $(aws-saml-auth -u $AWS_HUBID -p "$(security find-generic-password -a $AWS_HUBID -s hubid -w)")
+}
+
+asap_shared_prod() {
+  export AWS_SAML_ACCOUNT=286174615158
+  unset AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_ACCESS_KEY_ID AWS_ACCESS_KEY AWS_PROFILE
+  eval $(aws-saml-auth -u $AWS_HUBID -p "$(security find-generic-password -a $AWS_HUBID -s hubid -w)")
+}
+
+aws-account-list() {
+  echo "886979687859 : ETech Shared Services DevTools"
+  echo "125225864736 : Build & Delivery Engineering (Platform Systems Engineering-4736)"
+  echo "841052471418 : ETech Shared Services Atlassian (sedevsvc)"
+  echo "120533669058 : ETech Shared Services NonProd"
+  echo "286174615158 : ETech Shared Services Prod"
+  echo "431617356611 : Tcoe Tools - Parks"
+  echo "245425841826 : Tcoe Tools - EntTech (corp)"
+  echo "409768580306 : ETech Shared Services Atlassian Prod"
+}
+
+aws-sts-get-id() {
+  aws-account-list | grep $(aws sts get-caller-identity | jq --raw-output '.Account')
+}
+
+# if your SAML_ROLE is different by account just add to the functions below.
+
+# how to store password in Mac Keystore
+
+reset_asap_password() {
+  echo "run the following:"
+  echo "security delete-generic-password -a $AWS_HUBID -s hubid"
+  echo "security add-generic-password -a $AWS_HUBID -s hubid -w $1"
+}
+
+asap_shared_nonprod() {
+  export AWS_SAML_ACCOUNT=120533669058
+  unset AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_ACCESS_KEY_ID AWS_ACCESS_KEY AWS_PROFILE
+  eval $(aws-saml-auth -u $AWS_HUBID -p "$(security find-generic-password -a $AWS_HUBID -s hubid -w)")
+}
+
+asap_shared_prod() {
+  export AWS_SAML_ACCOUNT=286174615158
+  unset AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_ACCESS_KEY_ID AWS_ACCESS_KEY AWS_PROFILE
+  eval $(aws-saml-auth -u $AWS_HUBID -p "$(security find-generic-password -a $AWS_HUBID -s hubid -w)")
+}
+
+# export SAUCE_USERNAME=xxx
+# export SAUCE_ACCESS_KEY=xxx
+
+# export decrypter_property=xxx
+# export AWS_REGION=xxx
+
+# export AWS_HUBID=xxx
+# export AWS_DEFAULT_REGION=xxx
+# export AWS_SAML_USER=xxx
+# export AWS_SAML_ROLE=xxx
+
+# export SERVER_SSL_KEY_STORE=xxx
+
+# export JAVA_HOME=xxx
