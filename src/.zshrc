@@ -126,6 +126,8 @@ function notes() {
 function open() {
   if [[ $(grep Microsoft /proc/version) ]]; then # WSL
     explorer.exe $(wslpath -w "${@:-.}")
+  elif [[ $(grep WSL2 /proc/version) ]]; then # WSL2
+    explorer.exe $@
   elif command -v open &>/dev/null; then # Mac
     command open $@
   else
