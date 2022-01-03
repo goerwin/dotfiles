@@ -5,12 +5,12 @@
   {
     "from": "PrtScr",
     "to": "Win",
-    "when": { "keyboard": "HID\\VID_0B05&PID_19B6&REV_0002&MI_02" }
+    "if": { "keyboard": "HID\\VID_0B05&PID_19B6&REV_0002&MI_02" }
   },
   {
-    "from": "NextToShiftL",
+    "from": "NonUSBackslash",
     "to": "Shift",
-    "when": { "keyboard": "HID\\VID_0B05&PID_19B6&REV_0002&MI_02" }
+    "if": { "keyboard": "HID\\VID_0B05&PID_19B6&REV_0002&MI_02" }
   },
   { "from": "WinR", "to": "Win" },
   { "from": "CtrlR", "to": "Win" },

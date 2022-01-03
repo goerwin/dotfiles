@@ -1,0 +1,44 @@
+[
+  {
+    "keys": ["Tab"],
+    "if": { "Alt": true, "isAltTabMode": false },
+    "set": { "isAltTabMode": true },
+    "send": ["Ctrl:up Alt:down Tab", null]
+  },
+  { "keys": ["Tab"], "if": { "isAltTabMode": true }, "send": ["Tab", null] },
+  {
+    "keys": ["Esc", "Enter"],
+    "if": { "isAltTabMode": true },
+    "set": { "isAltTabMode": false },
+    "send": ["currentKey:down Delay10 Alt:up Ctrl:down", null]
+  },
+
+  { "keys": ["Q"], "if": { "isAltTabMode": true }, "send": ["Supr", null] },
+  {
+    "keys": ["Alt"],
+    "if": { "isAltTabMode": true },
+    "setOnKeyUp": { "isAltTabMode": false },
+    "send": [null, "Alt:up"]
+  },
+  {
+    "keys": ["H"],
+    "if": { "Caps": true, "isAltTabMode": true },
+    "send": ["LeftArrow", null]
+  },
+  {
+    "keys": ["L"],
+    "if": { "Caps": true, "isAltTabMode": true },
+    "send": ["RightArrow", null]
+  },
+  {
+    "keys": ["J"],
+    "if": { "Caps": true, "isAltTabMode": true },
+    "send": ["DownArrow", null]
+  },
+  {
+    "keys": ["K"],
+    "if": { "Caps": true, "isAltTabMode": true },
+    "send": ["UpArrow", null]
+  },
+  { "keys": ["Alt"], "send": ["Ctrl:down", "Ctrl:up"] }
+]

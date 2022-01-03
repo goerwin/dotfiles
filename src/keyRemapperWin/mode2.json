@@ -4,22 +4,22 @@
   "keybindings": [
     "%dotdotdotArray(_common.json)",
     {
-      "keys": ["Left"],
+      "keys": ["LeftArrow"],
       "when": { "appName": "chrome.exe", "Shift": false },
       "fire": ["Ctrl:down 5 Ctrl:up", null]
     },
     {
-      "keys": ["Right"],
+      "keys": ["RightArrow"],
       "when": { "appName": "chrome.exe", "Shift": false },
       "fire": ["Ctrl:down 6 Ctrl:up", null]
     },
     {
-      "keys": ["Down"],
+      "keys": ["DownArrow"],
       "when": { "appName": "chrome.exe", "Shift": false },
       "fire": ["Alt:down T Alt:up", null]
     },
     {
-      "keys": ["Up"],
+      "keys": ["UpArrow"],
       "when": { "appName": "chrome.exe", "Shift": false },
       "fire": ["Alt:down S Alt:up", null]
     }

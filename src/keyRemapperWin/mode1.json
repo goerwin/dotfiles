@@ -16,7 +16,7 @@
     ],
     [
       "Alt:down Tab Esc Alt:up",
-      "Ctrl:down Ctrl:up Alt:down Tab Esc:down Alt:up Ctrl:down Esc:up Ctrl:up"
+      "Ctrl:down Ctrl:up Alt:down Tab Esc:down Delay10 Alt:up Ctrl:down Esc:up Ctrl:up"
     ],
     // Key
     ["A", "A"],
@@ -38,13 +38,13 @@
     // VIM MODE
     ["Caps", "Esc"],
     ["Caps:down A Caps:up", "A"],
-    ["Caps:down H Caps:up", "Left"],
-    ["Caps:down L Caps:up", "Right"],
-    ["Caps:down J Caps:up", "Down"],
-    ["Caps:down K Caps:up", "Up"],
+    ["Caps:down H Caps:up", "LeftArrow"],
+    ["Caps:down L Caps:up", "RightArrow"],
+    ["Caps:down J Caps:up", "DownArrow"],
+    ["Caps:down K Caps:up", "UpArrow"],
     ["Caps:down Alt:down H Alt:up Caps:up", "Ctrl Home Ctrl"],
     ["Caps:down Alt:down L Alt:up Caps:up", "Ctrl End Ctrl"],
-    ["Caps:down F:down H F:up Caps:up", "Shift:down Left Shift:up"],
+    ["Caps:down F:down H F:up Caps:up", "Shift:down LeftArrow Shift:up"],
 
     // VIM MODE: When Caps is not the first pressed key
     ["T:down Caps:down T:up Caps:up", "T"],

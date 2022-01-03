@@ -1,0 +1,208 @@
+[
+  {
+    "keys": ["1"],
+    "if": { "Esc": true },
+    "send": [null, "AppMode1"]
+  },
+  {
+    "keys": ["2"],
+    "if": { "Esc": true },
+    "send": [null, "AppMode2"]
+  },
+  {
+    "keys": ["3"],
+    "if": { "Esc": true },
+    "send": [null, "AppMode3"]
+  },
+  {
+    "keys": ["4"],
+    "if": { "Esc": true },
+    "send": [null, "AppMode4"]
+  },
+
+  "%dotdotdotArray(_altTabMode.json)",
+  "%dotdotdotArray(_vimMode.json)",
+  "%dotdotdotArray(_clicksMode.json)",
+  "%dotdotdotArray(_apps.json)",
+
+  { "keys": ["Ctrl"], "send": ["Alt:down", "Alt:up"] },
+  { "keys": ["Win"], "send": [null, null] },
+  {
+    "keys": ["V"],
+    "if": { "Caps": true, "Alt": true },
+    "send": ["Ctrl:up Win:down V Win:up Ctrl:down", null]
+  },
+  {
+    "keys": ["C", "Tab", "Space"],
+    "if": { "Caps": true },
+    "send": ["Ctrl:down currentKey Ctrl:up", null]
+  },
+  {
+    "keys": ["Tab"],
+    "if": { "Ctrl": true },
+    "send": ["Alt:up Ctrl:down Tab Ctrl:up Alt:down", null]
+  },
+  {
+    "keys": ["H"],
+    "if": { "Win": true, "Alt": true },
+    "send": ["Ctrl:up Win:down LeftArrow Win:up", "Ctrl:down"]
+  },
+  {
+    "keys": ["L"],
+    "if": { "Win": true, "Alt": true },
+    "send": ["Ctrl:up Win:down RightArrow Win:up", "Ctrl:down"]
+  },
+  {
+    "keys": ["J"],
+    "if": { "Win": true, "Alt": true },
+    "send": ["Ctrl:up Win:down DownArrow Win:up", "Ctrl:down"]
+  },
+  {
+    "keys": ["K"],
+    "if": { "Win": true, "Alt": true },
+    "send": ["Ctrl:up Win:down UpArrow Win:up", "Ctrl:down"]
+  },
+  {
+    "keys": ["F", "J", "K"],
+    "if": { "Win": true },
+    "send": ["Alt:down currentKey Alt:up", null]
+  },
+  {
+    "keys": ["J"],
+    "if": { "Alt": true },
+    "send": ["Ctrl:up PageDown Ctrl:down", null]
+  },
+  {
+    "keys": ["K"],
+    "if": { "Alt": true },
+    "send": ["Ctrl:up PageUp Ctrl:down", null]
+  },
+  { "keys": ["D"], "if": { "Win": true }, "send": ["Win:down D Win:up", null] },
+  {
+    "keys": ["Backspace"],
+    "if": { "Alt": true },
+    "send": ["Ctrl:up Shift:down Home Shift:up Backspace Ctrl:down", null]
+  },
+  {
+    "keys": ["Backspace"],
+    "if": { "Win": true },
+    "send": ["Ctrl:down Backspace Ctrl:up", null]
+  },
+  { "keys": ["Space"], "if": { "Alt": true }, "send": ["Ctrl:up Win", null] },
+
+  {
+    "keys": ["H"],
+    "if": { "Win": true },
+    "send": ["Alt:down LeftArrow Alt:up", null]
+  },
+  {
+    "keys": ["L"],
+    "if": { "Win": true },
+    "send": ["Alt:down RightArrow Alt:up", null]
+  },
+  {
+    "keys": ["Q"],
+    "if": { "Alt": true },
+    "send": ["Ctrl:up Alt:down F4 Alt:up Ctrl:down", null]
+  },
+  {
+    "keys": ["F1"],
+    "if": { "Alt": true },
+    "send": ["Ctrl:up F1 Ctrl:down", null]
+  },
+  { "keys": ["F1"], "send": ["BrightnessDown", null] },
+  {
+    "keys": ["F2"],
+    "if": { "Alt": true },
+    "send": ["Ctrl:up F2 Ctrl:down", null]
+  },
+  { "keys": ["F2"], "send": ["BrightnessUp", null] },
+  {
+    "keys": ["F10"],
+    "if": { "Alt": true },
+    "send": ["Ctrl:up F10 Ctrl:down", null]
+  },
+  { "keys": ["F10"], "send": ["Mute", null] },
+  {
+    "keys": ["F11"],
+    "if": { "Alt": true },
+    "send": ["Ctrl:up F11 Ctrl:down", null]
+  },
+  {
+    "keys": ["F11"],
+    "send": ["VolumeDown VolumeDown VolumeDown VolumeDown", null]
+  },
+  {
+    "keys": ["F12"],
+    "if": { "Alt": true },
+    "send": ["Ctrl:up F12 Ctrl:down", null]
+  },
+  { "keys": ["F12"], "send": ["VolumeUp VolumeUp VolumeUp VolumeUp", null] },
+  {
+    "keys": ["A"],
+    "if": { "Shift": true, "Win": true },
+    "send": ["Shift:up Alt:down NP0 NP1 NP9 NP3 Alt:up Shift:down", null]
+  },
+  {
+    "keys": ["A"],
+    "if": { "Win": true },
+    "send": ["Alt:down NP0 NP2 NP2 NP5 Alt:up", null]
+  },
+  {
+    "keys": ["E"],
+    "if": { "Shift": true, "Win": true },
+    "send": ["Shift:up Alt:down NP0 NP2 NP0 NP1 Alt:up Shift:down", null]
+  },
+  {
+    "keys": ["E"],
+    "if": { "Win": true },
+    "send": ["Alt:down NP0 NP2 NP3 NP3 Alt:up", null]
+  },
+  {
+    "keys": ["I"],
+    "if": { "Shift": true, "Win": true },
+    "send": ["Shift:up Alt:down NP0 NP2 NP0 NP5 Alt:up Shift:down", null]
+  },
+  {
+    "keys": ["I"],
+    "if": { "Win": true },
+    "send": ["Alt:down NP0 NP2 NP3 NP7 Alt:up", null]
+  },
+  {
+    "keys": ["O"],
+    "if": { "Shift": true, "Win": true },
+    "send": ["Shift:up Alt:down NP0 NP2 NP1 NP1 Alt:up Shift:down", null]
+  },
+  {
+    "keys": ["O"],
+    "if": { "Win": true },
+    "send": ["Alt:down NP0 NP2 NP4 NP3 Alt:up", null]
+  },
+  {
+    "keys": ["U"],
+    "if": { "Shift": true, "Win": true },
+    "send": ["Shift:up Alt:down NP0 NP2 NP1 NP8 Alt:up Shift:down", null]
+  },
+  {
+    "keys": ["U"],
+    "if": { "Win": true },
+    "send": ["Alt:down NP0 NP2 NP5 NP0 Alt:up", null]
+  },
+  {
+    "keys": ["N"],
+    "if": { "Shift": true, "Win": true },
+    "send": ["Shift:up Alt:down NP1 NP6 NP5 Alt:up Shift:down", null]
+  },
+  {
+    "keys": ["N"],
+    "if": { "Win": true },
+    "send": ["Alt:down NP1 NP6 NP4 Alt:up", null]
+  },
+
+  // TODO: MUTE
+  {
+    "keys": ["M"],
+    "if": { "Win": true },
+    "send": ["Ctrl:down F6 Ctrl:up", null]
+  }
+]

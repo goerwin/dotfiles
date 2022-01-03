@@ -1,0 +1,87 @@
+[
+  // Starcraft 2
+
+  {
+    "keys": ["F1", "F2", "F3", "F4", "F10", "F11", "F12"],
+    "if": { "appName": "SC2_x64.exe" },
+    "send": ["currentKey:down", "currentKey:up"]
+  },
+  {
+    "keys": ["1", "2", "3", "4"],
+    "if": { "appName": "SC2_x64.exe", "Win": true },
+    "send": ["Alt:down currentKey Alt:up", null]
+  },
+  {
+    "keys": ["D"],
+    "if": { "appName": "SC2_x64.exe", "Alt": true },
+    "send": ["Ctrl:up Alt:down C Alt:up Ctrl:down", null]
+  },
+
+  // Windows Terminal
+  {
+    "keys": ["1", "2", "3", "4"],
+    "if": { "appName": "WindowsTerminal.exe", "Win": true },
+    "send": ["Alt:down currentKey Alt:up", null]
+  },
+
+  // Google Chrome
+
+  {
+    "keys": ["F"],
+    "if": { "appName": "chrome.exe", "Alt": true, "Win": true },
+    "send": ["Ctrl:up F11 Ctrl:down", null]
+  },
+  {
+    "keys": ["Enter"],
+    "if": { "appName": "chrome.exe", "Alt": true },
+    "send": ["Ctrl:up Alt:down Enter Alt:up Ctrl:down", null]
+  },
+  {
+    "keys": ["H"],
+    "if": { "appName": "chrome.exe", "Alt": true, "Win": false },
+    "send": ["5", null]
+  },
+  {
+    "keys": ["L"],
+    "if": { "appName": "chrome.exe", "Alt": true, "Win": false },
+    "send": ["6", null]
+  },
+  {
+    "keys": ["Semicolon"],
+    "if": { "appName": "chrome.exe", "Alt": true },
+    "send": ["L", null]
+  },
+  {
+    "keys": ["F3"],
+    "if": { "appName": "chrome.exe" },
+    "send": ["Ctrl:down 5 Ctrl:up", null]
+  },
+  {
+    "keys": ["F4"],
+    "if": { "appName": "chrome.exe" },
+    "send": ["Ctrl:down 6 Ctrl:up", null]
+  },
+  {
+    "keys": ["F5"],
+    "if": { "appName": "chrome.exe" },
+    "send": ["Alt:down S Alt:up", null]
+  },
+  {
+    "keys": ["F6"],
+    "if": { "appName": "chrome.exe" },
+    "send": ["Alt:down T Alt:up", null]
+  },
+  {
+    "keys": ["S", "T"],
+    "if": { "appName": "chrome.exe", "Win": true },
+    "send": ["Alt:down currentKey Alt:up"]
+  },
+
+  // Slack
+
+  {
+    "keys": ["P"],
+    "if": { "appName": "slack.exe", "Alt": true },
+    "send": ["K", null]
+  }
+]
