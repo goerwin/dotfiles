@@ -50,6 +50,7 @@ bindkey '^[[1;5D' backward-word      # Ctrl+leftArrow
 bindkey '^[[1;5C' forward-word       # Ctrl+rightArrow
 bindkey "^[[1;2H" backward-kill-line # (windows: Shift+Home)
 bindkey "^H" backward-kill-word      # (windows: Ctrl+Shift+H or Ctrl+Backspace)
+bindkey \^U backward-kill-line       # (mac/unix)
 
 zle -N customClearScreen
 bindkey "^O" customClearScreen
