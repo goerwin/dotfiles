@@ -13,22 +13,22 @@
 
     {
       "keys": ["LeftArrow"],
-      "when": { "appName": "com.google.Chrome", "Shift": false, "Cmd": false },
+      "if": { "appName": "com.google.Chrome", "Shift": false, "Cmd": false },
       "send": ["Cmd:down 5 Cmd:up"]
     },
     {
       "keys": ["RightArrow"],
-      "when": { "appName": "com.google.Chrome", "Shift": false, "Cmd": false },
+      "if": { "appName": "com.google.Chrome", "Shift": false, "Cmd": false },
       "send": ["Cmd:down 6 Cmd:up"]
     },
     {
       "keys": ["UpArrow"],
-      "when": { "appName": "com.google.Chrome", "Shift": false, "Cmd": false },
+      "if": { "appName": "com.google.Chrome", "Shift": false, "Cmd": false },
       "send": ["Alt:down S Alt:up"]
     },
     {
       "keys": ["DownArrow"],
-      "when": { "appName": "com.google.Chrome", "Shift": false, "Cmd": false },
+      "if": { "appName": "com.google.Chrome", "Shift": false, "Cmd": false },
       "send": ["Alt:down T Alt:up"]
     }
   ]
