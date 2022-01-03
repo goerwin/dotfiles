@@ -1,45 +1,45 @@
 [
   {
     "keys": ["J"],
-    "when": { "Cmd": true, "Alt": false },
+    "if": { "Cmd": true, "Alt": false },
     "send": ["Cmd:up PageDown:down", "PageDown:up Cmd:down"]
   },
   {
     "keys": ["K"],
-    "when": { "Cmd": true, "Alt": false },
+    "if": { "Cmd": true, "Alt": false },
     "send": ["Cmd:up PageUp:down", "PageUp:up Cmd:down"]
   },
 
   // F18/Caps as control for some keys
   {
     "keys": ["C", "Space", "V", "Tab"],
-    "when": { "F18": true },
+    "if": { "F18": true },
     "send": ["Ctrl:down currentKey Ctrl:up", null]
   },
 
   // Mute mic
   {
     "keys": ["M"],
-    "when": { "Alt": true },
+    "if": { "Alt": true },
     "send": ["Cmd:down M Cmd:up"]
   },
 
   // App exposé
   {
     "keys": ["J"],
-    "when": { "Cmd": true, "Alt": true, "Shift": false },
+    "if": { "Cmd": true, "Alt": true, "Shift": false },
     "send": ["Cmd:up Alt:up Ctrl:down DownArrow Ctrl:up Cmd:down Alt:down", null]
   },
 
   // Go to back/forward page in browser navigation
   {
     "keys": ["H"],
-    "when": { "Alt": true, "Cmd": false },
+    "if": { "Alt": true, "Cmd": false },
     "send": ["Alt:up Cmd:down BracketL Cmd:up Alt:down", null]
   },
   {
     "keys": ["L"],
-    "when": { "Alt": true, "Cmd": false },
+    "if": { "Alt": true, "Cmd": false },
     "send": ["Alt:up Cmd:down BracketR Cmd:up Alt:down", null]
   },
 
@@ -47,47 +47,47 @@
 
   {
     "keys": ["F1"],
-    "when": { "Cmd": false },
+    "if": { "Cmd": false },
     "send": ["BrightnessDown:down", "BrightnessDown:up"]
   },
   {
     "keys": ["F2"],
-    "when": { "Cmd": false },
+    "if": { "Cmd": false },
     "send": ["BrightnessUp:down", "BrightnessUp:up"]
   },
   {
     "keys": ["F7"],
-    "when": { "Cmd": false },
+    "if": { "Cmd": false },
     "send": ["Rewind"]
   },
   {
     "keys": ["F8"],
-    "when": { "Cmd": false },
+    "if": { "Cmd": false },
     "send": ["PlayPause", null]
   },
   {
     "keys": ["F9"],
-    "when": { "Cmd": false },
+    "if": { "Cmd": false },
     "send": ["FastForward", null]
   },
   {
     "keys": ["F10"],
-    "when": { "Cmd": false },
+    "if": { "Cmd": false },
     "send": ["Mute"]
   },
   {
     "keys": ["F11"],
-    "when": { "Cmd": false },
+    "if": { "Cmd": false },
     "send": ["VolumeDown:down", "VolumeDown:up"]
   },
   {
     "keys": ["F12"],
-    "when": { "Cmd": false },
+    "if": { "Cmd": false },
     "send": ["VolumeUp:down", "VolumeUp:up"]
   },
   {
     "keys": ["F1", "F2", "F7", "F8", "F9", "F10", "F11", "F12"],
-    "when": { "Cmd": true},
+    "if": { "Cmd": true},
     "send": ["Cmd:up currentKey Cmd:down", null]
   }
 ]

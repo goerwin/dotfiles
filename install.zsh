@@ -23,7 +23,7 @@ homeDir=$(
 echo -e "\nCopying files..."
 
 for entry in $(ls -a ./src); do
-  if [ $entry != "." ] && [ $entry != ".." ]; then
+  if [ $entry != "." ] && [ $entry != ".." ] && [ $entry != ".DS_Store" ]; then
     cp -r ./src/$entry $homeDir
     echo "Copying $entry"
   fi
