@@ -1,12 +1,7 @@
 const HOR_DIVISIONS = 12;
 const VER_DIVISIONS = 12;
-
-function showModal(msg, duration = 1) {
-  const modal = new Modal();
-  modal.message = JSON.stringify(msg);
-  modal.duration = duration;
-  modal.show();
-}
+const GAP_W = 0;
+const GAP_H = 0;
 
 function getDimensionMeasures(size, divisions, gap = 0) {
   const measures = [];
@@ -35,7 +30,7 @@ function getDimensionMeasures(size, divisions, gap = 0) {
   return { measures, positions };
 }
 
-function getGrid({ sizeW, sizeH, hDivisions, vDivisions, gapW = 0, gapH = 0 }) {
+function getGrid({ sizeW, sizeH, hDivisions, vDivisions, gapW, gapH }) {
   const { measures: widths, positions: horPositions } = getDimensionMeasures(
     sizeW,
     hDivisions,
@@ -51,6 +46,13 @@ function getGrid({ sizeW, sizeH, hDivisions, vDivisions, gapW = 0, gapH = 0 }) {
   return { widths, horPositions, heights, verPositions };
 }
 
+function showModal(msg, duration = 1) {
+  const modal = new Modal();
+  modal.message = JSON.stringify(msg);
+  modal.duration = duration;
+  modal.show();
+}
+
 function getFocusedWindowInfo() {
   const window = Window.focused();
   const windowFrame = window?.frame?.();
@@ -62,7 +64,7 @@ function getFocusedWindowInfo() {
   return { window, windowFrame, screen, screenFrame };
 }
 
-function changeWindowSize(action, horDivisions = HOR_DIVISIONS, verDivisions = VER_DIVISIONS) {
+function changeWindowSize(action) {
   const focusedWindowInfo = getFocusedWindowInfo();
 
   if (!focusedWindowInfo) return;
@@ -71,110 +73,74 @@ function changeWindowSize(action, horDivisions = HOR_DIVISIONS, verDivisions = V
   const { widths, heights, horPositions, verPositions } = getGrid({
     sizeW: screenFrame.width,
     sizeH: screenFrame.height,
-    hDivisions: horDivisions,
-    vDivisions: verDivisions,
+    hDivisions: HOR_DIVISIONS,
+    vDivisions: VER_DIVISIONS,
+    gapW: GAP_W,
+    gapH: GAP_H,
   });
 
-  if (['top', 'bottom'].includes(action)) {
-    const heightsLen = heights.length;
+  const measures = ['top', 'bottom'].includes(action) ? heights : widths;
+  const positions = ['top', 'bottom'].includes(action)
+    ? verPositions
+    : horPositions;
+  const measuresLen = measures.length;
+  const axis = ['top', 'bottom'].includes(action) ? 'y' : 'x';
+  const size = ['top', 'bottom'].includes(action) ? 'height' : 'width';
 
-    for (let i = 0; i < heightsLen; i++) {
-      const windowTopEdge = windowFrame.y;
-      const windowBottomEdge = windowTopEdge + windowFrame.height;
+  if (['top', 'left'].includes(action)) {
+    for (let i = 0; i < measuresLen; i++) {
+      const windowPrevEdge = windowFrame[axis];
+      const windowNextEdge = windowPrevEdge + windowFrame[size];
 
-      if (action === 'bottom') {
-        // increase height to bottom
-        const gridItemEdge = verPositions[i] + heights[i] + screenFrame.y;
-        if (windowBottomEdge < screenFrame.height + screenFrame.y) {
-          if (gridItemEdge <= windowBottomEdge) continue;
-          return window.setFrame({
-            ...windowFrame,
-            height: gridItemEdge - windowTopEdge,
-          });
-        }
-
-        // decrease height from top
-        if (gridItemEdge <= windowTopEdge) continue;
+      // increase size to prev
+      let gridItemEdge = positions[measuresLen - 1 - i] + screenFrame[axis];
+      if (windowPrevEdge > screenFrame[axis]) {
+        if (windowPrevEdge <= gridItemEdge) continue;
         return window.setFrame({
           ...windowFrame,
-          y: gridItemEdge,
-          height: windowFrame.height + windowTopEdge - gridItemEdge,
+          [axis]: gridItemEdge,
+          [size]: windowFrame[size] + windowPrevEdge - gridItemEdge,
         });
       }
 
-      if (action === 'top') {
-        // increase height to top
-        const gridItemEdge = verPositions[heightsLen - 1 - i] + screenFrame.y;
-        if (windowTopEdge > screenFrame.y) {
-          if (windowTopEdge <= gridItemEdge) continue;
-          return window.setFrame({
-            ...windowFrame,
-            y: gridItemEdge,
-            height: windowFrame.height + windowTopEdge - gridItemEdge,
-          });
-        }
-
-        // decrease height from bottom
-        if (windowBottomEdge <= gridItemEdge) continue;
-        return window.setFrame({
-          ...windowFrame,
-          height: gridItemEdge - windowTopEdge,
-        });
-      }
+      // decrease size from next
+      gridItemEdge = gridItemEdge + measures[measuresLen - 1 - i];
+      if (windowNextEdge <= gridItemEdge) continue;
+      return window.setFrame({
+        ...windowFrame,
+        [size]: gridItemEdge - windowPrevEdge,
+      });
     }
 
     return;
   }
 
-  const widthsLen = widths.length;
+  for (let i = 0; i < measuresLen; i++) {
+    const windowPrevEdge = windowFrame[axis];
+    const windowNextEdge = windowPrevEdge + windowFrame[size];
 
-  for (let i = 0; i < widthsLen; i++) {
-    const windowLeftEdge = windowFrame.x;
-    const windowRightEdge = windowLeftEdge + windowFrame.width;
-
-    if (action === 'left') {
-      // increase width to left
-      const gridItemEdge = horPositions[widthsLen - 1 - i] + screenFrame.x;
-      if (windowLeftEdge > screenFrame.x) {
-        if (windowLeftEdge <= gridItemEdge) continue;
-        return window.setFrame({
-          ...windowFrame,
-          x: gridItemEdge,
-          width: windowFrame.width + windowLeftEdge - gridItemEdge,
-        });
-      }
-
-      // decrease width from right
-      if (windowRightEdge <= gridItemEdge) continue;
+    // increase size to next
+    let gridItemEdge = positions[i] + measures[i] + screenFrame[axis];
+    if (windowNextEdge < screenFrame[size] + screenFrame[axis]) {
+      if (gridItemEdge <= windowNextEdge) continue;
       return window.setFrame({
         ...windowFrame,
-        width: gridItemEdge - windowLeftEdge,
+        [size]: gridItemEdge - windowPrevEdge,
       });
     }
 
-    if (action === 'right') {
-      // increase width to right
-      const gridItemEdge = horPositions[i] + widths[i] + screenFrame.x;
-      if (windowRightEdge < screenFrame.width + screenFrame.x) {
-        if (gridItemEdge <= windowRightEdge) continue;
-        return window.setFrame({
-          ...windowFrame,
-          width: gridItemEdge - windowLeftEdge,
-        });
-      }
-
-      // decrease width from left
-      if (gridItemEdge <= windowLeftEdge) continue;
-      return window.setFrame({
-        ...windowFrame,
-        x: gridItemEdge,
-        width: windowFrame.width + windowLeftEdge - gridItemEdge,
-      });
-    }
+    // decrease size from prev
+    gridItemEdge = gridItemEdge - measures[i];
+    if (gridItemEdge <= windowPrevEdge) continue;
+    return window.setFrame({
+      ...windowFrame,
+      [axis]: gridItemEdge,
+      [size]: windowFrame[size] + windowPrevEdge - gridItemEdge,
+    });
   }
 }
 
-function setNewWindowFrame(newWinKey, direction, newWinMaps) {
+function set4x4WindowFrame(newWinKey, direction, newWinMaps) {
   const focusedWindowInfo = getFocusedWindowInfo();
   if (!focusedWindowInfo) return;
 
@@ -272,10 +238,10 @@ function setNewWindowFrame(newWinKey, direction, newWinMaps) {
   window.setFrame(grid4x4[newWinKey]);
 }
 
-Key.on('k', ['cmd', 'alt'], () => setNewWindowFrame('maximized'));
+Key.on('k', ['cmd', 'alt'], () => set4x4WindowFrame('maximized'));
 
 Key.on('h', ['cmd', 'alt'], () =>
-  setNewWindowFrame('halfLeft', 'next', {
+  set4x4WindowFrame('halfLeft', 'next', {
     halfLeft: 'topHalfLeft',
     topHalfLeft: 'bottomHalfLeft',
     bottomHalfLeft: 'halfLeft',
@@ -283,7 +249,7 @@ Key.on('h', ['cmd', 'alt'], () =>
 );
 
 Key.on('l', ['cmd', 'alt'], () =>
-  setNewWindowFrame('halfRight', 'next', {
+  set4x4WindowFrame('halfRight', 'next', {
     halfRight: 'topHalfRight',
     topHalfRight: 'bottomHalfRight',
     bottomHalfRight: 'halfRight',
