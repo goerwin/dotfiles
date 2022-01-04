@@ -1,3 +1,6 @@
+const HOR_DIVISIONS = 12;
+const VER_DIVISIONS = 12;
+
 function showModal(msg, duration = 1) {
   const modal = new Modal();
   modal.message = JSON.stringify(msg);
@@ -59,7 +62,7 @@ function getFocusedWindowInfo() {
   return { window, windowFrame, screen, screenFrame };
 }
 
-function changeWindowSize(action, horDivisions = 15, verDivisions = 15) {
+function changeWindowSize(action, horDivisions = HOR_DIVISIONS, verDivisions = VER_DIVISIONS) {
   const focusedWindowInfo = getFocusedWindowInfo();
 
   if (!focusedWindowInfo) return;
@@ -72,42 +75,50 @@ function changeWindowSize(action, horDivisions = 15, verDivisions = 15) {
     vDivisions: verDivisions,
   });
 
-  if (['moveLeft', 'moveRight', 'decreaseW', 'increaseW'].includes(action)) {
-    const widthsLen = widths.length;
+  if (['top', 'bottom'].includes(action)) {
+    const heightsLen = heights.length;
 
-    for (let i = 0; i < widthsLen; i++) {
-      const windowLeftEdge = windowFrame.x;
-      const windowRightEdge = windowFrame.x + windowFrame.width;
+    for (let i = 0; i < heightsLen; i++) {
+      const windowTopEdge = windowFrame.y;
+      const windowBottomEdge = windowTopEdge + windowFrame.height;
 
-      if (action === 'moveLeft') {
-        const newLeftEdge = horPositions[widthsLen - 1 - i] + screenFrame.x;
-        if (windowLeftEdge <= newLeftEdge) continue;
-        return window.setFrame({ ...windowFrame, x: newLeftEdge });
-      }
+      if (action === 'bottom') {
+        // increase height to bottom
+        const gridItemEdge = verPositions[i] + heights[i] + screenFrame.y;
+        if (windowBottomEdge < screenFrame.height + screenFrame.y) {
+          if (gridItemEdge <= windowBottomEdge) continue;
+          return window.setFrame({
+            ...windowFrame,
+            height: gridItemEdge - windowTopEdge,
+          });
+        }
 
-      if (action === 'moveRight') {
-        const newLeftEdge = horPositions[i] + screenFrame.x;
-        if (windowLeftEdge >= newLeftEdge) continue;
-        return window.setFrame({ ...windowFrame, x: newLeftEdge });
-      }
-
-      if (action === 'decreaseW') {
-        const idx = widthsLen - 1 - i;
-        const newRightEdge = widths[idx] + horPositions[idx] + screenFrame.x;
-        if (windowRightEdge <= newRightEdge) continue;
-
+        // decrease height from top
+        if (gridItemEdge <= windowTopEdge) continue;
         return window.setFrame({
           ...windowFrame,
-          width: newRightEdge - windowFrame.x,
+          y: gridItemEdge,
+          height: windowFrame.height + windowTopEdge - gridItemEdge,
         });
       }
 
-      if (action === 'increaseW') {
-        const newRightEdge = widths[i] + horPositions[i] + screenFrame.x;
-        if (windowRightEdge >= newRightEdge) continue;
+      if (action === 'top') {
+        // increase height to top
+        const gridItemEdge = verPositions[heightsLen - 1 - i] + screenFrame.y;
+        if (windowTopEdge > screenFrame.y) {
+          if (windowTopEdge <= gridItemEdge) continue;
+          return window.setFrame({
+            ...windowFrame,
+            y: gridItemEdge,
+            height: windowFrame.height + windowTopEdge - gridItemEdge,
+          });
+        }
+
+        // decrease height from bottom
+        if (windowBottomEdge <= gridItemEdge) continue;
         return window.setFrame({
           ...windowFrame,
-          width: newRightEdge - windowFrame.x,
+          height: gridItemEdge - windowTopEdge,
         });
       }
     }
@@ -115,41 +126,49 @@ function changeWindowSize(action, horDivisions = 15, verDivisions = 15) {
     return;
   }
 
-  const heightsLen = heights.length;
+  const widthsLen = widths.length;
 
-  for (let i = 0; i < heightsLen; i++) {
-    const windowTopEdge = windowFrame.y;
-    const windowBottomEdge = windowFrame.y + windowFrame.height;
+  for (let i = 0; i < widthsLen; i++) {
+    const windowLeftEdge = windowFrame.x;
+    const windowRightEdge = windowLeftEdge + windowFrame.width;
 
-    if (action === 'moveUp') {
-      const newTopEdge = verPositions[heightsLen - 1 - i] + screenFrame.y;
-      if (windowTopEdge <= newTopEdge) continue;
-      return window.setFrame({ ...windowFrame, y: newTopEdge });
-    }
+    if (action === 'left') {
+      // increase width to left
+      const gridItemEdge = horPositions[widthsLen - 1 - i] + screenFrame.x;
+      if (windowLeftEdge > screenFrame.x) {
+        if (windowLeftEdge <= gridItemEdge) continue;
+        return window.setFrame({
+          ...windowFrame,
+          x: gridItemEdge,
+          width: windowFrame.width + windowLeftEdge - gridItemEdge,
+        });
+      }
 
-    if (action === 'moveDown') {
-      const newTopEdge = verPositions[i] + screenFrame.y;
-      if (windowTopEdge >= newTopEdge) continue;
-      return window.setFrame({ ...windowFrame, y: newTopEdge });
-    }
-
-    if (action === 'decreaseH') {
-      const idx = heightsLen - 1 - i;
-      const newBottomEdge = heights[idx] + verPositions[idx] + screenFrame.y;
-      if (windowBottomEdge <= newBottomEdge) continue;
-
+      // decrease width from right
+      if (windowRightEdge <= gridItemEdge) continue;
       return window.setFrame({
         ...windowFrame,
-        height: newBottomEdge - windowFrame.y,
+        width: gridItemEdge - windowLeftEdge,
       });
     }
 
-    if (action === 'increaseH') {
-      const newBottomEdge = heights[i] + verPositions[i] + screenFrame.y;
-      if (windowBottomEdge >= newBottomEdge) continue;
+    if (action === 'right') {
+      // increase width to right
+      const gridItemEdge = horPositions[i] + widths[i] + screenFrame.x;
+      if (windowRightEdge < screenFrame.width + screenFrame.x) {
+        if (gridItemEdge <= windowRightEdge) continue;
+        return window.setFrame({
+          ...windowFrame,
+          width: gridItemEdge - windowLeftEdge,
+        });
+      }
+
+      // decrease width from left
+      if (gridItemEdge <= windowLeftEdge) continue;
       return window.setFrame({
         ...windowFrame,
-        height: newBottomEdge - windowFrame.y,
+        x: gridItemEdge,
+        width: windowFrame.width + windowLeftEdge - gridItemEdge,
       });
     }
   }
@@ -271,159 +290,157 @@ Key.on('l', ['cmd', 'alt'], () =>
   })
 );
 
-Key.on('y', ['cmd', 'alt'], () => changeWindowSize('moveLeft'));
-Key.on('o', ['cmd', 'alt'], () => changeWindowSize('moveRight'));
-Key.on('i', ['cmd', 'alt'], () => changeWindowSize('moveUp'));
-Key.on('u', ['cmd', 'alt'], () => changeWindowSize('moveDown'));
-Key.on('h', ['cmd', 'alt', 'shift'], () => changeWindowSize('decreaseW'));
-Key.on('l', ['cmd', 'alt', 'shift'], () => changeWindowSize('increaseW'));
-Key.on('k', ['cmd', 'alt', 'shift'], () => changeWindowSize('decreaseH'));
-Key.on('j', ['cmd', 'alt', 'shift'], () => changeWindowSize('increaseH'));
+Key.on('y', ['cmd', 'alt'], () => changeWindowSize('left'));
+Key.on('o', ['cmd', 'alt'], () => changeWindowSize('right'));
+Key.on('u', ['cmd', 'alt'], () => changeWindowSize('bottom'));
+Key.on('i', ['cmd', 'alt'], () => changeWindowSize('top'));
 
 ////////////////////////////////////
 ///////////// TESTS ////////////////
 ////////////////////////////////////
 
-let allTestsPassed = true;
+(() => {
+  let allTestsPassed = true;
 
-function expectDeepEqual(input, expected) {
-  if (JSON.stringify(input) === JSON.stringify(expected)) return;
-  allTestsPassed = false;
-}
+  function expectDeepEqual(input, expected) {
+    if (JSON.stringify(input) === JSON.stringify(expected)) return;
+    allTestsPassed = false;
+  }
 
-expectDeepEqual(
-  getGrid({ sizeW: 27, sizeH: 26, hDivisions: 5, vDivisions: 5 }),
-  {
-    widths: [5, 6, 6, 5, 5],
-    horPositions: [0, 5, 11, 17, 22],
-    heights: [5, 5, 6, 5, 5],
-    verPositions: [0, 5, 10, 16, 21],
-  }
-);
-expectDeepEqual(
-  getGrid({ sizeW: 10, sizeH: 28, hDivisions: 2, vDivisions: 5 }),
-  {
-    widths: [5, 5],
-    horPositions: [0, 5],
-    heights: [5, 6, 6, 6, 5],
-    verPositions: [0, 5, 11, 17, 23],
-  }
-);
-expectDeepEqual(
-  getGrid({
-    sizeW: 27,
-    sizeH: 26,
-    hDivisions: 5,
-    vDivisions: 5,
-    gapW: 2,
-    gapH: 2,
-  }),
-  {
-    widths: [4, 4, 4, 4, 3],
-    horPositions: [0, 6, 12, 18, 24],
-    heights: [3, 4, 4, 4, 3],
-    verPositions: [0, 5, 11, 17, 23],
-  }
-);
-expectDeepEqual(
-  getGrid({
-    sizeW: 27,
-    sizeH: 26,
-    hDivisions: 5,
-    vDivisions: 5,
-    gapW: 3,
-    gapH: 3,
-  }),
-  {
-    widths: [3, 3, 3, 3, 3],
-    horPositions: [0, 6, 12, 18, 24],
-    heights: [3, 3, 3, 3, 2],
-    verPositions: [0, 6, 12, 18, 24],
-  }
-);
-expectDeepEqual(
-  getGrid({
-    sizeW: 27,
-    sizeH: 26,
-    hDivisions: 5,
-    vDivisions: 5,
-    gapW: 4,
-    gapH: 4,
-  }),
-  {
-    widths: [2, 2, 3, 2, 2],
-    horPositions: [0, 6, 12, 19, 25],
-    heights: [2, 2, 2, 2, 2],
-    verPositions: [0, 6, 12, 18, 24],
-  }
-);
+  expectDeepEqual(
+    getGrid({ sizeW: 27, sizeH: 26, hDivisions: 5, vDivisions: 5 }),
+    {
+      widths: [5, 6, 6, 5, 5],
+      horPositions: [0, 5, 11, 17, 22],
+      heights: [5, 5, 6, 5, 5],
+      verPositions: [0, 5, 10, 16, 21],
+    }
+  );
+  expectDeepEqual(
+    getGrid({ sizeW: 10, sizeH: 28, hDivisions: 2, vDivisions: 5 }),
+    {
+      widths: [5, 5],
+      horPositions: [0, 5],
+      heights: [5, 6, 6, 6, 5],
+      verPositions: [0, 5, 11, 17, 23],
+    }
+  );
+  expectDeepEqual(
+    getGrid({
+      sizeW: 27,
+      sizeH: 26,
+      hDivisions: 5,
+      vDivisions: 5,
+      gapW: 2,
+      gapH: 2,
+    }),
+    {
+      widths: [4, 4, 4, 4, 3],
+      horPositions: [0, 6, 12, 18, 24],
+      heights: [3, 4, 4, 4, 3],
+      verPositions: [0, 5, 11, 17, 23],
+    }
+  );
+  expectDeepEqual(
+    getGrid({
+      sizeW: 27,
+      sizeH: 26,
+      hDivisions: 5,
+      vDivisions: 5,
+      gapW: 3,
+      gapH: 3,
+    }),
+    {
+      widths: [3, 3, 3, 3, 3],
+      horPositions: [0, 6, 12, 18, 24],
+      heights: [3, 3, 3, 3, 2],
+      verPositions: [0, 6, 12, 18, 24],
+    }
+  );
+  expectDeepEqual(
+    getGrid({
+      sizeW: 27,
+      sizeH: 26,
+      hDivisions: 5,
+      vDivisions: 5,
+      gapW: 4,
+      gapH: 4,
+    }),
+    {
+      widths: [2, 2, 3, 2, 2],
+      horPositions: [0, 6, 12, 19, 25],
+      heights: [2, 2, 2, 2, 2],
+      verPositions: [0, 6, 12, 18, 24],
+    }
+  );
 
-expectDeepEqual(
-  getGrid({
-    sizeW: 10,
-    sizeH: 28,
-    hDivisions: 2,
-    vDivisions: 5,
-    gapW: 1,
-    gapH: 1,
-  }),
-  {
-    widths: [4, 5],
-    horPositions: [0, 5],
-    heights: [5, 5, 5, 5, 4],
-    verPositions: [0, 6, 12, 18, 24],
-  }
-);
-expectDeepEqual(
-  getGrid({
-    sizeW: 10,
-    sizeH: 28,
-    hDivisions: 2,
-    vDivisions: 5,
-    gapW: 2,
-    gapH: 2,
-  }),
-  {
-    widths: [4, 4],
-    horPositions: [0, 6],
-    heights: [4, 4, 4, 4, 4],
-    verPositions: [0, 6, 12, 18, 24],
-  }
-);
-expectDeepEqual(
-  getGrid({
-    sizeW: 10,
-    sizeH: 28,
-    hDivisions: 2,
-    vDivisions: 5,
-    gapW: 3,
-    gapH: 3,
-  }),
-  {
-    widths: [3, 4],
-    horPositions: [0, 6],
-    heights: [3, 3, 4, 3, 3],
-    verPositions: [0, 6, 12, 19, 25],
-  }
-);
-expectDeepEqual(
-  getGrid({
-    sizeW: 10,
-    sizeH: 28,
-    hDivisions: 2,
-    vDivisions: 5,
-    gapW: 4,
-    gapH: 4,
-  }),
-  {
-    widths: [3, 3],
-    horPositions: [0, 7],
-    heights: [2, 3, 3, 2, 2],
-    verPositions: [0, 6, 13, 20, 26],
-  }
-);
+  expectDeepEqual(
+    getGrid({
+      sizeW: 10,
+      sizeH: 28,
+      hDivisions: 2,
+      vDivisions: 5,
+      gapW: 1,
+      gapH: 1,
+    }),
+    {
+      widths: [4, 5],
+      horPositions: [0, 5],
+      heights: [5, 5, 5, 5, 4],
+      verPositions: [0, 6, 12, 18, 24],
+    }
+  );
+  expectDeepEqual(
+    getGrid({
+      sizeW: 10,
+      sizeH: 28,
+      hDivisions: 2,
+      vDivisions: 5,
+      gapW: 2,
+      gapH: 2,
+    }),
+    {
+      widths: [4, 4],
+      horPositions: [0, 6],
+      heights: [4, 4, 4, 4, 4],
+      verPositions: [0, 6, 12, 18, 24],
+    }
+  );
+  expectDeepEqual(
+    getGrid({
+      sizeW: 10,
+      sizeH: 28,
+      hDivisions: 2,
+      vDivisions: 5,
+      gapW: 3,
+      gapH: 3,
+    }),
+    {
+      widths: [3, 4],
+      horPositions: [0, 6],
+      heights: [3, 3, 4, 3, 3],
+      verPositions: [0, 6, 12, 19, 25],
+    }
+  );
+  expectDeepEqual(
+    getGrid({
+      sizeW: 10,
+      sizeH: 28,
+      hDivisions: 2,
+      vDivisions: 5,
+      gapW: 4,
+      gapH: 4,
+    }),
+    {
+      widths: [3, 3],
+      horPositions: [0, 7],
+      heights: [2, 3, 3, 2, 2],
+      verPositions: [0, 6, 13, 20, 26],
+    }
+  );
 
-if (!allTestsPassed) {
-  showModal('A Test failed', 5);
-  throw 'A Test failed';
-}
+  if (!allTestsPassed) {
+    showModal('A Test failed', 5);
+    throw 'A Test failed';
+  }
+})();
