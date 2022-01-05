@@ -64,6 +64,133 @@ function getFocusedWindowInfo() {
   return { window, windowFrame, screen, screenFrame };
 }
 
+function getWindowStartEdges({ positions, windowStartEdge, screenStartEdge }) {
+  const posLen = positions.length;
+  let curWindowStartEdge = positions[0];
+  let prevWindowStartEdge = curWindowStartEdge;
+  let nextWindowStartEdge = curWindowStartEdge;
+
+  for (let i = 0; i < posLen; i++) {
+    const startEdge = screenStartEdge + positions[i];
+
+    if (startEdge > windowStartEdge) break;
+
+    curWindowStartEdge = startEdge;
+    prevWindowStartEdge =
+      i > 0 ? screenStartEdge + positions[i - 1] : startEdge;
+    nextWindowStartEdge =
+      i < posLen - 1 ? screenStartEdge + positions[i + 1] : startEdge;
+  }
+
+  return { curWindowStartEdge, prevWindowStartEdge, nextWindowStartEdge };
+}
+
+function getWindowEndEdges({
+  positions,
+  measures,
+  windowEndEdge,
+  screenStartEdge,
+}) {
+  const posLen = positions.length;
+  let curWindowEndEdge = positions[posLen - 1] + measures[posLen - 1];
+  let prevWindowEndEdge = curWindowEndEdge;
+  let nextWindowEndEdge = curWindowEndEdge;
+
+  for (let i = 0; i < posLen; i++) {
+    const endEdge = screenStartEdge + positions[i] + measures[i];
+
+    if (endEdge < windowEndEdge) continue;
+
+    curWindowEndEdge = endEdge;
+    prevWindowEndEdge =
+      i > 0 ? screenStartEdge + positions[i - 1] + measures[i - 1] : endEdge;
+    nextWindowEndEdge =
+      i < posLen - 1
+        ? screenStartEdge + positions[i + 1] + measures[i + 1]
+        : endEdge;
+
+    break;
+  }
+
+  return { curWindowEndEdge, prevWindowEndEdge, nextWindowEndEdge };
+}
+
+function forceWindowInGrid({
+  onlyMove,
+  dir,
+  windowStartEdge,
+  windowEndEdge,
+  screenEndEdge,
+
+  axis,
+  size,
+  window,
+  windowFrame,
+  positions,
+  measures,
+  screenStartEdge,
+  newWindowStartEdge,
+  newWindowEndEdge,
+}) {
+  if (
+    onlyMove &&
+    ((dir === 'prev' && windowStartEdge === screenStartEdge) ||
+      (dir === 'next' && windowEndEdge === screenEndEdge)) &&
+    windowFrame[axis] === windowStartEdge &&
+    windowFrame[size] === windowEndEdge - windowStartEdge
+  )
+    return;
+
+  // try to resize and move window with given args within grid
+  const newSize = newWindowEndEdge - newWindowStartEdge;
+
+  window.setFrame({
+    ...windowFrame,
+    [size]: newSize,
+    [axis]: newWindowStartEdge,
+  });
+
+  if (window.frame()[size] <= newSize) return;
+
+  // if it does not fit correctly in grid...
+  // try to increase size towards end
+  const posLen = positions.length;
+
+  for (let j = 0; j < posLen; j++) {
+    const tmpWindowEndEdge = screenStartEdge + positions[j] + measures[j];
+    if (tmpWindowEndEdge <= newWindowEndEdge) continue;
+
+    const newSize = tmpWindowEndEdge - newWindowStartEdge;
+
+    window.setFrame({
+      ...windowFrame,
+      [axis]: newWindowStartEdge,
+      [size]: newSize,
+    });
+
+    if (window.frame()[size] <= newSize) return true;
+  }
+
+  // try to increase size towards start
+  for (let j = posLen - 1; j >= 0; j--) {
+    const tmpWindowStartEdge = screenStartEdge + positions[j];
+    if (tmpWindowStartEdge > newWindowStartEdge) continue;
+
+    const newSize = newWindowEndEdge - tmpWindowStartEdge;
+
+    window.setFrame({
+      ...windowFrame,
+      [axis]: tmpWindowStartEdge,
+      [size]: newSize,
+    });
+
+    if (window.frame()[size] <= newSize) return;
+  }
+
+  showModal('Could not force the window in Grid');
+  throw new Error('Could not force the window in Grid');
+}
+
 function changeWindowSize(dir) {
   const focusedWindowInfo = getFocusedWindowInfo();
 
@@ -79,95 +206,103 @@ function changeWindowSize(dir) {
     gapH: GAP_H,
   });
 
-  const measures = ['top', 'bottom'].includes(dir) ? heights : widths;
-  const positions = ['top', 'bottom'].includes(dir)
-    ? verPositions
-    : horPositions;
-  const posLen = positions.length;
-  const axis = ['top', 'bottom'].includes(dir) ? 'y' : 'x';
-  const size = ['top', 'bottom'].includes(dir) ? 'height' : 'width';
+  const isVerAxis = ['top', 'bottom', 'moveTop', 'moveBottom'].includes(dir);
+  const measures = isVerAxis ? heights : widths;
+  const positions = isVerAxis ? verPositions : horPositions;
+  const axis = isVerAxis ? 'y' : 'x';
+  const size = isVerAxis ? 'height' : 'width';
 
   const windowStartEdge = windowFrame[axis];
   const windowEndEdge = windowStartEdge + windowFrame[size];
+  const screenStartEdge = screenFrame[axis];
+  const screenEndEdge = screenStartEdge + screenFrame[size];
 
-  for (let i = 0; i < posLen; i++) {
-    if (['top', 'left'].includes(dir)) {
-      // increase size to start
-      let gridItemEdge = positions[posLen - 1 - i] + screenFrame[axis];
-      if (windowStartEdge > screenFrame[axis]) {
-        if (windowStartEdge <= gridItemEdge) continue;
-        return window.setFrame({
-          ...windowFrame,
-          [axis]: gridItemEdge,
-          [size]: windowFrame[size] + windowStartEdge - gridItemEdge,
-        });
-      }
-
-      // decrease size from end
-      gridItemEdge = gridItemEdge + measures[posLen - 1 - i];
-      if (windowEndEdge <= gridItemEdge) continue;
-      return window.setFrame({
-        ...windowFrame,
-        [size]: gridItemEdge - windowStartEdge,
-      });
-    }
-
-    // increase size to end
-    let gridItemEdge = positions[i] + measures[i] + screenFrame[axis];
-    if (windowEndEdge < screenFrame[size] + screenFrame[axis]) {
-      if (gridItemEdge <= windowEndEdge) continue;
-      return window.setFrame({
-        ...windowFrame,
-        [size]: gridItemEdge - windowStartEdge,
-      });
-    }
-
-    // decrease size from start
-    gridItemEdge = gridItemEdge - measures[i];
-    if (gridItemEdge <= windowStartEdge) continue;
-    return window.setFrame({
-      ...windowFrame,
-      [axis]: gridItemEdge,
-      [size]: windowFrame[size] + windowStartEdge - gridItemEdge,
+  const { curWindowStartEdge, prevWindowStartEdge, nextWindowStartEdge } =
+    getWindowStartEdges({
+      positions,
+      measures,
+      windowStartEdge,
+      screenStartEdge,
     });
-  }
-}
 
-function moveWindow(dir) {
-  const focusedWindowInfo = getFocusedWindowInfo();
+  const { curWindowEndEdge, prevWindowEndEdge, nextWindowEndEdge } =
+    getWindowEndEdges({
+      positions,
+      measures,
+      windowEndEdge,
+      screenStartEdge,
+    });
 
-  if (!focusedWindowInfo) return;
+  if (['top', 'left'].includes(dir))
+    return forceWindowInGrid({
+      axis,
+      size,
+      window,
+      windowFrame,
+      measures,
+      positions,
+      screenStartEdge,
+      newWindowStartEdge: curWindowStartEdge,
+      newWindowEndEdge: prevWindowEndEdge,
+    });
 
-  const { window, windowFrame, screenFrame } = focusedWindowInfo;
-  const { horPositions, verPositions } = getGrid({
-    sizeW: screenFrame.width,
-    sizeH: screenFrame.height,
-    hDivisions: HOR_DIVISIONS,
-    vDivisions: VER_DIVISIONS,
-    gapW: GAP_W,
-    gapH: GAP_H,
-  });
+  if (['bottom', 'right'].includes(dir))
+    return forceWindowInGrid({
+      axis,
+      size,
+      window,
+      windowFrame,
+      measures,
+      positions,
+      screenStartEdge,
+      newWindowStartEdge: curWindowStartEdge,
+      newWindowEndEdge: nextWindowEndEdge,
+    });
 
-  const positions = ['top', 'bottom'].includes(dir)
-    ? verPositions
-    : horPositions;
-  const posLen = positions.length;
-  const axis = ['top', 'bottom'].includes(dir) ? 'y' : 'x';
-  const windowStartEdge = windowFrame[axis];
+  if (
+    ((dir === 'prev' && windowStartEdge === screenStartEdge) ||
+      (dir === 'next' && curWindowEndEdge === screenEndEdge)) &&
+    windowFrame[axis] === windowStartEdge &&
+    windowFrame[size] === windowEndEdge - windowStartEdge
+  )
+    return;
 
-  for (let i = 0; i < posLen; i++) {
-    if (['top', 'left'].includes(dir)) {
-      // move window to start
-      const gridItemEdge = positions[posLen - 1 - i] + screenFrame[axis];
-      if (windowStartEdge <= gridItemEdge) continue;
-      return window.setFrame({ ...windowFrame, [axis]: gridItemEdge });
-    }
+  if (['moveTop', 'moveLeft'].includes(dir))
+    return forceWindowInGrid({
+      onlyMove: true,
+      dir: 'prev',
+      windowStartEdge,
+      windowEndEdge,
 
-    // move window to end
-    const gridItemEdge = positions[i] + screenFrame[axis];
-    if (windowStartEdge >= gridItemEdge) continue;
-    return window.setFrame({ ...windowFrame, [axis]: gridItemEdge });
-  }
+      axis,
+      size,
+      window,
+      windowFrame,
+      measures,
+      positions,
+      screenStartEdge,
+      newWindowStartEdge: prevWindowStartEdge,
+      newWindowEndEdge: prevWindowEndEdge,
+    });
+
+  if (['moveBottom', 'moveRight'].includes(dir))
+    return forceWindowInGrid({
+      onlyMove: true,
+      dir: 'next',
+      windowEndEdge,
+      windowStartEdge,
+      screenEndEdge,
+
+      axis,
+      size,
+      window,
+      windowFrame,
+      measures,
+      positions,
+      screenStartEdge,
+      newWindowStartEdge: nextWindowStartEdge,
+      newWindowEndEdge: nextWindowEndEdge,
+    });
 }
 
 function set4x4WindowFrame(newWinKey, direction, newWinMaps) {
@@ -290,10 +425,10 @@ Key.on('y', ['cmd', 'alt'], () => changeWindowSize('left'));
 Key.on('o', ['cmd', 'alt'], () => changeWindowSize('right'));
 Key.on('u', ['cmd', 'alt'], () => changeWindowSize('bottom'));
 Key.on('i', ['cmd', 'alt'], () => changeWindowSize('top'));
-Key.on('y', ['cmd', 'alt', 'shift'], () => moveWindow('left'));
-Key.on('o', ['cmd', 'alt', 'shift'], () => moveWindow('right'));
-Key.on('i', ['cmd', 'alt', 'shift'], () => moveWindow('top'));
-Key.on('u', ['cmd', 'alt', 'shift'], () => moveWindow('bottom'));
+Key.on('y', ['cmd', 'alt', 'shift'], () => changeWindowSize('moveLeft'));
+Key.on('o', ['cmd', 'alt', 'shift'], () => changeWindowSize('moveRight'));
+Key.on('i', ['cmd', 'alt', 'shift'], () => changeWindowSize('moveTop'));
+Key.on('u', ['cmd', 'alt', 'shift'], () => changeWindowSize('moveBottom'));
 
 ////////////////////////////////////
 ///////////// TESTS ////////////////
