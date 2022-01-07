@@ -42,12 +42,7 @@
   },
   {
     "keys": ["I"],
-    "if": {
-      "appName": "com.google.Chrome",
-      "Cmd": true,
-      "Shift": true,
-      "Alt": true
-    },
+    "if": { "appName": "com.google.Chrome", "Cmd": true, "Shift": true },
     "send": ["Shift:up Alt:down I Alt:up Shift:down", null]
   },
 
