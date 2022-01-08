@@ -199,6 +199,13 @@
     "send": ["Alt:down NP1 NP6 NP4 Alt:up", null]
   },
 
+  // Alt+`
+  {
+    "keys": ["GraveAccent"],
+    "if": { "Alt": true, "isAltTabMode": false },
+    "send": ["Ctrl:up Alt:down GraveAccent Alt:up Ctrl:down", null]
+  },
+
   // TODO: MUTE
   {
     "keys": ["M"],
