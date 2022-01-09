@@ -421,14 +421,14 @@ Key.on('l', ['cmd', 'alt'], () =>
   })
 );
 
-Key.on('y', ['cmd', 'alt'], () => changeWindowSize('left'));
-Key.on('o', ['cmd', 'alt'], () => changeWindowSize('right'));
-Key.on('u', ['cmd', 'alt'], () => changeWindowSize('bottom'));
-Key.on('i', ['cmd', 'alt'], () => changeWindowSize('top'));
-Key.on('y', ['cmd', 'alt', 'shift'], () => changeWindowSize('moveLeft'));
-Key.on('o', ['cmd', 'alt', 'shift'], () => changeWindowSize('moveRight'));
-Key.on('i', ['cmd', 'alt', 'shift'], () => changeWindowSize('moveTop'));
-Key.on('u', ['cmd', 'alt', 'shift'], () => changeWindowSize('moveBottom'));
+Key.on('h', ['ctrl'], () => changeWindowSize('moveLeft'));
+Key.on('h', ['ctrl', 'shift'], () => changeWindowSize('left'));
+Key.on('l', ['ctrl'], () => changeWindowSize('moveRight'));
+Key.on('l', ['ctrl', 'shift'], () => changeWindowSize('right'));
+Key.on('j', ['ctrl'], () => changeWindowSize('moveBottom'));
+Key.on('j', ['ctrl', 'shift'], () => changeWindowSize('bottom'));
+Key.on('k', ['ctrl'], () => changeWindowSize('moveTop'));
+Key.on('k', ['ctrl', 'shift'], () => changeWindowSize('top'));
 
 ////////////////////////////////////
 ///////////// TESTS ////////////////
