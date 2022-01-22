@@ -12,6 +12,11 @@
     "%dotdotdotArray(_globals.json)",
 
     {
+      "keys": ["LeftArrow", "RightArrow", "DownArrow", "UpArrow"],
+      "if": { "appName": "com.google.Chrome", "Alt": true },
+      "send": ["Alt:up currentKey:down", "currentKey:up Alt:down"]
+    },
+    {
       "keys": ["LeftArrow"],
       "if": { "appName": "com.google.Chrome", "Shift": false, "Cmd": false },
       "send": ["Cmd:down 5 Cmd:up", "currentKey:up"]
@@ -27,7 +32,6 @@
       "if": { "appName": "com.google.Chrome", "Shift": false, "Cmd": false },
       "send": ["Alt:down S Alt:up", "currentKey:up"]
     },
-
     {
       "keys": ["DownArrow"],
       "if": { "appName": "com.google.Chrome", "Shift": false, "Cmd": false },
