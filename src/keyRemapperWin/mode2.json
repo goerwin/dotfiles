@@ -6,22 +6,22 @@
     {
       "keys": ["LeftArrow"],
       "if": { "appName": "chrome.exe", "Shift": false },
-      "send": ["Ctrl:down 5 Ctrl:up", null]
+      "send": ["Ctrl:down 5 Ctrl:up", "currentKey:up"]
     },
     {
       "keys": ["RightArrow"],
       "if": { "appName": "chrome.exe", "Shift": false },
-      "send": ["Ctrl:down 6 Ctrl:up", null]
+      "send": ["Ctrl:down 6 Ctrl:up", "currentKey:up"]
     },
     {
       "keys": ["DownArrow"],
       "if": { "appName": "chrome.exe", "Shift": false },
-      "send": ["Alt:down T Alt:up", null]
+      "send": ["Alt:down T Alt:up", "currentKey:up"]
     },
     {
       "keys": ["UpArrow"],
       "if": { "appName": "chrome.exe", "Shift": false },
-      "send": ["Alt:down S Alt:up", null]
+      "send": ["Alt:down S Alt:up", "currentKey:up"]
     }
   ]
 }
