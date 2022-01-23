@@ -4,6 +4,11 @@
   "keybindings": [
     "%dotdotdotArray(_common.json)",
     {
+      "keys": ["LeftArrow", "RightArrow", "DownArrow", "UpArrow"],
+      "if": { "appName": "chrome.exe", "Win": true },
+      "send": ["currentKey:down", "currentKey:up"]
+    },
+    {
       "keys": ["LeftArrow"],
       "if": { "appName": "chrome.exe", "Shift": false },
       "send": ["Ctrl:down 5 Ctrl:up", "currentKey:up"]
