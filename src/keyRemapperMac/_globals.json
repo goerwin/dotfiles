@@ -35,12 +35,12 @@
   {
     "keys": ["H"],
     "if": { "Alt": true, "Cmd": false },
-    "send": ["Alt:up Cmd:down BracketL Cmd:up Alt:down", null]
+    "send": ["Alt:up Cmd:down BracketL Cmd:up Alt:down", "H:up"]
   },
   {
     "keys": ["L"],
     "if": { "Alt": true, "Cmd": false },
-    "send": ["Alt:up Cmd:down BracketR Cmd:up Alt:down", null]
+    "send": ["Alt:up Cmd:down BracketR Cmd:up Alt:down", "L:up"]
   },
 
   // Media Keys
