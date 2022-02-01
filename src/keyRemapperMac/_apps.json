@@ -41,6 +41,14 @@
     "send": ["Alt:up Ctrl:down currentKey Ctrl:up Alt:up", null]
   },
   {
+    "keys": ["F"],
+    "if": { "appName": "com.google.Chrome", "Alt": true },
+    "send": [
+      "Alt:up Cmd:down L Cmd:up Delay10 U Delay10 Enter Delay10 Alt:down",
+      null
+    ]
+  },
+  {
     "keys": ["I"],
     "if": { "appName": "com.google.Chrome", "Cmd": true, "Shift": true },
     "send": ["Shift:up Alt:down I Alt:up Shift:down", null]
