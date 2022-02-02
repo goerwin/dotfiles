@@ -28,7 +28,10 @@
   {
     "keys": ["J"],
     "if": { "Cmd": true, "Alt": true, "Shift": false },
-    "send": ["Cmd:up Alt:up Ctrl:down DownArrow Ctrl:up Cmd:down Alt:down", null]
+    "send": [
+      "Cmd:up Alt:up Ctrl:down DownArrow Ctrl:up Cmd:down Alt:down",
+      null
+    ]
   },
 
   // Go to back/forward page in browser navigation
@@ -41,6 +44,13 @@
     "keys": ["L"],
     "if": { "Alt": true, "Cmd": false },
     "send": ["Alt:up Cmd:down BracketR Cmd:up Alt:down", "L:up"]
+  },
+
+  // Alfred stop active workflows
+  {
+    "keys": ["S"],
+    "if": { "F18": true },
+    "send": ["Cmd:down Alt:down S Alt:up Cmd:up", null]
   },
 
   // Media Keys
@@ -87,7 +97,7 @@
   },
   {
     "keys": ["F1", "F2", "F7", "F8", "F9", "F10", "F11", "F12"],
-    "if": { "Cmd": true},
+    "if": { "Cmd": true },
     "send": ["Cmd:up currentKey Cmd:down", null]
   }
 ]
