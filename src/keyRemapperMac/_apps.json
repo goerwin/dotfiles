@@ -36,30 +36,36 @@
     "send": ["Cmd:down L Cmd:up Cmd:down", null]
   },
   {
+    // full screen
     "keys": ["F"],
     "if": { "appName": "com.google.Chrome", "Cmd": true, "Alt": true },
     "send": ["Alt:up Ctrl:down currentKey Ctrl:up Alt:up", null]
   },
   {
-    "keys": ["F"],
-    "if": { "appName": "com.google.Chrome", "Alt": true },
-    "send": [
-      "Alt:up Cmd:down L Cmd:up Delay10 U Delay10 Enter Delay10 Alt:down",
-      null
-    ]
+    // give focus back to page
+    "keys": ["E"],
+    "if": { "appName": "com.google.Chrome", "Cmd": true },
+    "send": ["L Cmd:up Delay10 U Enter Cmd:down", "currentKey:up"]
   },
   {
+    // cmd+shift+i for toggling dev tools
     "keys": ["I"],
     "if": { "appName": "com.google.Chrome", "Cmd": true, "Shift": true },
-    "send": ["Shift:up Alt:down I Alt:up Shift:down", null]
+    "send": ["Shift:up Alt:down I Alt:up Shift:down", "currentKey:up"]
+  },
+  {
+    // cmd+p show downloads tab
+    "keys": ["ForwardSlash"],
+    "if": { "appName": "com.google.Chrome", "Cmd": true, "Shift": false },
+    "send": ["Shift:down J Shift:up", "currentKey:up"]
   },
 
   // Terminal
 
   {
-    "keys": ["O"],
-    "if": { "appName": "com.googlecode.iterm2", "Cmd": true, "Alt": false },
-    "send": ["K", null]
+    "keys": ["K"],
+    "if": { "appName": "com.googlecode.iterm2", "Alt": true, "Cmd": false },
+    "send": ["Alt:up Cmd:down K:down Cmd:up Alt:down", "K:up"]
   },
 
   // Slack
@@ -67,6 +73,14 @@
   {
     "keys": ["P"],
     "if": { "appName": "com.tinyspeck.slackmacgap", "Cmd": true, "Alt": false },
-    "send": ["K", null]
+    "send": ["K", "currentKey:up"]
+  },
+
+  // iTerm
+
+  {
+    "keys": ["O"],
+    "if": { "appName": "com.googlecode.iterm2", "Cmd": true, "Alt": false },
+    "send": ["K", "currentKey:up"]
   }
 ]
