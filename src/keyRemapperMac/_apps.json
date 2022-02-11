@@ -3,43 +3,43 @@
   {
     "keys": ["F3"],
     "if": { "appName": "com.google.Chrome" },
-    "send": ["Cmd:down 5 Cmd:up", null]
+    "send": ["Cmd:down 5 Cmd:up", "currentKey:up"]
   },
   {
     "keys": ["F4"],
     "if": { "appName": "com.google.Chrome" },
-    "send": ["Cmd:down 6 Cmd:up", null]
+    "send": ["Cmd:down 6 Cmd:up", "currentKey:up"]
   },
   {
     "keys": ["F5"],
     "if": { "appName": "com.google.Chrome" },
-    "send": ["Alt:down S Alt:up", null]
+    "send": ["Alt:down S Alt:up", "currentKey:up"]
   },
   {
     "keys": ["F6"],
     "if": { "appName": "com.google.Chrome" },
-    "send": ["Alt:down T Alt:up", null]
+    "send": ["Alt:down T Alt:up", "currentKey:up"]
   },
   {
     "keys": ["H"],
     "if": { "appName": "com.google.Chrome", "Cmd": true, "Alt": false },
-    "send": ["Cmd:down 5 Cmd:up Cmd:down", null]
+    "send": ["Cmd:down 5 Cmd:up Cmd:down", "currentKey:up"]
   },
   {
     "keys": ["L"],
     "if": { "appName": "com.google.Chrome", "Cmd": true, "Alt": false },
-    "send": ["Cmd:down 6 Cmd:up Cmd:down", null]
+    "send": ["Cmd:down 6 Cmd:up Cmd:down", "currentKey:up"]
   },
   {
     "keys": ["Semicolon"],
-    "if": { "appName": "com.google.Chrome", "Cmd": true },
-    "send": ["Cmd:down L Cmd:up Cmd:down", null]
+    "if": { "appName": "com.google.Chrome", "Cmd": true, "Alt": false },
+    "send": ["Cmd:down L Cmd:up Cmd:down", "currentKey:up"]
   },
   {
     // full screen
     "keys": ["F"],
     "if": { "appName": "com.google.Chrome", "Cmd": true, "Alt": true },
-    "send": ["Alt:up Ctrl:down currentKey Ctrl:up Alt:up", null]
+    "send": ["Alt:up Ctrl:down currentKey Ctrl:up Alt:up", "currentKey:up"]
   },
   {
     // give focus back to page
@@ -56,7 +56,12 @@
   {
     // cmd+p show downloads tab
     "keys": ["ForwardSlash"],
-    "if": { "appName": "com.google.Chrome", "Cmd": true, "Shift": false },
+    "if": {
+      "appName": "com.google.Chrome",
+      "Cmd": true,
+      "Shift": false,
+      "Alt": false
+    },
     "send": ["Shift:down J Shift:up", "currentKey:up"]
   },
 
@@ -65,7 +70,7 @@
   {
     "keys": ["K"],
     "if": { "appName": "com.googlecode.iterm2", "Alt": true, "Cmd": false },
-    "send": ["Alt:up Cmd:down K:down Cmd:up Alt:down", "K:up"]
+    "send": ["Alt:up Cmd:down K:down Cmd:up Alt:down", "currentKey:up"]
   },
 
   // Slack
