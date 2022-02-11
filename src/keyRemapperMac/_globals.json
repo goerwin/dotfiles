@@ -83,14 +83,33 @@
   { "keys": ["F11"], "send": ["VolumeDown:down", "VolumeDown:up"] },
   { "keys": ["F12"], "send": ["VolumeUp:down", "VolumeUp:up"] },
 
-  // NOTE: at the very end, release all possible keyDown keys
-  // that previous shortcuts could trigger
+  // NOTE: at the very end, release all possible keys
+  // that can still be on down on other shortcuts
+
+  {
+    "keys": ["Backspace"],
+    "if": { "Fn": true },
+    "send": ["ForwardDelete:down", "ForwardDelete:up currentKey:up"]
+  },
+
   {
     "keys": ["J"],
-    "send": ["currentKey:down", "PageDown:up currentKey:up"]
+    "send": ["currentKey:down", "PageDown:up DownArrow:up currentKey:up"]
   },
   {
     "keys": ["K"],
-    "send": ["currentKey:down", "PageUp:up currentKey:up"]
+    "send": ["currentKey:down", "PageUp:up UpArrow:up currentKey:up"]
+  },
+  {
+    "keys": ["H"],
+    "send": ["currentKey:down", "LeftArrow:up currentKey:up"]
+  },
+  {
+    "keys": ["L"],
+    "send": ["currentKey:down", "RightArrow:up currentKey:up"]
+  },
+  {
+    "keys": ["Backspace"],
+    "send": ["currentKey:down", "ForwardDelete:up currentKey:up"]
   }
 ]
