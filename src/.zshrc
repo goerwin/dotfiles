@@ -1,10 +1,9 @@
 # .zshrc is sourced in interactive shells. It should contain commands to set up
 # aliases, functions, options, key bindings, etc.
 
-# NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+# Using FNM INSTEAD OF NVM for faster init
+eval "$(fnm env --use-on-cd)"
+alias nvm="fnm"
 
 # YARN
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
