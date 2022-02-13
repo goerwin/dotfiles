@@ -4,7 +4,7 @@
     "ifPressedNTimes": 1,
     "if": { "isAltTabMode": true },
     "set": { "isAltTabMode": false },
-    "send": "Esc Delay10 Alt:up Ctrl:down"
+    "send": "Esc SK:Delay:10 Alt:up Ctrl:down"
   },
   { "key": "Caps", "ifPressedNTimes": 1, "send": "Esc" },
   { "key": "Caps", "ifPressedNTimes": 2, "send": "Esc" },

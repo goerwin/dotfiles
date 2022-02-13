@@ -1,32 +1,5 @@
 {
   "remaps": "%object(_remaps.json)",
   "keyPresses": "%array(_keyPresses.json)",
-  "keybindings": [
-    "%dotdotdotArray(_common.json)",
-    {
-      "keys": ["LeftArrow", "RightArrow", "DownArrow", "UpArrow"],
-      "if": { "appName": "chrome.exe", "Win": true },
-      "send": ["currentKey:down", "currentKey:up"]
-    },
-    {
-      "keys": ["LeftArrow"],
-      "if": { "appName": "chrome.exe", "Shift": false },
-      "send": ["Ctrl:down 5 Ctrl:up", "currentKey:up"]
-    },
-    {
-      "keys": ["RightArrow"],
-      "if": { "appName": "chrome.exe", "Shift": false },
-      "send": ["Ctrl:down 6 Ctrl:up", "currentKey:up"]
-    },
-    {
-      "keys": ["DownArrow"],
-      "if": { "appName": "chrome.exe", "Shift": false },
-      "send": ["Alt:down T Alt:up", "currentKey:up"]
-    },
-    {
-      "keys": ["UpArrow"],
-      "if": { "appName": "chrome.exe", "Shift": false },
-      "send": ["Alt:down S Alt:up", "currentKey:up"]
-    }
-  ]
+  "keybindings": "%array(_common.json)"
 }

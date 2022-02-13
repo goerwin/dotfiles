@@ -10,7 +10,7 @@
     "keys": ["Esc", "Enter"],
     "if": { "isAltTabMode": true },
     "set": { "isAltTabMode": false },
-    "send": ["currentKey:down Delay10 Alt:up Ctrl:down", null]
+    "send": ["currentKey:down SK:Delay:10 Alt:up Ctrl:down", null]
   },
 
   { "keys": ["Q"], "if": { "isAltTabMode": true }, "send": ["Supr", null] },
