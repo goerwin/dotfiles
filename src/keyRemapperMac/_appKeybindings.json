@@ -2,21 +2,21 @@
   {
     "keys": ["1"],
     "if": { "Ctrl": true },
-    "send": [null, "AppMode1"]
+    "send": ["SK:Mode1"]
   },
   {
     "keys": ["2"],
     "if": { "Ctrl": true },
-    "send": [null, "AppMode2"]
+    "send": ["SK:Mode2"]
   },
   {
     "keys": ["3"],
     "if": { "Ctrl": true },
-    "send": [null, "AppMode3"]
+    "send": ["SK:Mode3"]
   },
   {
     "keys": ["4"],
     "if": { "Ctrl": true },
-    "send": [null, "AppMode4"]
+    "send": ["SK:Mode4"]
   }
 ]
