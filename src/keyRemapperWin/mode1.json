@@ -28,7 +28,7 @@
       "if": { "appName": "chrome.exe", "Shift": false },
       "send": ["Alt:down S Alt:up", "currentKey:up"]
     }
-  ]
+  ],
   "tests": [
     //Alt Tab Mode
     ["Alt:down Tab Alt:up", "Ctrl:down Ctrl:up Alt:down Tab Alt:up"],
