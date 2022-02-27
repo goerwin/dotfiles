@@ -124,9 +124,9 @@ function notes() {
 }
 
 function open() {
-  if [[ $(grep Microsoft /proc/version) ]]; then # WSL
+  if [[ $(grep -s Microsoft /proc/version) ]]; then # WSL
     explorer.exe $(wslpath -w "${@:-.}")
-  elif [[ $(grep WSL2 /proc/version) ]]; then # WSL2
+  elif [[ $(grep -s WSL2 /proc/version) ]]; then # WSL2
     explorer.exe $@
   elif command -v open &>/dev/null; then # Mac
     command open $@
@@ -370,6 +370,13 @@ asap_shared_prod() {
   eval $(aws-saml-auth -u $AWS_HUBID -p "$(security find-generic-password -a $AWS_HUBID -s hubid -w)")
 }
 
+# To check Java Virtual Machines/JDK installed:
+# /usr/libexec/java_home -V
+
+# To switch to a specific JDK
+# export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
+export JAVA_HOME=`/usr/libexec/java_home -v 11`
+
 # export SAUCE_USERNAME=xxx
 # export SAUCE_ACCESS_KEY=xxx
 
@@ -383,4 +390,9 @@ asap_shared_prod() {
 
 # export SERVER_SSL_KEY_STORE=xxx
 
-# export JAVA_HOME=xxx
+# For React-Native Development with Android
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
