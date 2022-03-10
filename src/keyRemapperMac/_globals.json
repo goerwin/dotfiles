@@ -4,12 +4,14 @@
   {
     "keys": ["J"],
     "if": { "Cmd": true, "Alt": false },
-    "send": ["Cmd:up PageDown:down", "PageDown:up currentKey:up Cmd:down"]
+    "send": ["Cmd:up PageDown:down", "PageDown:up currentKey:up"],
+    "afterKeyUp": "Cmd:down"
   },
   {
     "keys": ["K"],
     "if": { "Cmd": true, "Alt": false },
-    "send": ["Cmd:up PageUp:down", "PageUp:up currentKey:up Cmd:down"]
+    "send": ["Cmd:up PageUp:down", "PageUp:up currentKey:up"],
+    "afterKeyUp": "Cmd:down"
   },
   {
     // fallback for when you need cmd+j/k you can use fn+j/k
