@@ -4,8 +4,7 @@
     "ifPressedNTimes": 1,
     "if": { "isAltTabMode": true },
     "set": { "isAltTabMode": false },
-    "send": "Esc Alt:up Ctrl:down",
-    // TODO: not working though, and also remove it from above
+    "send": "Esc",
     "afterKeyUp": "Alt:up Ctrl:down"
   },
   { "key": "Caps", "ifPressedNTimes": 1, "send": "Esc" },
