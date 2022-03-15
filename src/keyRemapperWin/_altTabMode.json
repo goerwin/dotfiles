@@ -10,7 +10,8 @@
     "keys": ["Esc", "Enter"],
     "if": { "isAltTabMode": true },
     "set": { "isAltTabMode": false },
-    "send": ["currentKey:down Alt:up Ctrl:down", null]
+    "send": ["currentKey:down", "currentKey:up"],
+    "afterKeyUp": "Alt:up Ctrl:down"
   },
 
   { "keys": ["Q"], "if": { "isAltTabMode": true }, "send": ["Supr", null] },
