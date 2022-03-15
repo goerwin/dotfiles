@@ -247,6 +247,7 @@ alias dc="docker-compose"
 alias dcb="dc build"
 alias dcu="dc up"
 alias dcd="dc down"
+alias matrix=cmatrix
 
 # Youtube download youtube-dl
 alias youtube="youtube-dl"
