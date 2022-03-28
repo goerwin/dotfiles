@@ -24,7 +24,7 @@
   {
     "keys": ["C", "Space", "V", "Tab", "W", "E", "R", "D", "U", "I", "O", "P"],
     "if": { "F18": true },
-    "send": ["Ctrl:down currentKey Ctrl:up", "currentKey:up"]
+    "send": ["CtrlL:down currentKey CtrlL:up", "currentKey:up"]
   },
 
   // Mute mic
@@ -39,7 +39,7 @@
     "keys": ["J"],
     "if": { "CmdL": true, "AltL": true, "ShiftL": false },
     "send": [
-      "CmdL:up AltL:up Ctrl:down DownArrow Ctrl:up CmdL:down AltL:down",
+      "CmdL:up AltL:up CtrlL:down DownArrow CtrlL:up CmdL:down AltL:down",
       "currentKey:up"
     ]
   },

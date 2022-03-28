@@ -39,7 +39,7 @@
     // full screen
     "keys": ["F"],
     "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": true },
-    "send": ["AltL:up Ctrl:down currentKey Ctrl:up AltL:up", "currentKey:up"]
+    "send": ["AltL:up CtrlL:down currentKey CtrlL:up AltL:up", "currentKey:up"]
   },
   {
     // give focus back to page
