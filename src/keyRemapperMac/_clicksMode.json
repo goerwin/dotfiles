@@ -1,30 +1,30 @@
 [
   {
     "keys": ["C"],
-    "if": { "Alt": true, "F18": true },
+    "if": { "AltL": true, "F18": true },
     "set": { "rightClickMode": true },
     "setOnKeyUp": { "rightClickMode": false },
-    "send": ["Alt:up RightClick:down", "RightClick:up"],
-    "afterKeyUp": "Alt:down"
+    "send": ["AltL:up RightClick:down", "RightClick:up"],
+    "afterKeyUp": "AltL:down"
   },
   {
     "keys": ["C"],
-    "if": { "Alt": true },
+    "if": { "AltL": true },
     "set": { "leftClickMode": true },
     "setOnKeyUp": { "leftClickMode": false },
-    "send": ["Alt:up LeftClick:down", "LeftClick:up"],
-    "afterKeyUp": "Alt:down"
+    "send": ["AltL:up LeftClick:down", "LeftClick:up"],
+    "afterKeyUp": "AltL:down"
   },
   {
-    "keys": ["Alt"],
+    "keys": ["AltL"],
     "if": { "isKeyDown": false, "leftClickMode": true },
     "setOnKeyUp": { "leftClickMode": false },
-    "send": [null, "LeftClick:up Alt:up"]
+    "send": [null, "LeftClick:up AltL:up"]
   },
   {
-    "keys": ["Alt"],
+    "keys": ["AltL"],
     "if": { "isKeyDown": false, "rightClickMode": true },
     "setOnKeyUp": { "rightClickMode": false },
-    "send": [null, "RightClick:up Alt:up"]
+    "send": [null, "RightClick:up AltL:up"]
   }
 ]

@@ -3,21 +3,21 @@
   // This is just for ergonomics
   {
     "keys": ["J"],
-    "if": { "Cmd": true, "Alt": false },
-    "send": ["Cmd:up PageDown:down", "PageDown:up currentKey:up"],
-    "afterKeyUp": "Cmd:down"
+    "if": { "CmdL": true, "AltL": false },
+    "send": ["CmdL:up PageDown:down", "PageDown:up currentKey:up"],
+    "afterKeyUp": "CmdL:down"
   },
   {
     "keys": ["K"],
-    "if": { "Cmd": true, "Alt": false },
-    "send": ["Cmd:up PageUp:down", "PageUp:up currentKey:up"],
-    "afterKeyUp": "Cmd:down"
+    "if": { "CmdL": true, "AltL": false },
+    "send": ["CmdL:up PageUp:down", "PageUp:up currentKey:up"],
+    "afterKeyUp": "CmdL:down"
   },
   {
     // fallback for when you need cmd+j/k you can use fn+j/k
     "keys": ["J", "K"],
     "if": { "Fn": true },
-    "send": ["Fn:up Cmd:down currentKey:down Cmd:up Fn:down", "currentKey:up"]
+    "send": ["Fn:up CmdL:down currentKey:down CmdL:up Fn:down", "currentKey:up"]
   },
 
   // F18/Caps as control for some keys
@@ -30,16 +30,16 @@
   // Mute mic
   {
     "keys": ["M"],
-    "if": { "Alt": true },
-    "send": ["Cmd:down M Cmd:up", "currentKey:up"]
+    "if": { "AltL": true },
+    "send": ["CmdL:down M CmdL:up", "currentKey:up"]
   },
 
   // App exposé
   {
     "keys": ["J"],
-    "if": { "Cmd": true, "Alt": true, "Shift": false },
+    "if": { "CmdL": true, "AltL": true, "ShiftL": false },
     "send": [
-      "Cmd:up Alt:up Ctrl:down DownArrow Ctrl:up Cmd:down Alt:down",
+      "CmdL:up AltL:up Ctrl:down DownArrow Ctrl:up CmdL:down AltL:down",
       "currentKey:up"
     ]
   },
@@ -47,34 +47,34 @@
   // Go to back/forward page in browser/finder navigation
   {
     "keys": ["H"],
-    "if": { "Alt": true, "Cmd": false, "Shift": false },
-    "send": ["Alt:up Cmd:down BracketL Cmd:up Alt:down", "currentKey:up"]
+    "if": { "AltL": true, "CmdL": false, "ShiftL": false },
+    "send": ["AltL:up CmdL:down BracketL CmdL:up AltL:down", "currentKey:up"]
   },
   {
     "keys": ["L"],
-    "if": { "Alt": true, "Cmd": false, "Shift": false },
-    "send": ["Alt:up Cmd:down BracketR Cmd:up Alt:down", "currentKey:up"]
+    "if": { "AltL": true, "CmdL": false, "ShiftL": false },
+    "send": ["AltL:up CmdL:down BracketR CmdL:up AltL:down", "currentKey:up"]
   },
   {
     // fallback for when you need alt+h/l you can use fn+h/l
     "keys": ["H", "L"],
     "if": { "Fn": true },
-    "send": ["Fn:up Alt:down currentKey:down Alt:up Fn:down", "currentKey:up"]
+    "send": ["Fn:up AltL:down currentKey:down AltL:up Fn:down", "currentKey:up"]
   },
 
   // Alfred stop active workflows
   {
     "keys": ["S"],
     "if": { "F18": true },
-    "send": ["Cmd:down Alt:down S Alt:up Cmd:up", "currentKey:up"]
+    "send": ["CmdL:down AltL:down S AltL:up CmdL:up", "currentKey:up"]
   },
 
   // Media Keys
 
   {
     "keys": ["F1", "F2", "F7", "F8", "F9", "F10", "F11", "F12"],
-    "if": { "Cmd": true },
-    "send": ["Cmd:up currentKey Cmd:down", "currentKey:up"]
+    "if": { "CmdL": true },
+    "send": ["CmdL:up currentKey CmdL:down", "currentKey:up"]
   },
   { "keys": ["F1"], "send": ["BrightnessDown:down", "BrightnessDown:up"] },
   { "keys": ["F2"], "send": ["BrightnessUp:down", "BrightnessUp:up"] },

@@ -3,81 +3,81 @@
   {
     "keys": ["F3"],
     "if": { "appName": "com.google.Chrome" },
-    "send": ["Cmd:down 5 Cmd:up", "currentKey:up"]
+    "send": ["CmdL:down 5 CmdL:up", "currentKey:up"]
   },
   {
     "keys": ["F4"],
     "if": { "appName": "com.google.Chrome" },
-    "send": ["Cmd:down 6 Cmd:up", "currentKey:up"]
+    "send": ["CmdL:down 6 CmdL:up", "currentKey:up"]
   },
   {
     "keys": ["F5"],
     "if": { "appName": "com.google.Chrome" },
-    "send": ["Alt:down S Alt:up", "currentKey:up"]
+    "send": ["AltL:down S AltL:up", "currentKey:up"]
   },
   {
     "keys": ["F6"],
     "if": { "appName": "com.google.Chrome" },
-    "send": ["Alt:down T Alt:up", "currentKey:up"]
+    "send": ["AltL:down T AltL:up", "currentKey:up"]
   },
   {
     "keys": ["H"],
-    "if": { "appName": "com.google.Chrome", "Cmd": true, "Alt": false },
-    "send": ["Cmd:down 5 Cmd:up Cmd:down", "currentKey:up"]
+    "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": false },
+    "send": ["CmdL:down 5 CmdL:up CmdL:down", "currentKey:up"]
   },
   {
     "keys": ["L"],
-    "if": { "appName": "com.google.Chrome", "Cmd": true, "Alt": false },
-    "send": ["Cmd:down 6 Cmd:up Cmd:down", "currentKey:up"]
+    "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": false },
+    "send": ["CmdL:down 6 CmdL:up CmdL:down", "currentKey:up"]
   },
   {
     "keys": ["Semicolon"],
-    "if": { "appName": "com.google.Chrome", "Cmd": true, "Alt": false },
-    "send": ["Cmd:down L Cmd:up Cmd:down", "currentKey:up"]
+    "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": false },
+    "send": ["CmdL:down L CmdL:up CmdL:down", "currentKey:up"]
   },
   {
     // full screen
     "keys": ["F"],
-    "if": { "appName": "com.google.Chrome", "Cmd": true, "Alt": true },
-    "send": ["Alt:up Ctrl:down currentKey Ctrl:up Alt:up", "currentKey:up"]
+    "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": true },
+    "send": ["AltL:up Ctrl:down currentKey Ctrl:up AltL:up", "currentKey:up"]
   },
   {
     // give focus back to page
     "keys": ["E"],
-    "if": { "appName": "com.google.Chrome", "Cmd": true },
-    "send": ["L Cmd:up SK:Delay:10 U Enter Cmd:down", "currentKey:up"]
+    "if": { "appName": "com.google.Chrome", "CmdL": true },
+    "send": ["L CmdL:up SK:Delay:10 U Enter CmdL:down", "currentKey:up"]
   },
   {
     // cmd+shift+i for toggling dev tools
     "keys": ["I"],
-    "if": { "appName": "com.google.Chrome", "Cmd": true, "Shift": true },
-    "send": ["Shift:up Alt:down I Alt:up Shift:down", "currentKey:up"]
+    "if": { "appName": "com.google.Chrome", "CmdL": true, "ShiftL": true },
+    "send": ["ShiftL:up AltL:down I AltL:up ShiftL:down", "currentKey:up"]
   },
   {
     // cmd+p show downloads tab
     "keys": ["ForwardSlash"],
     "if": {
       "appName": "com.google.Chrome",
-      "Cmd": true,
-      "Shift": false,
-      "Alt": false
+      "CmdL": true,
+      "ShiftL": false,
+      "AltL": false
     },
-    "send": ["Shift:down J Shift:up", "currentKey:up"]
+    "send": ["ShiftL:down J ShiftL:up", "currentKey:up"]
   },
 
   // Terminal
 
   {
     "keys": ["K"],
-    "if": { "appName": "com.googlecode.iterm2", "Alt": true, "Cmd": false },
-    "send": ["Alt:up Cmd:down K:down Cmd:up Alt:down", "currentKey:up"]
+    "if": { "appName": "com.googlecode.iterm2", "AltL": true, "CmdL": false },
+    "send": ["AltL:up CmdL:down K:down CmdL:up AltL:down", "currentKey:up"]
   },
 
   // Slack
 
   {
     "keys": ["P"],
-    "if": { "appName": "com.tinyspeck.slackmacgap", "Cmd": true, "Alt": false },
+    "if": { "appName": "com.tinyspeck.slackmacgap", "CmdL": true, "AltL": false },
     "send": ["K", "currentKey:up"]
   },
 
@@ -85,7 +85,7 @@
 
   {
     "keys": ["O"],
-    "if": { "appName": "com.googlecode.iterm2", "Cmd": true, "Alt": false },
+    "if": { "appName": "com.googlecode.iterm2", "CmdL": true, "AltL": false },
     "send": ["K", "currentKey:up"]
   }
 ]

@@ -1,9 +1,9 @@
 [
   {
     "keys": ["F18"],
-    "if": { "isKeyDown": false, "_vimMode": true, "_vimModeShift": true },
-    "setOnKeyUp": { "_vimMode": false, "_vimModeShift": false },
-    "send": [null, "Shift:up"]
+    "if": { "isKeyDown": false, "_vimMode": true, "_vimModeShiftL": true },
+    "setOnKeyUp": { "_vimMode": false, "_vimModeShiftL": false },
+    "send": [null, "ShiftL:up"]
   },
   {
     "keys": ["F18"],
@@ -34,8 +34,8 @@
   {
     "keys": ["F"],
     "if": { "_vimMode": true },
-    "set": { "_vimModeShift": true },
-    "setOnKeyUp": { "_vimModeShift": false },
-    "send": ["Shift:down", "Shift:up"]
+    "set": { "_vimModeShiftL": true },
+    "setOnKeyUp": { "_vimModeShiftL": false },
+    "send": ["ShiftL:down", "ShiftL:up"]
   }
 ]

@@ -12,12 +12,12 @@
         ["Caps:down test_delay:100 Caps:up", "Esc"],
         ["Caps:down test_delay:251 Caps:up", ""],
         [
-          "Shift:down Caps:down Caps:up Shift:up",
-          "Shift:down Esc:down Esc:up Shift:up"
+          "ShiftL:down Caps:down Caps:up ShiftL:up",
+          "ShiftL:down Esc:down Esc:up ShiftL:up"
         ],
         [
-          "Shift:down Caps:down test_delay:251 Caps:up Shift:up",
-          "Shift:down Shift:up"
+          "ShiftL:down Caps:down test_delay:251 Caps:up ShiftL:up",
+          "ShiftL:down ShiftL:up"
         ]
       ],
       "keyPressesDelay": 200,
@@ -27,49 +27,49 @@
         "%dotdotdotArray(_apps.json)",
         "%dotdotdotArray(_globals.json)",
         {
-          "send": ["Alt:up currentKey:down", "currentKey:up"],
+          "send": ["AltL:up currentKey:down", "currentKey:up"],
           "keys": ["LeftArrow", "RightArrow", "DownArrow", "UpArrow"],
           "if": {
             "appName": "com.google.Chrome",
-            "Alt": true
+            "AltL": true
           },
-          "afterKeyUp": "Alt:down"
+          "afterKeyUp": "AltL:down"
         },
         {
           "keys": ["LeftArrow"],
           "if": {
             "appName": "com.google.Chrome",
-            "Shift": false,
-            "Cmd": false
+            "ShiftL": false,
+            "CmdL": false
           },
-          "send": ["Cmd:down 5 Cmd:up", "currentKey:up"]
+          "send": ["CmdL:down 5 CmdL:up", "currentKey:up"]
         },
         {
           "keys": ["RightArrow"],
           "if": {
             "appName": "com.google.Chrome",
-            "Shift": false,
-            "Cmd": false
+            "ShiftL": false,
+            "CmdL": false
           },
-          "send": ["Cmd:down 6 Cmd:up", "currentKey:up"]
+          "send": ["CmdL:down 6 CmdL:up", "currentKey:up"]
         },
         {
           "keys": ["UpArrow"],
           "if": {
             "appName": "com.google.Chrome",
-            "Shift": false,
-            "Cmd": false
+            "ShiftL": false,
+            "CmdL": false
           },
-          "send": ["Alt:down S Alt:up", "currentKey:up"]
+          "send": ["AltL:down S AltL:up", "currentKey:up"]
         },
         {
           "keys": ["DownArrow"],
           "if": {
             "appName": "com.google.Chrome",
-            "Shift": false,
-            "Cmd": false
+            "ShiftL": false,
+            "CmdL": false
           },
-          "send": ["Alt:down T Alt:up", "currentKey:up"]
+          "send": ["AltL:down T AltL:up", "currentKey:up"]
         }
       ]
     },
