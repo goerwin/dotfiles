@@ -1,7 +1,7 @@
 [
   {
     "keys": ["Tab"],
-    "if": { "Alt": true, "isAltTabMode": false },
+    "if": { "AltL": true, "isAltTabMode": false },
     "set": { "isAltTabMode": true },
     "send": ["CtrlL:up AltL:down Tab", null]
   },
@@ -16,7 +16,7 @@
 
   { "keys": ["Q"], "if": { "isAltTabMode": true }, "send": ["Supr", null] },
   {
-    "keys": ["Alt"],
+    "keys": ["AltL"],
     "if": { "isAltTabMode": true },
     "setOnKeyUp": { "isAltTabMode": false },
     "send": [null, "AltL:up"]
@@ -41,5 +41,5 @@
     "if": { "Caps": true, "isAltTabMode": true },
     "send": ["UpArrow", null]
   },
-  { "keys": ["Alt"], "send": ["CtrlL:down", "CtrlL:up"] }
+  { "keys": ["AltL"], "send": ["CtrlL:down", "CtrlL:up"] }
 ]

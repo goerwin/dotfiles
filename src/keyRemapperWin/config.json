@@ -7,7 +7,7 @@
         "%dotdotdotArray(_common.json)",
         {
           "keys": ["LeftArrow", "RightArrow", "DownArrow", "UpArrow"],
-          "if": { "appName": "chrome.exe", "Win": true },
+          "if": { "appName": "chrome.exe", "WinL": true },
           "send": ["currentKey:down", "currentKey:up"]
         },
         {
@@ -65,7 +65,7 @@
         // Key - 3 Keys No Order
         ["H:down J:down K H:up J:up", "H:down J:down K:down K:up H:up J:up"],
 
-        ["Alt", "CtrlL"],
+        ["AltL", "CtrlL"],
 
         // VIM MODE
         ["Caps", "Esc"],

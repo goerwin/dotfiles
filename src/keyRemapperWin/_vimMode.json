@@ -13,32 +13,32 @@
   },
   {
     "keys": ["J"],
-    "if": { "vimMode": true, "Alt": true },
+    "if": { "vimMode": true, "AltL": true },
     "send": ["End", null]
   },
   {
     "keys": ["K"],
-    "if": { "vimMode": true, "Alt": true },
+    "if": { "vimMode": true, "AltL": true },
     "send": ["Home", null]
   },
   {
     "keys": ["H"],
-    "if": { "vimMode": true, "Win": true },
+    "if": { "vimMode": true, "WinL": true },
     "send": ["CtrlL:down LeftArrow CtrlL:up", null]
   },
   {
     "keys": ["L"],
-    "if": { "vimMode": true, "Win": true },
+    "if": { "vimMode": true, "WinL": true },
     "send": ["CtrlL:down RightArrow CtrlL:up", null]
   },
   {
     "keys": ["H"],
-    "if": { "vimMode": true, "Alt": true, "isAltTabMode": false },
+    "if": { "vimMode": true, "AltL": true, "isAltTabMode": false },
     "send": ["CtrlL:up Home CtrlL:down", null]
   },
   {
     "keys": ["L"],
-    "if": { "vimMode": true, "Alt": true, "isAltTabMode": false },
+    "if": { "vimMode": true, "AltL": true, "isAltTabMode": false },
     "send": ["CtrlL:up End CtrlL:down", null]
   },
   { "keys": ["H"], "if": { "vimMode": true }, "send": ["LeftArrow", null] },
