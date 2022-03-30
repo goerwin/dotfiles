@@ -3,7 +3,7 @@
     "keys": ["Tab"],
     "if": { "Alt": true, "isAltTabMode": false },
     "set": { "isAltTabMode": true },
-    "send": ["Ctrl:up Alt:down Tab", null]
+    "send": ["CtrlL:up AltL:down Tab", null]
   },
   { "keys": ["Tab"], "if": { "isAltTabMode": true }, "send": ["Tab", null] },
   {
@@ -11,7 +11,7 @@
     "if": { "isAltTabMode": true },
     "set": { "isAltTabMode": false },
     "send": ["currentKey:down", "currentKey:up"],
-    "afterKeyUp": "Alt:up Ctrl:down"
+    "afterKeyUp": "AltL:up CtrlL:down"
   },
 
   { "keys": ["Q"], "if": { "isAltTabMode": true }, "send": ["Supr", null] },
@@ -19,7 +19,7 @@
     "keys": ["Alt"],
     "if": { "isAltTabMode": true },
     "setOnKeyUp": { "isAltTabMode": false },
-    "send": [null, "Alt:up"]
+    "send": [null, "AltL:up"]
   },
   {
     "keys": ["H"],
@@ -41,5 +41,5 @@
     "if": { "Caps": true, "isAltTabMode": true },
     "send": ["UpArrow", null]
   },
-  { "keys": ["Alt"], "send": ["Ctrl:down", "Ctrl:up"] }
+  { "keys": ["Alt"], "send": ["CtrlL:down", "CtrlL:up"] }
 ]

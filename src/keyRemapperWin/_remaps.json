@@ -9,11 +9,11 @@
   },
   {
     "from": "NonUSBackslash",
-    "to": "Shift",
+    "to": "ShiftL",
     "if": { "keyboard": "HID\\VID_0B05&PID_19B6&REV_0002&MI_02" }
   },
   { "from": "WinR", "to": "Win" },
   { "from": "CtrlR", "to": "Win" },
   { "from": "AltR", "to": "Alt" },
-  { "from": "ShiftR", "to": "Shift" }
+  { "from": "ShiftR", "to": "ShiftL" }
 ]
