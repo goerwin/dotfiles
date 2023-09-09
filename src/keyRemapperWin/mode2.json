@@ -1,5 +1,0 @@
-{
-  "remaps": "%object(_remaps.json)",
-  "keyPresses": "%array(_keyPresses.json)",
-  "keybindings": "%array(_common.json)"
-}

@@ -1,9 +1,9 @@
 [
   {
     "keys": ["Caps"],
-    "if": { "isKeyDown": false, "vimMode": true, "vimModeShift": true },
-    "setOnKeyUp": { "vimMode": false, "vimModeShift": false },
-    "send": [null, "Shift:up"]
+    "if": { "isKeyDown": false, "vimMode": true, "vimModeShiftL": true },
+    "setOnKeyUp": { "vimMode": false, "vimModeShiftL": false },
+    "send": [null, "ShiftL:up"]
   },
   {
     "keys": ["Caps"],
@@ -13,33 +13,33 @@
   },
   {
     "keys": ["J"],
-    "if": { "vimMode": true, "Alt": true },
+    "if": { "vimMode": true, "AltL": true },
     "send": ["End", null]
   },
   {
     "keys": ["K"],
-    "if": { "vimMode": true, "Alt": true },
+    "if": { "vimMode": true, "AltL": true },
     "send": ["Home", null]
   },
   {
     "keys": ["H"],
-    "if": { "vimMode": true, "Win": true },
-    "send": ["Ctrl:down LeftArrow Ctrl:up", null]
+    "if": { "vimMode": true, "WinL": true },
+    "send": ["CtrlL:down LeftArrow CtrlL:up", null]
   },
   {
     "keys": ["L"],
-    "if": { "vimMode": true, "Win": true },
-    "send": ["Ctrl:down RightArrow Ctrl:up", null]
+    "if": { "vimMode": true, "WinL": true },
+    "send": ["CtrlL:down RightArrow CtrlL:up", null]
   },
   {
     "keys": ["H"],
-    "if": { "vimMode": true, "Alt": true, "isAltTabMode": false },
-    "send": ["Ctrl:up Home Ctrl:down", null]
+    "if": { "vimMode": true, "AltL": true, "isAltTabMode": false },
+    "send": ["CtrlL:up Home CtrlL:down", null]
   },
   {
     "keys": ["L"],
-    "if": { "vimMode": true, "Alt": true, "isAltTabMode": false },
-    "send": ["Ctrl:up End Ctrl:down", null]
+    "if": { "vimMode": true, "AltL": true, "isAltTabMode": false },
+    "send": ["CtrlL:up End CtrlL:down", null]
   },
   { "keys": ["H"], "if": { "vimMode": true }, "send": ["LeftArrow", null] },
   { "keys": ["L"], "if": { "vimMode": true }, "send": ["RightArrow", null] },
@@ -48,8 +48,8 @@
   {
     "keys": ["F"],
     "if": { "vimMode": true },
-    "set": { "vimModeShift": true },
-    "setOnKeyUp": { "vimModeShift": false },
-    "send": ["Shift:down", "Shift:up"]
+    "set": { "vimModeShiftL": true },
+    "setOnKeyUp": { "vimModeShiftL": false },
+    "send": ["ShiftL:down", "ShiftL:up"]
   }
 ]

@@ -4,16 +4,16 @@
 [
   {
     "from": "PrtScr",
-    "to": "Win",
+    "to": "WinL",
     "if": { "keyboard": "HID\\VID_0B05&PID_19B6&REV_0002&MI_02" }
   },
   {
     "from": "NonUSBackslash",
-    "to": "Shift",
+    "to": "ShiftL",
     "if": { "keyboard": "HID\\VID_0B05&PID_19B6&REV_0002&MI_02" }
   },
-  { "from": "WinR", "to": "Win" },
-  { "from": "CtrlR", "to": "Win" },
-  { "from": "AltR", "to": "Alt" },
-  { "from": "ShiftR", "to": "Shift" }
+  { "from": "WinR", "to": "WinL" },
+  { "from": "CtrlR", "to": "WinL" },
+  { "from": "AltR", "to": "AltL" },
+  { "from": "ShiftR", "to": "ShiftL" }
 ]

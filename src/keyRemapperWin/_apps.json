@@ -8,80 +8,85 @@
   },
   {
     "keys": ["1", "2", "3", "4"],
-    "if": { "appName": "SC2_x64.exe", "Win": true },
-    "send": ["Alt:down currentKey Alt:up", null]
+    "if": { "appName": "SC2_x64.exe", "WinL": true },
+    "send": ["AltL:down currentKey AltL:up", null]
   },
   {
     "keys": ["D"],
-    "if": { "appName": "SC2_x64.exe", "Alt": true },
-    "send": ["Ctrl:up Alt:down C Alt:up Ctrl:down", null]
+    "if": { "appName": "SC2_x64.exe", "AltL": true },
+    "send": ["CtrlL:up AltL:down C AltL:up CtrlL:down", null]
   },
 
   // Windows Terminal
   {
     "keys": ["1", "2", "3", "4"],
-    "if": { "appName": "WindowsTerminal.exe", "Win": true },
-    "send": ["Alt:down currentKey Alt:up", null]
+    "if": { "appName": "WindowsTerminal.exe", "WinL": true },
+    "send": ["AltL:down currentKey AltL:up", null]
   },
 
   // Google Chrome
 
   {
     "keys": ["F"],
-    "if": { "appName": "chrome.exe", "Alt": true, "Win": true },
-    "send": ["Ctrl:up F11 Ctrl:down", null]
+    "if": { "appName": "chrome.exe", "AltL": true, "WinL": true },
+    "send": ["CtrlL:up F11 CtrlL:down", null]
   },
   {
     "keys": ["Enter"],
-    "if": { "appName": "chrome.exe", "Alt": true },
-    "send": ["Ctrl:up Alt:down Enter Alt:up Ctrl:down", null]
+    "if": { "appName": "chrome.exe", "AltL": true },
+    "send": ["CtrlL:up AltL:down Enter AltL:up CtrlL:down", null]
+  },
+  {
+    "keys": ["E"],
+    "if": { "appName": "chrome.exe", "AltL": true },
+    "send": ["L CtrlL:up SK:Delay:10 U Enter CtrlL:down", "currentKey:up"]
   },
   {
     "keys": ["H"],
-    "if": { "appName": "chrome.exe", "Alt": true, "Win": false },
+    "if": { "appName": "chrome.exe", "AltL": true, "WinL": false },
     "send": ["5", null]
   },
   {
     "keys": ["L"],
-    "if": { "appName": "chrome.exe", "Alt": true, "Win": false },
+    "if": { "appName": "chrome.exe", "AltL": true, "WinL": false },
     "send": ["6", null]
   },
   {
     "keys": ["Semicolon"],
-    "if": { "appName": "chrome.exe", "Alt": true },
+    "if": { "appName": "chrome.exe", "AltL": true },
     "send": ["L", null]
   },
   {
     "keys": ["F3"],
     "if": { "appName": "chrome.exe" },
-    "send": ["Ctrl:down 5 Ctrl:up", null]
+    "send": ["CtrlL:down 5 CtrlL:up", null]
   },
   {
     "keys": ["F4"],
     "if": { "appName": "chrome.exe" },
-    "send": ["Ctrl:down 6 Ctrl:up", null]
+    "send": ["CtrlL:down 6 CtrlL:up", null]
   },
   {
     "keys": ["F5"],
     "if": { "appName": "chrome.exe" },
-    "send": ["Alt:down S Alt:up", null]
+    "send": ["AltL:down S AltL:up", null]
   },
   {
     "keys": ["F6"],
     "if": { "appName": "chrome.exe" },
-    "send": ["Alt:down T Alt:up", null]
+    "send": ["AltL:down T AltL:up", null]
   },
   {
     "keys": ["S", "T"],
-    "if": { "appName": "chrome.exe", "Win": true },
-    "send": ["Alt:down currentKey Alt:up"]
+    "if": { "appName": "chrome.exe", "WinL": true },
+    "send": ["AltL:down currentKey AltL:up"]
   },
 
   // Slack
 
   {
     "keys": ["P"],
-    "if": { "appName": "slack.exe", "Alt": true },
+    "if": { "appName": "slack.exe", "AltL": true },
     "send": ["K", null]
   }
 ]

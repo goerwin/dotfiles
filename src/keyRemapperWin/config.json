@@ -1,0 +1,101 @@
+{
+  "profiles": [
+    {
+      "remaps": "%object(_remaps.json)",
+      "keyPresses": "%array(_keyPresses.json)",
+      "keybindings": [
+        "%dotdotdotArray(_common.json)",
+        {
+          "keys": ["LeftArrow", "RightArrow", "DownArrow", "UpArrow"],
+          "if": { "appName": "chrome.exe", "WinL": true },
+          "send": ["currentKey:down", "currentKey:up"]
+        },
+        {
+          "keys": ["LeftArrow"],
+          "if": { "appName": "chrome.exe", "ShiftL": false },
+          "send": ["CtrlL:down 5 CtrlL:up", "currentKey:up"]
+        },
+        {
+          "keys": ["RightArrow"],
+          "if": { "appName": "chrome.exe", "ShiftL": false },
+          "send": ["CtrlL:down 6 CtrlL:up", "currentKey:up"]
+        },
+        {
+          "keys": ["DownArrow"],
+          "if": { "appName": "chrome.exe", "ShiftL": false },
+          "send": ["AltL:down T AltL:up", "currentKey:up"]
+        },
+        {
+          "keys": ["UpArrow"],
+          "if": { "appName": "chrome.exe", "ShiftL": false },
+          "send": ["AltL:down S AltL:up", "currentKey:up"]
+        }
+      ],
+      "tests": [
+        //Alt Tab Mode
+        ["AltL:down Tab AltL:up", "CtrlL:down CtrlL:up AltL:down Tab AltL:up"],
+        [
+          "AltL:down Tab Tab AltL:up",
+          "CtrlL:down CtrlL:up AltL:down Tab Tab AltL:up"
+        ],
+        [
+          "AltL:down ShiftL:down Tab ShiftL:up AltL:up",
+          "CtrlL:down ShiftL:down CtrlL:up AltL:down Tab ShiftL:up AltL:up"
+        ],
+        [
+          "AltL:down ShiftL:down Tab Tab ShiftL:up AltL:up",
+          "CtrlL:down ShiftL:down CtrlL:up AltL:down Tab Tab ShiftL:up AltL:up"
+        ],
+        [
+          "AltL:down Tab Esc AltL:up",
+          "CtrlL:down CtrlL:up AltL:down Tab Esc:down SK:Delay:10 AltL:up CtrlL:down Esc:up CtrlL:up"
+        ],
+        // Key
+        ["A", "A"],
+        // Key - Down
+        ["H:down H:down H:down", "H:down H:down H:down"],
+        // Key - Down then Up
+        ["H:down H:down H:up", "H:down H:down H:up"],
+        // Key - 2 Keys In Order
+        ["H:down J H:up", "H:down J:down J:up H:up"],
+        // Key - 2 Keys In No Order
+        ["H:down J:down H:up J:up", "H:down J:down H:up J:up"],
+        // Key - 3 Keys In Order
+        ["H:down J:down K J:up H:up", "H:down J:down K:down K:up J:up H:up"],
+        // Key - 3 Keys No Order
+        ["H:down J:down K H:up J:up", "H:down J:down K:down K:up H:up J:up"],
+
+        ["AltL", "CtrlL"],
+
+        // VIM MODE
+        ["Caps", "Esc"],
+        ["Caps:down A Caps:up", "A"],
+        ["Caps:down H Caps:up", "LeftArrow"],
+        ["Caps:down L Caps:up", "RightArrow"],
+        ["Caps:down J Caps:up", "DownArrow"],
+        ["Caps:down K Caps:up", "UpArrow"],
+        ["Caps:down AltL:down H AltL:up Caps:up", "CtrlL Home CtrlL"],
+        ["Caps:down AltL:down L AltL:up Caps:up", "CtrlL End CtrlL"],
+        ["Caps:down F:down H F:up Caps:up", "ShiftL:down LeftArrow ShiftL:up"],
+
+        // VIM MODE: When Caps is not the first pressed key
+        ["T:down Caps:down T:up Caps:up", "T"],
+        ["AltL:down Caps:down H Caps:up AltL:up", "CtrlL Home CtrlL"],
+        ["AltL:down Caps:down L Caps:up AltL:up", "CtrlL End CtrlL"],
+
+        // Clicks
+        ["WinL:down C WinL:up", "LeftClick"],
+        ["WinL:down C:down C:down C WinL:up", "LeftClick"],
+        ["WinL:down C:down WinL:up C:up", "LeftClick C:up"],
+        ["WinL:down Caps:down C Caps:up WinL:up", "RightClick"],
+        ["WinL:down Caps:down C:down C:down C Caps:up WinL:up", "RightClick"]
+      ]
+    },
+    {
+      "name": "normal keys",
+      "remaps": "%object(_remaps.json)",
+      "keyPresses": "%array(_keyPresses.json)",
+      "keybindings": "%array(_common.json)"
+    }
+  ]
+}

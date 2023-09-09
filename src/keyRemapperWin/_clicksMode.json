@@ -11,29 +11,29 @@
   },
   {
     "keys": ["C"],
-    "if": { "Win": true, "Caps": true },
+    "if": { "WinL": true, "Caps": true },
     "set": { "rightClickMode": true },
     "setOnKeyUp": { "rightClickMode": false },
     "send": ["RightClick:down", "RightClick:up"]
   },
   {
     "keys": ["C"],
-    "if": { "Win": true },
+    "if": { "WinL": true },
     "set": { "leftClickMode": true },
     "setOnKeyUp": { "leftClickMode": false },
     "send": ["LeftClick:down", "LeftClick:up"]
   },
   {
-    "keys": ["Win"],
+    "keys": ["WinL"],
     "if": { "isKeyDown": false, "leftClickMode": true },
     "setOnKeyUp": { "leftClickMode": false },
     "send": [null, "LeftClick:up"]
   },
   {
-    "keys": ["Win"],
+    "keys": ["WinL"],
     "if": { "isKeyDown": false, "rightClickMode": true },
     "setOnKeyUp": { "rightClickMode": false },
     "send": [null, "RightClick:up"]
   },
-  { "keys": ["Win"], "send": [null, null] }
+  { "keys": ["WinL"], "send": [null, null] }
 ]

@@ -5,7 +5,7 @@
     "if": { "isAltTabMode": true },
     "set": { "isAltTabMode": false },
     "send": "Esc",
-    "afterKeyUp": "Alt:up Ctrl:down"
+    "afterKeyUp": "AltL:up CtrlL:down"
   },
   { "key": "Caps", "ifPressedNTimes": 1, "send": "Esc" },
   { "key": "Caps", "ifPressedNTimes": 2, "send": "Esc" },
@@ -13,5 +13,5 @@
   { "key": "Caps", "ifPressedNTimes": 4, "send": "Esc" },
   { "key": "Caps", "ifPressedNTimes": 5, "send": "Esc" },
   { "key": "Esc", "ifPressedNTimes": 2, "send": "ToggleAppEnabled" },
-  { "key": "Shift", "ifPressedNTimes": 2, "send": "Caps" }
+  { "key": "ShiftL", "ifPressedNTimes": 2, "send": "Caps" }
 ]
