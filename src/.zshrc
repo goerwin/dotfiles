@@ -376,7 +376,7 @@ asap_shared_prod() {
 
 # To switch to a specific JDK
 # export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
-export JAVA_HOME=`/usr/libexec/java_home -v 11`
+export JAVA_HOME=$(/usr/libexec/java_home -v 11)
 
 # export SAUCE_USERNAME=xxx
 # export SAUCE_ACCESS_KEY=xxx
@@ -397,3 +397,7 @@ export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/tools
 export PATH=$PATH:$ANDROID_HOME/tools/bin
 export PATH=$PATH:$ANDROID_HOME/platform-tools
+
+# Bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
