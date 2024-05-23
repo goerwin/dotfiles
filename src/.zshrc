@@ -259,5 +259,6 @@ fi
 if isDir $ZSH_PATH/zsh-syntax-highlighting; then
   source "$ZSH_PATH/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 else
+  echo "Installing ZSH syntax highlighting..."
   cloneGitRepo "https://github.com/zsh-users/zsh-syntax-highlighting.git" "zsh-syntax-highlighting"
 fi
