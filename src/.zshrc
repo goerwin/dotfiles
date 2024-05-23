@@ -1,16 +1,6 @@
 # .zshrc is sourced in interactive shells. It should contain commands to set up
 # aliases, functions, options, key bindings, etc.
 
-# YARN
-# export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-
-
-# TODO:
-# Install starship
-# To install homebrew, find a way to make it automatic
-# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-
 ZSH_PATH=$HOME/.zsh
 TEXT_EDITOR="code"
 HOME_DIRS=(
@@ -29,7 +19,7 @@ GOOGLE_DRIVE_POSSIBLE_PATHS=(
 # # Settings
 #//////////////////////////
 
-# Create .zsh folder
+# Create .zsh folder for plugins
 mkdir -p $ZSH_PATH
 
 # Disable beep sound
@@ -40,36 +30,6 @@ zstyle ':completion:*' menu select
 
 # Case insensitive tab completion
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-
-#//////////////////////////
-# # Key Bindings
-#//////////////////////////
-
-# Text manipulation
-# bindkey -L to list all bindings
-# showkey -a to see keycodes
-bindkey '^[[1;5D' backward-word      # Ctrl+leftArrow
-bindkey '^[[1;5C' forward-word       # Ctrl+rightArrow
-bindkey "^[[1;2H" backward-kill-line # (windows: Shift+Home)
-bindkey "^H" backward-kill-word      # (windows: Ctrl+Shift+H or Ctrl+Backspace)
-bindkey \^U backward-kill-line       # (mac/unix)
-
-zle -N customClearScreen
-bindkey "^O" customClearScreen
-
-# make search up and down work, so partially type and hit up/down to find relevant stuff
-# start typing + [Up-Arrow] - fuzzy find history forward
-if [[ "${terminfo[kcuu1]}" != "" ]]; then
-  autoload -U up-line-or-beginning-search
-  zle -N up-line-or-beginning-search
-  bindkey "${terminfo[kcuu1]}" up-line-or-beginning-search
-fi
-# start typing + [Down-Arrow] - fuzzy find history backward
-if [[ "${terminfo[kcud1]}" != "" ]]; then
-  autoload -U down-line-or-beginning-search
-  zle -N down-line-or-beginning-search
-  bindkey "${terminfo[kcud1]}" down-line-or-beginning-search
-fi
 
 #//////////////////////////
 # # Functions
@@ -154,6 +114,14 @@ function updatePlugins() {
 
 function isDir() {
   if [ -d $1 ]; then
+    true
+  else
+    false
+  fi
+}
+
+function isFile() {
+  if [ -e $1 ]; then
     true
   else
     false
@@ -252,155 +220,44 @@ alias dcu="dc up"
 alias dcd="dc down"
 alias matrix=cmatrix
 
-# Youtube download youtube-dl
-alias youtube="youtube-dl"
-alias youtubebestaudio="youtube-dl -f bestaudio"
-alias youtubebestvideo="youtube-dl -f bestvideo"
-alias youtubemp3="youtube-dl -x --audio-format mp3 --audio-quality 0"
-alias youtubem4a="youtube-dl -f m4a"
-alias youtubemp4="youtube-dl -f mp4"
-alias youtubea=youtubem4a
-alias youtubev=youtubebestvideo
+#//////////////////////////
+# Commands/Plugins
+#//////////////////////////
 
-#//////////////////////////
-# Plugins
-#//////////////////////////
+# Homebrew
+
+if isCommand "brew"; then
+  :
+else
+  echo "Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Starship
 
 if isCommand "starship"; then # WSL
   eval "$(starship init zsh)"
 else
+  echo "Installing Starship..."
   curl -sS https://starship.rs/install.sh | sh
 fi
 
+# NVM
+
+NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+
+if isFile "$NVM_DIR/nvm.sh"; then
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+else
+  echo "Installing NVM..."
+  PROFILE=/dev/null bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash'
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+fi
+
 # zsh-syntax-highlighting
+
 if isDir $ZSH_PATH/zsh-syntax-highlighting; then
   source "$ZSH_PATH/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 else
   cloneGitRepo "https://github.com/zsh-users/zsh-syntax-highlighting.git" "zsh-syntax-highlighting"
 fi
-
-# zsh-autosuggestions
-if isDir $ZSH_PATH/zsh-autosuggestions; then
-  source "$ZSH_PATH/zsh-autosuggestions/zsh-autosuggestions.zsh"
-else
-  cloneGitRepo "https://github.com/zsh-users/zsh-autosuggestions" "zsh-autosuggestions"
-fi
-
-# zsh-z
-if isDir $ZSH_PATH/zsh-z; then
-  source "$ZSH_PATH/zsh-z/zsh-z.plugin.zsh"
-  autoload -U compinit && compinit # Tab completions
-else
-  cloneGitRepo "https://github.com/agkozak/zsh-z.git" "zsh-z"
-fi
-
-# TODO: LS_COLORS
-
-##############################
-# D1$N€Y
-##############################
-
-aws-account-list() {
-  echo "886979687859 : ETech Shared Services DevTools"
-  echo "125225864736 : Build & Delivery Engineering (Platform Systems Engineering-4736)"
-  echo "841052471418 : ETech Shared Services Atlassian (sedevsvc)"
-  echo "120533669058 : ETech Shared Services NonProd"
-  echo "286174615158 : ETech Shared Services Prod"
-  echo "431617356611 : Tcoe Tools - Parks"
-  echo "245425841826 : Tcoe Tools - EntTech (corp)"
-  echo "409768580306 : ETech Shared Services Atlassian Prod"
-}
-
-aws-sts-get-id() {
-  aws-account-list | grep $(aws sts get-caller-identity | jq --raw-output '.Account')
-}
-
-# if your SAML_ROLE is different by account just add to the functions below.
-
-# how to store password in Mac Keystore
-
-reset_asap_password() {
-  echo "run the following:"
-  echo "security delete-generic-password -a $AWS_HUBID -s hubid"
-  echo "security add-generic-password -a $AWS_HUBID -s hubid -w $1"
-}
-
-asap_shared_nonprod() {
-  export AWS_SAML_ACCOUNT=120533669058
-  unset AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_ACCESS_KEY_ID AWS_ACCESS_KEY AWS_PROFILE
-  eval $(aws-saml-auth -u $AWS_HUBID -p "$(security find-generic-password -a $AWS_HUBID -s hubid -w)")
-}
-
-asap_shared_prod() {
-  export AWS_SAML_ACCOUNT=286174615158
-  unset AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_ACCESS_KEY_ID AWS_ACCESS_KEY AWS_PROFILE
-  eval $(aws-saml-auth -u $AWS_HUBID -p "$(security find-generic-password -a $AWS_HUBID -s hubid -w)")
-}
-
-aws-account-list() {
-  echo "886979687859 : ETech Shared Services DevTools"
-  echo "125225864736 : Build & Delivery Engineering (Platform Systems Engineering-4736)"
-  echo "841052471418 : ETech Shared Services Atlassian (sedevsvc)"
-  echo "120533669058 : ETech Shared Services NonProd"
-  echo "286174615158 : ETech Shared Services Prod"
-  echo "431617356611 : Tcoe Tools - Parks"
-  echo "245425841826 : Tcoe Tools - EntTech (corp)"
-  echo "409768580306 : ETech Shared Services Atlassian Prod"
-}
-
-aws-sts-get-id() {
-  aws-account-list | grep $(aws sts get-caller-identity | jq --raw-output '.Account')
-}
-
-# if your SAML_ROLE is different by account just add to the functions below.
-
-# how to store password in Mac Keystore
-
-reset_asap_password() {
-  echo "run the following:"
-  echo "security delete-generic-password -a $AWS_HUBID -s hubid"
-  echo "security add-generic-password -a $AWS_HUBID -s hubid -w $1"
-}
-
-asap_shared_nonprod() {
-  export AWS_SAML_ACCOUNT=120533669058
-  unset AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_ACCESS_KEY_ID AWS_ACCESS_KEY AWS_PROFILE
-  eval $(aws-saml-auth -u $AWS_HUBID -p "$(security find-generic-password -a $AWS_HUBID -s hubid -w)")
-}
-
-asap_shared_prod() {
-  export AWS_SAML_ACCOUNT=286174615158
-  unset AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_ACCESS_KEY_ID AWS_ACCESS_KEY AWS_PROFILE
-  eval $(aws-saml-auth -u $AWS_HUBID -p "$(security find-generic-password -a $AWS_HUBID -s hubid -w)")
-}
-
-# To check Java Virtual Machines/JDK installed:
-# /usr/libexec/java_home -V
-
-# To switch to a specific JDK
-# export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
-# export JAVA_HOME=$(/usr/libexec/java_home -v 11)
-
-# export SAUCE_USERNAME=xxx
-# export SAUCE_ACCESS_KEY=xxx
-
-# export decrypter_property=xxx
-# export AWS_REGION=xxx
-
-# export AWS_HUBID=xxx
-# export AWS_DEFAULT_REGION=xxx
-# export AWS_SAML_USER=xxx
-# export AWS_SAML_ROLE=xxx
-
-# export SERVER_SSL_KEY_STORE=xxx
-
-# For React-Native Development with Android
-export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$PATH:$ANDROID_HOME/emulator
-export PATH=$PATH:$ANDROID_HOME/tools
-export PATH=$PATH:$ANDROID_HOME/tools/bin
-export PATH=$PATH:$ANDROID_HOME/platform-tools
-
-# Bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
