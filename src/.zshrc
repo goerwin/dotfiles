@@ -1,12 +1,15 @@
 # .zshrc is sourced in interactive shells. It should contain commands to set up
 # aliases, functions, options, key bindings, etc.
 
-# Using FNM INSTEAD OF NVM for faster init
-eval "$(fnm env --use-on-cd)"
-alias nvm="fnm"
-
 # YARN
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+# export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+
+# TODO:
+# Install starship
+# To install homebrew, find a way to make it automatic
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
 
 ZSH_PATH=$HOME/.zsh
 TEXT_EDITOR="code"
@@ -266,7 +269,7 @@ alias youtubev=youtubebestvideo
 if isCommand "starship"; then # WSL
   eval "$(starship init zsh)"
 else
-  curl -fsSL https://starship.rs/install.sh | bash
+  curl -sS https://starship.rs/install.sh | sh
 fi
 
 # zsh-syntax-highlighting
@@ -376,7 +379,7 @@ asap_shared_prod() {
 
 # To switch to a specific JDK
 # export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
-export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+# export JAVA_HOME=$(/usr/libexec/java_home -v 11)
 
 # export SAUCE_USERNAME=xxx
 # export SAUCE_ACCESS_KEY=xxx
