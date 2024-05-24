@@ -24,10 +24,12 @@ mkdir -p $ZSH_PATH
 unsetopt beep
 
 # Enable menu navigation with double tab
-zstyle ':completion:*' menu select
+# NOTE: This seems to not be doing anything
+# zstyle ':completion:*' menu select
 
 # Case insensitive tab completion
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+# NOTE: This seems to not be doing anything
+# zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 #//////////////////////////
 # # Functions
