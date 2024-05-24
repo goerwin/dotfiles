@@ -1,7 +1,7 @@
 // https://github.com/kasper/phoenix
 
-const HOR_DIVISIONS = 12;
-const VER_DIVISIONS = 12;
+const HOR_DIVISIONS = 16;
+const VER_DIVISIONS = 16;
 const GAP_W = 0;
 const GAP_H = 0;
 
