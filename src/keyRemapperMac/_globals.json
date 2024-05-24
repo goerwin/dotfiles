@@ -44,13 +44,6 @@
     ]
   },
 
-  // Show Desktop
-  {
-    "keys": ["D"],
-    "if": { "AltL": true },
-    "send": ["AltL:up F11", "currentKey:up"]
-  },
-
   // Go to back/forward page in browser/finder navigation
   {
     "keys": ["H"],
