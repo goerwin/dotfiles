@@ -10,9 +10,7 @@ HOME_DIRS=(
 )
 
 GOOGLE_DRIVE_POSSIBLE_PATHS=(
-  "/mnt/g/Mi unidad"
-  "G:/Mi unidad"
-  "Google Drive"
+  "Google Drive/My Drive"
 )
 
 #//////////////////////////
