@@ -3,15 +3,6 @@
 
 ZSH_PATH=$HOME/.zsh
 TEXT_EDITOR="code"
-HOME_DIRS=(
-  $HOME
-  "/mnt/c/Users/erwin.gaitan"
-  "/mnt/c/Users/goerwin"
-)
-
-GOOGLE_DRIVE_POSSIBLE_PATHS=(
-  "Google Drive/My Drive"
-)
 
 #//////////////////////////
 # # Settings
@@ -46,46 +37,6 @@ function fd() {
   find . -type d -iname "$1" ${@:2}
 }
 
-# Make dir and cd into it
-function md() {
-  mkdir -p "$@" && cd "$@"
-}
-
-function move() {
-  mkdir -p "$2"
-  mv "$1" "$2"
-}
-
-function copy() {
-  mkdir -p "$2"
-  cp "$1" "$2"
-}
-
-function customClearScreen() {
-  echo "\ec\e[3J"
-  zle reset-prompt # For TMUX
-  zle redisplay    # For ZSH Shell
-}
-
-function notes() {
-  for homeDir in $HOME_DIRS; do
-    for googleDrivePossiblePath in $GOOGLE_DRIVE_POSSIBLE_PATHS; do
-      notesFullPath="$homeDir/$googleDrivePossiblePath/Documents/notes"
-      notesFullPath2="$googleDrivePossiblePath/Documents/notes"
-
-      if isDir $notesFullPath; then
-        $TEXT_EDITOR $notesFullPath
-        break 2
-        break
-      elif isDir $notesFullPath2; then
-        $TEXT_EDITOR $notesFullPath2
-        break 2
-        break
-      fi
-    done
-  done
-}
-
 function open() {
   if [[ $(grep -s Microsoft /proc/version) ]]; then # WSL
     explorer.exe $(wslpath -w "${@:-.}")
@@ -98,16 +49,16 @@ function open() {
   fi
 }
 
-function cloneGitRepo() {
+function zshCloneGitRepoToZshDir() {
   gitRepoUrl=$1
   baseName=$2
 
-  pushd $ZSH_PATH # cd temporately to this path until popd
+  pushd $ZSH_PATH # temporarily "cd" into this path until popd
   git clone $gitRepoUrl $baseName
   popd
 }
 
-function updatePlugins() {
+function ZshUpdatePlugins() {
   rm -rf $ZSH_PATH
   source $HOME/.zshrc
 }
@@ -260,5 +211,5 @@ if isDir $ZSH_PATH/zsh-syntax-highlighting; then
   source "$ZSH_PATH/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 else
   echo "Installing ZSH syntax highlighting..."
-  cloneGitRepo "https://github.com/zsh-users/zsh-syntax-highlighting.git" "zsh-syntax-highlighting"
+  zshCloneGitRepoToZshDir "https://github.com/zsh-users/zsh-syntax-highlighting.git" "zsh-syntax-highlighting"
 fi
