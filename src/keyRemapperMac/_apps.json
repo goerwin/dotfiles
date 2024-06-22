@@ -53,17 +53,6 @@
     "if": { "appName": "com.google.Chrome", "CmdL": true, "ShiftL": true },
     "send": ["ShiftL:up AltL:down I AltL:up ShiftL:down", "currentKey:up"]
   },
-  {
-    // cmd+p show downloads tab
-    "keys": ["ForwardSlash"],
-    "if": {
-      "appName": "com.google.Chrome",
-      "CmdL": true,
-      "ShiftL": false,
-      "AltL": false
-    },
-    "send": ["ShiftL:down J ShiftL:up", "currentKey:up"]
-  },
 
   // Terminal
 
@@ -77,7 +66,11 @@
 
   {
     "keys": ["P"],
-    "if": { "appName": "com.tinyspeck.slackmacgap", "CmdL": true, "AltL": false },
+    "if": {
+      "appName": "com.tinyspeck.slackmacgap",
+      "CmdL": true,
+      "AltL": false
+    },
     "send": ["K", "currentKey:up"]
   },
 
