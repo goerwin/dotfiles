@@ -25,52 +25,7 @@
         "%dotdotdotArray(_vimMode.json)",
         "%dotdotdotArray(_clicksMode.json)",
         "%dotdotdotArray(_apps.json)",
-        "%dotdotdotArray(_globals.json)",
-        {
-          "send": ["AltL:up currentKey:down", "currentKey:up"],
-          "keys": ["LeftArrow", "RightArrow", "DownArrow", "UpArrow"],
-          "if": {
-            "appName": "com.google.Chrome",
-            "AltL": true
-          },
-          "afterKeyUp": "AltL:down"
-        },
-        {
-          "keys": ["LeftArrow"],
-          "if": {
-            "appName": "com.google.Chrome",
-            "ShiftL": false,
-            "CmdL": false
-          },
-          "send": ["CmdL:down 5 CmdL:up", "currentKey:up"]
-        },
-        {
-          "keys": ["RightArrow"],
-          "if": {
-            "appName": "com.google.Chrome",
-            "ShiftL": false,
-            "CmdL": false
-          },
-          "send": ["CmdL:down 6 CmdL:up", "currentKey:up"]
-        },
-        {
-          "keys": ["UpArrow"],
-          "if": {
-            "appName": "com.google.Chrome",
-            "ShiftL": false,
-            "CmdL": false
-          },
-          "send": ["AltL:down S AltL:up", "currentKey:up"]
-        },
-        {
-          "keys": ["DownArrow"],
-          "if": {
-            "appName": "com.google.Chrome",
-            "ShiftL": false,
-            "CmdL": false
-          },
-          "send": ["AltL:down T AltL:up", "currentKey:up"]
-        }
+        "%dotdotdotArray(_globals.json)"
       ]
     },
     {
