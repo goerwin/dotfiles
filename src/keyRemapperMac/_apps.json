@@ -53,7 +53,15 @@
     "if": { "appName": "com.google.Chrome", "CmdL": true, "ShiftL": true },
     "send": ["ShiftL:up AltL:down I AltL:up ShiftL:down", "currentKey:up"]
   },
-
+  {
+    // faster bookmark bar tooggle
+    "keys": ["B"],
+    "if": { "appName": "com.google.Chrome", "CmdL": true },
+    "send": [
+      "CmdL:up CmdL:down ShiftL:down currentKey ShiftL:up",
+      "currentKey:up"
+    ]
+  },
   // {
   //   "send": ["AltL:up currentKey:down", "currentKey:up"],
   //   "keys": ["LeftArrow", "RightArrow", "DownArrow", "UpArrow"],

@@ -213,3 +213,37 @@ else
   echo "Installing ZSH syntax highlighting..."
   zshCloneGitRepoToZshDir "https://github.com/zsh-users/zsh-syntax-highlighting.git" "zsh-syntax-highlighting"
 fi
+
+# enable auto completions for commands/files
+autoload -Uz compinit bashcompinit
+compinit
+bashcompinit
+
+# keyboard navigation to autocompletions
+zstyle ':completion:*' menu select
+
+# zsh-autosuggestions
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# Initialize python environment
+eval "$(pyenv init - zsh)"
+
+# JOB - WORK - GODADDY SETUP
+# https://pep-docs.uxp.gdcorp.tools/docs/onboarding/machine-setup/aws/
+
+# user should be your godaddy email username
+export USER=egaitan
+alias okta='OKTA_DOMAIN=godaddy.okta.com; KEY=$(openssl rand -hex 18); eval $(aws-okta-processor authenticate -e -o $OKTA_DOMAIN -u $USER -k $KEY -d 7200)'
+alias kasm='. kasm-wrapper'
+
+# Created by `pipx` on 2025-01-21 01:09:18
+export PATH="$PATH:/Users/goerwin/.local/bin"
+export PATH="$PATH:/Users/goerwin/.local/bin"
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+
+# Enable AWS Profile auto completions (ap, ar)
+eval "$(awsprofile completion zsh)"
+
+# (ar does not set the region properly, so doing it manually)
+export AWS_REGION=us-west-2
