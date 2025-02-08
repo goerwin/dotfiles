@@ -181,12 +181,6 @@ alias matrix=cmatrix
 # Load environment variables from .zshenv file
 isFile ~/.zshenv && source ~/.zshenv
 
-# enable auto completions for commands/files
-autoload -Uz compinit bashcompinit && compinit && bashcompinit
-
-# keyboard navigation to autocompletions
-zstyle ':completion:*' menu select
-
 # Homebrew
 if ! isCommand "brew"; then
   echo "Installing Homebrew..."
@@ -214,6 +208,15 @@ zshInstallPlugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-aut
 
 # zsh-autosuggestions
 zshInstallPlugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions.git" "zsh-autosuggestions.zsh"
+
+# zsh-z
+zshInstallPlugin "zsh-z" "https://github.com/agkozak/zsh-z.git" "zsh-z.plugin.zsh"
+
+# enable auto completions for commands/files
+autoload -U compinit bashcompinit && compinit && bashcompinit
+
+# keyboard navigation to autocompletions
+zstyle ':completion:*' menu select
 
 #//////////////////////////
 # Godaddy
