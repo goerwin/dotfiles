@@ -26,6 +26,18 @@ unsetopt beep
 # # Functions
 #//////////////////////////
 
+function isDir() {
+  [ -d "$1" ]
+}
+
+function isFile() {
+  [ -e "$1" ]
+}
+
+function isCommand() {
+  command -v "$1" &>/dev/null
+}
+
 # Better way to find
 function f() {
   find . -iname "$1" ${@:2}
@@ -50,41 +62,30 @@ function open() {
 }
 
 function zshCloneGitRepoToZshDir() {
-  gitRepoUrl=$1
-  baseName=$2
+  local gitRepoUrl="$1"
+  local baseName="$2"
 
-  pushd $ZSH_PATH # temporarily "cd" into this path until popd
-  git clone $gitRepoUrl $baseName
+  pushd "$ZSH_PATH" # temporarily "cd" into this path until popd
+  git clone "$gitRepoUrl" "$baseName"
   popd
 }
 
-function ZshUpdatePlugins() {
-  rm -rf $ZSH_PATH
-  source $HOME/.zshrc
-}
+function zshInstallPlugin() {
+  local pluginName="$1"
+  local gitUrl="$2"
+  local relativeSourceFilePath="$3"
+  local pluginDir="$ZSH_PATH/$pluginName"
 
-function isDir() {
-  if [ -d $1 ]; then
-    true
+  if isDir "$pluginDir"; then
+    source "$pluginDir/$relativeSourceFilePath"
   else
-    false
+    echo "Installing $pluginName..."
+    zshCloneGitRepoToZshDir "$gitUrl" "$pluginName"
   fi
 }
 
-function isFile() {
-  if [ -e $1 ]; then
-    true
-  else
-    false
-  fi
-}
-
-function isCommand() {
-  if command -v $1 &>/dev/null; then
-    true
-  else
-    false
-  fi
+function zshRemovePlugins() {
+  rm -rf "$ZSH_PATH" && source "$HOME/.zshrc"
 }
 
 #//////////////////////////
@@ -172,78 +173,64 @@ alias dcd="dc down"
 alias matrix=cmatrix
 
 #//////////////////////////
-# Commands/Plugins
+# Main
 #//////////////////////////
 
-# Homebrew
+# Load environment variables from .zshenv file
+isFile ~/.zshenv && source ~/.zshenv
 
-if isCommand "brew"; then
-  :
-else
+# enable auto completions for commands/files
+autoload -Uz compinit bashcompinit && compinit && bashcompinit
+
+# keyboard navigation to autocompletions
+zstyle ':completion:*' menu select
+
+# Homebrew
+if ! isCommand "brew"; then
   echo "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
 # Starship
-
-if isCommand "starship"; then # WSL
+if isCommand "starship"; then
   eval "$(starship init zsh)"
 else
   echo "Installing Starship..."
   curl -sS https://starship.rs/install.sh | sh
 fi
 
-# NVM
-
-NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-
-if isFile "$NVM_DIR/nvm.sh"; then
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+# FNM
+if isCommand "fnm"; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
 else
-  echo "Installing NVM..."
-  PROFILE=/dev/null bash -c 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash'
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+  echo "Installing FNM..."
+  curl -fsSL https://fnm.vercel.app/install | bash
 fi
 
 # zsh-syntax-highlighting
-
-if isDir $ZSH_PATH/zsh-syntax-highlighting; then
-  source "$ZSH_PATH/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-else
-  echo "Installing ZSH syntax highlighting..."
-  zshCloneGitRepoToZshDir "https://github.com/zsh-users/zsh-syntax-highlighting.git" "zsh-syntax-highlighting"
-fi
-
-# enable auto completions for commands/files
-autoload -Uz compinit bashcompinit
-compinit
-bashcompinit
-
-# keyboard navigation to autocompletions
-zstyle ':completion:*' menu select
+zshInstallPlugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-autosuggestions.git" "zsh-syntax-highlighting.zsh"
 
 # zsh-autosuggestions
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+zshInstallPlugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions.git" "zsh-autosuggestions.zsh"
 
-# Initialize python environment
-eval "$(pyenv init - zsh)"
+#//////////////////////////
+# Godaddy
+#//////////////////////////
+if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
+  # https://pep-docs.uxp.gdcorp.tools/docs/onboarding/machine-setup/aws/
+  export USER=egaitan # user should be your godaddy email username
+  alias okta='OKTA_DOMAIN=godaddy.okta.com; KEY=$(openssl rand -hex 18); eval $(aws-okta-processor authenticate -e -o $OKTA_DOMAIN -u $USER -k $KEY -d 7200)'
+  alias kasm='. kasm-wrapper'
+  export AWS_REGION=us-west-2 # (ar does not set the region properly, so doing it manually)
 
-# JOB - WORK - GODADDY SETUP
-# https://pep-docs.uxp.gdcorp.tools/docs/onboarding/machine-setup/aws/
+  # Created by `pipx` on 2025-01-21 01:09:18
+  export PATH="$PATH:/Users/goerwin/.local/bin"
+  export PYENV_ROOT="$HOME/.pyenv"
+  [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 
-# user should be your godaddy email username
-export USER=egaitan
-alias okta='OKTA_DOMAIN=godaddy.okta.com; KEY=$(openssl rand -hex 18); eval $(aws-okta-processor authenticate -e -o $OKTA_DOMAIN -u $USER -k $KEY -d 7200)'
-alias kasm='. kasm-wrapper'
+  # Initialize python environment
+  eval "$(pyenv init - zsh)"
 
-# Created by `pipx` on 2025-01-21 01:09:18
-export PATH="$PATH:/Users/goerwin/.local/bin"
-export PATH="$PATH:/Users/goerwin/.local/bin"
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-
-# Enable AWS Profile auto completions (ap, ar)
-eval "$(awsprofile completion zsh)"
-
-# (ar does not set the region properly, so doing it manually)
-export AWS_REGION=us-west-2
+  # Enable AWS Profile auto completions (ap, ar)
+  eval "$(awsprofile completion zsh)"
+fi
