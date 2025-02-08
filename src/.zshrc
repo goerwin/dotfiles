@@ -176,6 +176,8 @@ alias matrix=cmatrix
 # Main
 #//////////////////////////
 
+# Create a .zshenv file in your home directory to load environment variables specific to your machine
+# For example: `export MACHINE_TYPE="work"`
 # Load environment variables from .zshenv file
 isFile ~/.zshenv && source ~/.zshenv
 
