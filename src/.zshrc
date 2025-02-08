@@ -190,6 +190,7 @@ fi
 # Starship
 if isCommand "starship"; then
   eval "$(starship init zsh)"
+  starship preset no-nerd-font -o ~/.config/starship.toml
 else
   echo "Installing Starship..."
   curl -sS https://starship.rs/install.sh | sh
