@@ -116,10 +116,10 @@
     "send": ["currentKey:down", "currentKey:up"]
   },
   {
-    // this is for autorepair (c is the hotkey for repair, so alt/option + d is for autorepair)
+    // this is for autorepair (c is the hotkey for repair, so cmd + d is for autorepair)
     "keys": ["D"],
-    "if": { "appName": "com.blizzard.starcraft2", "AltL": true },
-    "send": ["D:up C", null]
+    "if": { "appName": "com.blizzard.starcraft2", "CmdL": true },
+    "send": ["D:up AltL:down C AltL:up", null]
   },
 
   // Terminal
