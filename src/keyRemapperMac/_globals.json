@@ -4,13 +4,14 @@
   {
     "keys": ["J"],
     "if": { "CmdL": true, "AltL": false },
-    "send": ["CmdL:up PageDown:down", "PageDown:up currentKey:up"],
+    "send": ["CmdL:up PageDown:down", "PageDown:up currentKey:up CmdL:down"],
+    // is this neccesary
     "afterKeyUp": "CmdL:down"
   },
   {
     "keys": ["K"],
     "if": { "CmdL": true, "AltL": false },
-    "send": ["CmdL:up PageUp:down", "PageUp:up currentKey:up"],
+    "send": ["CmdL:up PageUp:down", "PageUp:up currentKey:up CmdL:down"],
     "afterKeyUp": "CmdL:down"
   },
   {
