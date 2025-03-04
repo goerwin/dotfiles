@@ -245,4 +245,8 @@ if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
 
   # Enable AWS Profile auto completions (ap, ar)
   eval "$(awsprofile completion zsh)"
+
+  # To use eg. deploy-assets you need to set a profile first, eg. `ap uxp_prod_ops`
+  # and also a region (already done above in AWS_REGION).
+  # Then, it should ask you for SSO login.
 fi
