@@ -45,7 +45,7 @@
     // give focus back to page
     "keys": ["E"],
     "if": { "appName": "com.google.Chrome", "CmdL": true },
-    "send": ["L CmdL:up SK:Delay:10 U Enter CmdL:down", "currentKey:up"]
+    "send": ["L CmdL:up SK:Delay:10 ShiftL:down 2 ShiftL:up U Space U Enter CmdL:down", "currentKey:up"]
   },
   {
     // cmd+shift+i for toggling dev tools
