@@ -62,51 +62,6 @@
       "currentKey:up"
     ]
   },
-  // {
-  //   "send": ["AltL:up currentKey:down", "currentKey:up"],
-  //   "keys": ["LeftArrow", "RightArrow", "DownArrow", "UpArrow"],
-  //   "if": {
-  //     "appName": "com.google.Chrome",
-  //     "AltL": true
-  //   },
-  //   "afterKeyUp": "AltL:down"
-  // },
-  // {
-  //   "keys": ["LeftArrow"],
-  //   "if": {
-  //     "appName": "com.google.Chrome",
-  //     "ShiftL": false,
-  //     "CmdL": false
-  //   },
-  //   "send": ["CmdL:down 5 CmdL:up", "currentKey:up"]
-  // },
-  // {
-  //   "keys": ["RightArrow"],
-  //   "if": {
-  //     "appName": "com.google.Chrome",
-  //     "ShiftL": false,
-  //     "CmdL": false
-  //   },
-  //   "send": ["CmdL:down 6 CmdL:up", "currentKey:up"]
-  // },
-  // {
-  //   "keys": ["UpArrow"],
-  //   "if": {
-  //     "appName": "com.google.Chrome",
-  //     "ShiftL": false,
-  //     "CmdL": false
-  //   },
-  //   "send": ["AltL:down S AltL:up", "currentKey:up"]
-  // },
-  // {
-  //   "keys": ["DownArrow"],
-  //   "if": {
-  //     "appName": "com.google.Chrome",
-  //     "ShiftL": false,
-  //     "CmdL": false
-  //   },
-  //   "send": ["AltL:down T AltL:up", "currentKey:up"]
-  // },
 
   // Starcraft II
 
@@ -122,14 +77,6 @@
     "send": ["D:up AltL:down C AltL:up", null]
   },
 
-  // Terminal
-
-  {
-    "keys": ["K"],
-    "if": { "appName": "com.googlecode.iterm2", "AltL": true, "CmdL": false },
-    "send": ["AltL:up CmdL:down K:down CmdL:up AltL:down", "currentKey:up"]
-  },
-
   // Slack
 
   {
@@ -139,14 +86,6 @@
       "CmdL": true,
       "AltL": false
     },
-    "send": ["K", "currentKey:up"]
-  },
-
-  // iTerm
-
-  {
-    "keys": ["O"],
-    "if": { "appName": "com.googlecode.iterm2", "CmdL": true, "AltL": false },
     "send": ["K", "currentKey:up"]
   },
 

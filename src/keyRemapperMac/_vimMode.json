@@ -11,6 +11,9 @@
     "setOnKeyUp": { "_vimMode": false },
     "send": [null, null]
   },
+  // todo: should be able to do something like:
+  // "keys": ["H", "J", "K", "L"], mappedKeys: ["LeftArrow", "DownArrow", "UpArrow", "RightArrow"]
+  // to avoid repetition
   {
     "keys": ["H"],
     "if": { "_vimMode": true },
