@@ -12,7 +12,8 @@ fi
 
 # Generate karabiner.json from template automatically
 if command -v node &>/dev/null; then
-  node "src/.config/karabiner/_template.js" >"src/.config/karabiner/karabiner.json"
+  node "src/.config/karabiner/_template.ts" >"src/.config/karabiner/karabiner.json"
+  echo "Generated karabiner.json from template"
 fi
 
 homeDir=$(
