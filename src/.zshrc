@@ -2,7 +2,7 @@
 # aliases, functions, options, key bindings, etc.
 
 ZSH_PATH=$HOME/.zsh
-TEXT_EDITOR="code"
+TEXT_EDITOR="cursor"
 
 #//////////////////////////
 # # Settings
