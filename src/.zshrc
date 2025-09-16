@@ -218,9 +218,13 @@ autoload -U compinit bashcompinit && compinit && bashcompinit
 # keyboard navigation to autocompletions
 zstyle ':completion:*' menu select
 
+# Make Ctrl-U (cmd+backspace) act as "delete to beginning of line" (backward-kill-line)
+bindkey "^U" backward-kill-line
+
 #//////////////////////////
 # Godaddy
 #//////////////////////////
+
 if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
   # AWS setup godaddy
   # https://pep-docs.uxp.gdcorp.tools/docs/onboarding/machine-setup/aws/
