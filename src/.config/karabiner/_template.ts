@@ -113,7 +113,6 @@ const f3f4TabNavigationManipulators = [
 console.log(
   JSON.stringify(
     {
-      global: { show_profile_name_in_menu_bar: true },
       profiles: [
         {
           name: '1',
