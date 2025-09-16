@@ -43,6 +43,73 @@ const capsLockAsControlManipulators = ['c', 'v', 'spacebar', 'tab'].map(
   })
 );
 
+const f3f4TabNavigationManipulators = [
+  {
+    type: 'basic',
+    conditions: [
+      {
+        type: 'frontmost_application_if',
+        bundle_identifiers: [
+          '^com\\.google\\.Chrome$',
+          '^dev\\.warp\\.Warp-Stable$',
+        ],
+      },
+    ],
+    from: { key_code: 'h', modifiers: { mandatory: ['left_command'] } },
+    to: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
+  },
+  {
+    type: 'basic',
+    conditions: [
+      {
+        type: 'frontmost_application_if',
+        bundle_identifiers: [
+          '^com\\.google\\.Chrome$',
+          '^dev\\.warp\\.Warp-Stable$',
+        ],
+      },
+    ],
+    from: {
+      key_code: 'l',
+      modifiers: { mandatory: ['left_command'] },
+    },
+    to: [{ key_code: 'tab', modifiers: ['left_control'] }],
+  },
+  {
+    conditions: [
+      {
+        bundle_identifiers: [
+          '^com\\.google\\.Chrome$',
+          '^dev\\.warp\\.Warp-Stable$',
+        ],
+        type: 'frontmost_application_if',
+      },
+    ],
+    from: { key_code: 'f3' },
+    to: [
+      {
+        key_code: 'tab',
+        modifiers: ['left_control', 'left_shift'],
+      },
+    ],
+    type: 'basic',
+  },
+  {
+    conditions: [
+      {
+        bundle_identifiers: [
+          '^com\\.google\\.Chrome$',
+          '^dev\\.warp\\.Warp-Stable$',
+        ],
+        type: 'frontmost_application_if',
+      },
+    ],
+    from: { key_code: 'f4' },
+    to: [{ key_code: 'tab', modifiers: ['left_control'] }],
+    type: 'basic',
+  },
+];
+
 console.log(
   JSON.stringify(
     {
@@ -122,11 +189,11 @@ console.log(
           complex_modifications: {
             rules: [
               {
-                description: 'Mode::VIM',
+                description: 'Mode VIM',
                 manipulators: vimManipulators,
               },
               {
-                description: 'Mode::Click',
+                description: 'Mode Click',
                 manipulators: [
                   {
                     conditions: [
@@ -345,9 +412,15 @@ console.log(
                 ],
               },
               {
-                description: 'App::Google Chrome - Cmd + ; to Cmd + L',
+                description:
+                  'Apps (Google Chrome, Warp) - Cmd + H/L and F3/F4 to prev/next tab',
+                manipulators: f3f4TabNavigationManipulators,
+              },
+              {
+                description: 'Apps (Google Chrome) - Cmd + ; to Cmd + L',
                 manipulators: [
                   {
+                    type: 'basic',
                     conditions: [
                       {
                         bundle_identifiers: ['^com\\.google\\.Chrome$'],
@@ -359,81 +432,15 @@ console.log(
                       modifiers: { mandatory: ['left_command'] },
                     },
                     to: [{ key_code: 'l', modifiers: ['left_command'] }],
-                    type: 'basic',
                   },
                 ],
               },
               {
                 description:
-                  'App::Google Chrome - Cmd + H/L and F3/F4 to prev/next tab',
+                  'Apps (Google Chrome) - F5 to Alt + M and F6 to Alt + T',
                 manipulators: [
                   {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: {
-                      key_code: 'h',
-                      modifiers: { mandatory: ['left_command'] },
-                    },
-                    to: [
-                      {
-                        key_code: 'tab',
-                        modifiers: ['left_control', 'left_shift'],
-                      },
-                    ],
                     type: 'basic',
-                  },
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: {
-                      key_code: 'l',
-                      modifiers: { mandatory: ['left_command'] },
-                    },
-                    to: [{ key_code: 'tab', modifiers: ['left_control'] }],
-                    type: 'basic',
-                  },
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: { key_code: 'f3' },
-                    to: [
-                      {
-                        key_code: 'tab',
-                        modifiers: ['left_control', 'left_shift'],
-                      },
-                    ],
-                    type: 'basic',
-                  },
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: { key_code: 'f4' },
-                    to: [{ key_code: 'tab', modifiers: ['left_control'] }],
-                    type: 'basic',
-                  },
-                ],
-              },
-              {
-                description:
-                  'App::Google Chrome - F5 to Alt + M and F6 to Alt + T',
-                manipulators: [
-                  {
                     conditions: [
                       {
                         bundle_identifiers: ['^com\\.google\\.Chrome$'],
@@ -442,23 +449,22 @@ console.log(
                     ],
                     from: { key_code: 'f5' },
                     to: [{ key_code: 'm', modifiers: ['left_option'] }],
-                    type: 'basic',
                   },
                   {
+                    type: 'basic',
                     conditions: [
                       {
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
                         type: 'frontmost_application_if',
+                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
                       },
                     ],
                     from: { key_code: 'f6' },
                     to: [{ key_code: 't', modifiers: ['left_option'] }],
-                    type: 'basic',
                   },
                 ],
               },
               {
-                description: 'App::Google Chrome - Toggle full-screen',
+                description: 'Apps (Google Chrome) - Toggle full-screen',
                 manipulators: [
                   {
                     conditions: [
@@ -482,7 +488,7 @@ console.log(
                 ],
               },
               {
-                description: 'App::Google Chrome - Unfocus omnibar',
+                description: 'Apps (Google Chrome) - Unfocus omnibar',
                 manipulators: [
                   {
                     conditions: [
@@ -509,7 +515,7 @@ console.log(
               },
               {
                 description:
-                  'App::Google Chrome - Cmd + shift + i to toggle dev tools',
+                  'Apps (Google Chrome) - Cmd + shift + i to toggle dev tools',
                 manipulators: [
                   {
                     conditions: [
@@ -544,9 +550,10 @@ console.log(
                 ],
               },
               {
-                description: 'App::Slack - Cmd + P to search',
+                description: 'Apps (Slack) - Cmd + P to search',
                 manipulators: [
                   {
+                    type: 'basic',
                     conditions: [
                       {
                         bundle_identifiers: ['^com\\.tinyspeck\\.slackmacgap$'],
@@ -558,12 +565,11 @@ console.log(
                       modifiers: { mandatory: ['left_command'] },
                     },
                     to: [{ key_code: 'k', modifiers: ['left_command'] }],
-                    type: 'basic',
                   },
                 ],
               },
               {
-                description: 'App::Starcraft2 - modifications',
+                description: 'Apps (Starcraft2) - Modifications',
                 manipulators: [
                   {
                     conditions: [

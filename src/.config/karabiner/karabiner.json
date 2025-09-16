@@ -248,7 +248,7 @@
       "complex_modifications": {
         "rules": [
           {
-            "description": "Mode::VIM",
+            "description": "Mode VIM",
             "manipulators": [
               {
                 "type": "basic",
@@ -487,7 +487,7 @@
             ]
           },
           {
-            "description": "Mode::Click",
+            "description": "Mode Click",
             "manipulators": [
               {
                 "conditions": [
@@ -974,9 +974,119 @@
             ]
           },
           {
-            "description": "App::Google Chrome - Cmd + ; to Cmd + L",
+            "description": "Apps (Google Chrome, Warp) - Cmd + H/L and F3/F4 to prev/next tab",
             "manipulators": [
               {
+                "type": "basic",
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com\\.google\\.Chrome$",
+                      "^dev\\.warp\\.Warp-Stable$"
+                    ]
+                  }
+                ],
+                "from": {
+                  "key_code": "h",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_command"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "tab",
+                    "modifiers": [
+                      "left_control",
+                      "left_shift"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com\\.google\\.Chrome$",
+                      "^dev\\.warp\\.Warp-Stable$"
+                    ]
+                  }
+                ],
+                "from": {
+                  "key_code": "l",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_command"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "tab",
+                    "modifiers": [
+                      "left_control"
+                    ]
+                  }
+                ]
+              },
+              {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.google\\.Chrome$",
+                      "^dev\\.warp\\.Warp-Stable$"
+                    ],
+                    "type": "frontmost_application_if"
+                  }
+                ],
+                "from": {
+                  "key_code": "f3"
+                },
+                "to": [
+                  {
+                    "key_code": "tab",
+                    "modifiers": [
+                      "left_control",
+                      "left_shift"
+                    ]
+                  }
+                ],
+                "type": "basic"
+              },
+              {
+                "conditions": [
+                  {
+                    "bundle_identifiers": [
+                      "^com\\.google\\.Chrome$",
+                      "^dev\\.warp\\.Warp-Stable$"
+                    ],
+                    "type": "frontmost_application_if"
+                  }
+                ],
+                "from": {
+                  "key_code": "f4"
+                },
+                "to": [
+                  {
+                    "key_code": "tab",
+                    "modifiers": [
+                      "left_control"
+                    ]
+                  }
+                ],
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Apps (Google Chrome) - Cmd + ; to Cmd + L",
+            "manipulators": [
+              {
+                "type": "basic",
                 "conditions": [
                   {
                     "bundle_identifiers": [
@@ -1000,120 +1110,15 @@
                       "left_command"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
           {
-            "description": "App::Google Chrome - Cmd + H/L and F3/F4 to prev/next tab",
+            "description": "Apps (Google Chrome) - F5 to Alt + M and F6 to Alt + T",
             "manipulators": [
               {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.google\\.Chrome$"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "h",
-                  "modifiers": {
-                    "mandatory": [
-                      "left_command"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "tab",
-                    "modifiers": [
-                      "left_control",
-                      "left_shift"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.google\\.Chrome$"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "l",
-                  "modifiers": {
-                    "mandatory": [
-                      "left_command"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "tab",
-                    "modifiers": [
-                      "left_control"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.google\\.Chrome$"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "f3"
-                },
-                "to": [
-                  {
-                    "key_code": "tab",
-                    "modifiers": [
-                      "left_control",
-                      "left_shift"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.google\\.Chrome$"
-                    ],
-                    "type": "frontmost_application_if"
-                  }
-                ],
-                "from": {
-                  "key_code": "f4"
-                },
-                "to": [
-                  {
-                    "key_code": "tab",
-                    "modifiers": [
-                      "left_control"
-                    ]
-                  }
-                ],
-                "type": "basic"
-              }
-            ]
-          },
-          {
-            "description": "App::Google Chrome - F5 to Alt + M and F6 to Alt + T",
-            "manipulators": [
-              {
+                "type": "basic",
                 "conditions": [
                   {
                     "bundle_identifiers": [
@@ -1132,16 +1137,16 @@
                       "left_option"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
                 "conditions": [
                   {
+                    "type": "frontmost_application_if",
                     "bundle_identifiers": [
                       "^com\\.google\\.Chrome$"
-                    ],
-                    "type": "frontmost_application_if"
+                    ]
                   }
                 ],
                 "from": {
@@ -1154,13 +1159,12 @@
                       "left_option"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
           {
-            "description": "App::Google Chrome - Toggle full-screen",
+            "description": "Apps (Google Chrome) - Toggle full-screen",
             "manipulators": [
               {
                 "conditions": [
@@ -1194,7 +1198,7 @@
             ]
           },
           {
-            "description": "App::Google Chrome - Unfocus omnibar",
+            "description": "Apps (Google Chrome) - Unfocus omnibar",
             "manipulators": [
               {
                 "conditions": [
@@ -1244,7 +1248,7 @@
             ]
           },
           {
-            "description": "App::Google Chrome - Cmd + shift + i to toggle dev tools",
+            "description": "Apps (Google Chrome) - Cmd + shift + i to toggle dev tools",
             "manipulators": [
               {
                 "conditions": [
@@ -1300,9 +1304,10 @@
             ]
           },
           {
-            "description": "App::Slack - Cmd + P to search",
+            "description": "Apps (Slack) - Cmd + P to search",
             "manipulators": [
               {
+                "type": "basic",
                 "conditions": [
                   {
                     "bundle_identifiers": [
@@ -1326,13 +1331,12 @@
                       "left_command"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
           {
-            "description": "App::Starcraft2 - modifications",
+            "description": "Apps (Starcraft2) - Modifications",
             "manipulators": [
               {
                 "conditions": [
