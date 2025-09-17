@@ -736,7 +736,7 @@
                       "left_command"
                     ],
                     "optional": [
-                      "left_shift"
+                      "any"
                     ]
                   }
                 },
@@ -755,7 +755,7 @@
                       "left_command"
                     ],
                     "optional": [
-                      "left_shift"
+                      "any"
                     ]
                   }
                 },

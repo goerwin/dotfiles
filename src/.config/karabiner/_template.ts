@@ -276,7 +276,7 @@ console.log(
                       key_code: 'j',
                       modifiers: {
                         mandatory: ['left_command'],
-                        optional: ['left_shift'],
+                        optional: ['any'],
                       },
                     },
                     to: [{ key_code: 'page_down' }],
@@ -287,7 +287,7 @@ console.log(
                       key_code: 'k',
                       modifiers: {
                         mandatory: ['left_command'],
-                        optional: ['left_shift'],
+                        optional: ['any'],
                       },
                     },
                     to: [{ key_code: 'page_up' }],
