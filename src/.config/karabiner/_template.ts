@@ -268,7 +268,8 @@ console.log(
                 ],
               },
               {
-                description: 'Global - Cmd[shift] + J/K to PageDown/PageUp',
+                description:
+                  'Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Ctrl + J/K',
                 manipulators: [
                   {
                     from: {
@@ -290,6 +291,38 @@ console.log(
                       },
                     },
                     to: [{ key_code: 'page_up' }],
+                    type: 'basic',
+                  },
+                  {
+                    from: {
+                      key_code: 'j',
+                      modifiers: {
+                        mandatory: ['left_control'],
+                        optional: ['any'],
+                      },
+                    },
+                    to: [
+                      {
+                        key_code: 'j',
+                        modifiers: ['left_command'],
+                      },
+                    ],
+                    type: 'basic',
+                  },
+                  {
+                    from: {
+                      key_code: 'k',
+                      modifiers: {
+                        mandatory: ['left_control'],
+                        optional: ['any'],
+                      },
+                    },
+                    to: [
+                      {
+                        key_code: 'k',
+                        modifiers: ['left_command'],
+                      },
+                    ],
                     type: 'basic',
                   },
                 ],
