@@ -736,7 +736,8 @@
                       "left_command"
                     ],
                     "optional": [
-                      "any"
+                      "left_shift",
+                      "caps_lock"
                     ]
                   }
                 },
@@ -755,7 +756,8 @@
                       "left_command"
                     ],
                     "optional": [
-                      "any"
+                      "left_shift",
+                      "caps_lock"
                     ]
                   }
                 },
@@ -934,25 +936,73 @@
             "description": "Global - Function Keys",
             "manipulators": [
               {
+                "type": "basic",
                 "from": {
-                  "key_code": "f10",
-                  "modifiers": {
-                    "mandatory": [
-                      "left_command"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
+                  "key_code": "f1"
                 },
                 "to": [
                   {
-                    "key_code": "f10"
+                    "consumer_key_code": "display_brightness_decrement"
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
+                "from": {
+                  "key_code": "f2"
+                },
+                "to": [
+                  {
+                    "consumer_key_code": "display_brightness_increment"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "f7"
+                },
+                "to": [
+                  {
+                    "consumer_key_code": "rewind"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "f8"
+                },
+                "to": [
+                  {
+                    "consumer_key_code": "play_or_pause"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "f9"
+                },
+                "to": [
+                  {
+                    "consumer_key_code": "fast_forward"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "f10"
+                },
+                "to": [
+                  {
+                    "consumer_key_code": "mute"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
                 "from": {
                   "key_code": "f11"
                 },
@@ -960,29 +1010,10 @@
                   {
                     "consumer_key_code": "volume_decrement"
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
-                "from": {
-                  "key_code": "f11",
-                  "modifiers": {
-                    "mandatory": [
-                      "left_command"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "f11"
-                  }
-                ],
-                "type": "basic"
-              },
-              {
+                "type": "basic",
                 "from": {
                   "key_code": "f12"
                 },
@@ -990,27 +1021,7 @@
                   {
                     "consumer_key_code": "volume_increment"
                   }
-                ],
-                "type": "basic"
-              },
-              {
-                "from": {
-                  "key_code": "f12",
-                  "modifiers": {
-                    "mandatory": [
-                      "left_command"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "f12"
-                  }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
@@ -1033,6 +1044,9 @@
                   "modifiers": {
                     "mandatory": [
                       "left_command"
+                    ],
+                    "optional": [
+                      "caps_lock"
                     ]
                   }
                 },
@@ -1062,6 +1076,9 @@
                   "modifiers": {
                     "mandatory": [
                       "left_command"
+                    ],
+                    "optional": [
+                      "caps_lock"
                     ]
                   }
                 },
@@ -1075,17 +1092,23 @@
                 ]
               },
               {
+                "type": "basic",
                 "conditions": [
                   {
+                    "type": "frontmost_application_if",
                     "bundle_identifiers": [
                       "^com\\.google\\.Chrome$",
                       "^dev\\.warp\\.Warp-Stable$"
-                    ],
-                    "type": "frontmost_application_if"
+                    ]
                   }
                 ],
                 "from": {
-                  "key_code": "f3"
+                  "key_code": "f3",
+                  "modifiers": {
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
                 },
                 "to": [
                   {
@@ -1095,21 +1118,26 @@
                       "left_shift"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
                 "conditions": [
                   {
+                    "type": "frontmost_application_if",
                     "bundle_identifiers": [
                       "^com\\.google\\.Chrome$",
                       "^dev\\.warp\\.Warp-Stable$"
-                    ],
-                    "type": "frontmost_application_if"
+                    ]
                   }
                 ],
                 "from": {
-                  "key_code": "f4"
+                  "key_code": "f4",
+                  "modifiers": {
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
                 },
                 "to": [
                   {
@@ -1118,8 +1146,7 @@
                       "left_control"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
@@ -1141,6 +1168,9 @@
                   "modifiers": {
                     "mandatory": [
                       "left_command"
+                    ],
+                    "optional": [
+                      "caps_lock"
                     ]
                   }
                 },
@@ -1242,6 +1272,7 @@
             "description": "Apps (Google Chrome) - Unfocus omnibar",
             "manipulators": [
               {
+                "type": "basic",
                 "conditions": [
                   {
                     "bundle_identifiers": [
@@ -1255,6 +1286,9 @@
                   "modifiers": {
                     "mandatory": [
                       "left_command"
+                    ],
+                    "optional": [
+                      "caps_lock"
                     ]
                   }
                 },
@@ -1266,25 +1300,48 @@
                     ]
                   },
                   {
-                    "key_code": "2",
+                    "key_code": "j"
+                  },
+                  {
+                    "key_code": "a"
+                  },
+                  {
+                    "key_code": "v"
+                  },
+                  {
+                    "key_code": "a"
+                  },
+                  {
+                    "key_code": "s"
+                  },
+                  {
+                    "key_code": "c"
+                  },
+                  {
+                    "key_code": "r"
+                  },
+                  {
+                    "key_code": "i"
+                  },
+                  {
+                    "key_code": "p"
+                  },
+                  {
+                    "key_code": "t"
+                  },
+                  {
+                    "key_code": "semicolon",
                     "modifiers": [
                       "left_shift"
                     ]
                   },
                   {
-                    "key_code": "u"
-                  },
-                  {
-                    "key_code": "spacebar"
-                  },
-                  {
-                    "key_code": "u"
+                    "key_code": "semicolon"
                   },
                   {
                     "key_code": "return_or_enter"
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
@@ -1416,25 +1473,6 @@
                   }
                 ],
                 "from": {
-                  "key_code": "f1"
-                },
-                "to": [
-                  {
-                    "consumer_key_code": "display_brightness_decrement"
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.blizzard\\.starcraft2$"
-                    ],
-                    "type": "frontmost_application_unless"
-                  }
-                ],
-                "from": {
                   "key_code": "f1",
                   "modifiers": {
                     "mandatory": [
@@ -1448,25 +1486,6 @@
                 "to": [
                   {
                     "key_code": "f1"
-                  }
-                ],
-                "type": "basic"
-              },
-              {
-                "conditions": [
-                  {
-                    "bundle_identifiers": [
-                      "^com\\.blizzard\\.starcraft2$"
-                    ],
-                    "type": "frontmost_application_unless"
-                  }
-                ],
-                "from": {
-                  "key_code": "f2"
-                },
-                "to": [
-                  {
-                    "consumer_key_code": "display_brightness_increment"
                   }
                 ],
                 "type": "basic"

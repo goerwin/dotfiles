@@ -55,7 +55,10 @@ const f3f4TabNavigationManipulators = [
         ],
       },
     ],
-    from: { key_code: 'h', modifiers: { mandatory: ['left_command'] } },
+    from: {
+      key_code: 'h',
+      modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] },
+    },
     to: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
   },
   {
@@ -71,42 +74,37 @@ const f3f4TabNavigationManipulators = [
     ],
     from: {
       key_code: 'l',
-      modifiers: { mandatory: ['left_command'] },
+      modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] },
     },
     to: [{ key_code: 'tab', modifiers: ['left_control'] }],
   },
   {
+    type: 'basic',
     conditions: [
       {
+        type: 'frontmost_application_if',
         bundle_identifiers: [
           '^com\\.google\\.Chrome$',
           '^dev\\.warp\\.Warp-Stable$',
         ],
-        type: 'frontmost_application_if',
       },
     ],
-    from: { key_code: 'f3' },
-    to: [
-      {
-        key_code: 'tab',
-        modifiers: ['left_control', 'left_shift'],
-      },
-    ],
-    type: 'basic',
+    from: { key_code: 'f3', modifiers: { optional: ['caps_lock'] } },
+    to: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
   },
   {
+    type: 'basic',
     conditions: [
       {
+        type: 'frontmost_application_if',
         bundle_identifiers: [
           '^com\\.google\\.Chrome$',
           '^dev\\.warp\\.Warp-Stable$',
         ],
-        type: 'frontmost_application_if',
       },
     ],
-    from: { key_code: 'f4' },
+    from: { key_code: 'f4', modifiers: { optional: ['caps_lock'] } },
     to: [{ key_code: 'tab', modifiers: ['left_control'] }],
-    type: 'basic',
   },
 ];
 
@@ -276,7 +274,7 @@ console.log(
                       key_code: 'j',
                       modifiers: {
                         mandatory: ['left_command'],
-                        optional: ['any'],
+                        optional: ['left_shift', 'caps_lock'],
                       },
                     },
                     to: [{ key_code: 'page_down' }],
@@ -287,7 +285,7 @@ console.log(
                       key_code: 'k',
                       modifiers: {
                         mandatory: ['left_command'],
-                        optional: ['any'],
+                        optional: ['left_shift', 'caps_lock'],
                       },
                     },
                     to: [{ key_code: 'page_up' }],
@@ -399,47 +397,44 @@ console.log(
                 description: 'Global - Function Keys',
                 manipulators: [
                   {
-                    from: {
-                      key_code: 'f10',
-                      modifiers: {
-                        mandatory: ['left_command'],
-                        optional: ['any'],
-                      },
-                    },
-                    to: [{ key_code: 'f10' }],
                     type: 'basic',
+                    from: { key_code: 'f1' },
+                    to: [{ consumer_key_code: 'display_brightness_decrement' }],
                   },
                   {
+                    type: 'basic',
+                    from: { key_code: 'f2' },
+                    to: [{ consumer_key_code: 'display_brightness_increment' }],
+                  },
+                  {
+                    type: 'basic',
+                    from: { key_code: 'f7' },
+                    to: [{ consumer_key_code: 'rewind' }],
+                  },
+                  {
+                    type: 'basic',
+                    from: { key_code: 'f8' },
+                    to: [{ consumer_key_code: 'play_or_pause' }],
+                  },
+                  {
+                    type: 'basic',
+                    from: { key_code: 'f9' },
+                    to: [{ consumer_key_code: 'fast_forward' }],
+                  },
+                  {
+                    type: 'basic',
+                    from: { key_code: 'f10' },
+                    to: [{ consumer_key_code: 'mute' }],
+                  },
+                  {
+                    type: 'basic',
                     from: { key_code: 'f11' },
                     to: [{ consumer_key_code: 'volume_decrement' }],
-                    type: 'basic',
                   },
                   {
-                    from: {
-                      key_code: 'f11',
-                      modifiers: {
-                        mandatory: ['left_command'],
-                        optional: ['any'],
-                      },
-                    },
-                    to: [{ key_code: 'f11' }],
                     type: 'basic',
-                  },
-                  {
                     from: { key_code: 'f12' },
                     to: [{ consumer_key_code: 'volume_increment' }],
-                    type: 'basic',
-                  },
-                  {
-                    from: {
-                      key_code: 'f12',
-                      modifiers: {
-                        mandatory: ['left_command'],
-                        optional: ['any'],
-                      },
-                    },
-                    to: [{ key_code: 'f12' }],
-                    type: 'basic',
                   },
                 ],
               },
@@ -461,7 +456,10 @@ console.log(
                     ],
                     from: {
                       key_code: 'semicolon',
-                      modifiers: { mandatory: ['left_command'] },
+                      modifiers: {
+                        mandatory: ['left_command'],
+                        optional: ['caps_lock'],
+                      },
                     },
                     to: [{ key_code: 'l', modifiers: ['left_command'] }],
                   },
@@ -523,6 +521,7 @@ console.log(
                 description: 'Apps (Google Chrome) - Unfocus omnibar',
                 manipulators: [
                   {
+                    type: 'basic',
                     conditions: [
                       {
                         bundle_identifiers: ['^com\\.google\\.Chrome$'],
@@ -531,17 +530,27 @@ console.log(
                     ],
                     from: {
                       key_code: 'e',
-                      modifiers: { mandatory: ['left_command'] },
+                      modifiers: {
+                        mandatory: ['left_command'],
+                        optional: ['caps_lock'],
+                      },
                     },
                     to: [
                       { key_code: 'l', modifiers: ['left_command'] },
-                      { key_code: '2', modifiers: ['left_shift'] },
-                      { key_code: 'u' },
-                      { key_code: 'spacebar' },
-                      { key_code: 'u' },
+                      { key_code: 'j' },
+                      { key_code: 'a' },
+                      { key_code: 'v' },
+                      { key_code: 'a' },
+                      { key_code: 's' },
+                      { key_code: 'c' },
+                      { key_code: 'r' },
+                      { key_code: 'i' },
+                      { key_code: 'p' },
+                      { key_code: 't' },
+                      { key_code: 'semicolon', modifiers: ['left_shift'] },
+                      { key_code: 'semicolon' },
                       { key_code: 'return_or_enter' },
                     ],
-                    type: 'basic',
                   },
                 ],
               },
@@ -624,17 +633,6 @@ console.log(
                         type: 'frontmost_application_unless',
                       },
                     ],
-                    from: { key_code: 'f1' },
-                    to: [{ consumer_key_code: 'display_brightness_decrement' }],
-                    type: 'basic',
-                  },
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
-                        type: 'frontmost_application_unless',
-                      },
-                    ],
                     from: {
                       key_code: 'f1',
                       modifiers: {
@@ -643,17 +641,6 @@ console.log(
                       },
                     },
                     to: [{ key_code: 'f1' }],
-                    type: 'basic',
-                  },
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
-                        type: 'frontmost_application_unless',
-                      },
-                    ],
-                    from: { key_code: 'f2' },
-                    to: [{ consumer_key_code: 'display_brightness_increment' }],
                     type: 'basic',
                   },
                   {
