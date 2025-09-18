@@ -108,584 +108,531 @@ const f3f4TabNavigationManipulators = [
   },
 ];
 
-console.log(
-  JSON.stringify(
+const karabinerConfig = {
+  profiles: [
     {
-      profiles: [
+      name: '1',
+      selected: true,
+      virtual_hid_keyboard: { country_code: 0, keyboard_type_v2: 'ansi' },
+      devices: [
         {
-          name: '1',
-          selected: true,
-          virtual_hid_keyboard: { country_code: 0, keyboard_type_v2: 'ansi' },
-          devices: [
-            {
-              identifiers: {
-                is_keyboard: true,
-                product_id: 32,
-                vendor_id: 9494,
-              },
-              simple_modifications: [
-                {
-                  from: { key_code: 'grave_accent_and_tilde' },
-                  to: [{ key_code: 'grave_accent_and_tilde' }],
-                },
-                {
-                  from: { key_code: 'left_command' },
-                  to: [{ key_code: 'left_option' }],
-                },
-                {
-                  from: { key_code: 'left_option' },
-                  to: [{ key_code: 'left_command' }],
-                },
-                {
-                  from: { key_code: 'right_command' },
-                  to: [{ key_code: 'left_option' }],
-                },
-                {
-                  from: { key_code: 'right_option' },
-                  to: [{ key_code: 'left_command' }],
-                },
-              ],
-            },
-          ],
-          fn_function_keys: [
-            { from: { key_code: 'f1' }, to: [{ key_code: 'f1' }] },
-            { from: { key_code: 'f2' }, to: [{ key_code: 'f2' }] },
-            { from: { key_code: 'f3' }, to: [{ key_code: 'f3' }] },
-            { from: { key_code: 'f4' }, to: [{ key_code: 'f4' }] },
-            { from: { key_code: 'f5' }, to: [{ key_code: 'f5' }] },
-            { from: { key_code: 'f7' }, to: [{ key_code: 'f7' }] },
-            { from: { key_code: 'f8' }, to: [{ key_code: 'f8' }] },
-            { from: { key_code: 'f9' }, to: [{ key_code: 'f9' }] },
-            { from: { key_code: 'f10' }, to: [{ key_code: 'f10' }] },
-            { from: { key_code: 'f11' }, to: [{ key_code: 'f11' }] },
-            { from: { key_code: 'f12' }, to: [{ key_code: 'f12' }] },
-          ],
+          identifiers: { is_keyboard: true, product_id: 32, vendor_id: 9494 },
           simple_modifications: [
-            { from: { key_code: 'caps_lock' }, to: [{ key_code: 'f18' }] },
             {
               from: { key_code: 'grave_accent_and_tilde' },
-              to: [{ key_code: 'left_shift' }],
-            },
-            {
-              from: { key_code: 'non_us_backslash' },
               to: [{ key_code: 'grave_accent_and_tilde' }],
             },
             {
-              from: { key_code: 'right_command' },
-              to: [{ key_code: 'left_command' }],
-            },
-            {
-              from: { key_code: 'right_option' },
+              from: { key_code: 'left_command' },
               to: [{ key_code: 'left_option' }],
             },
             {
-              from: { key_code: 'right_shift' },
-              to: [{ key_code: 'left_shift' }],
+              from: { key_code: 'left_option' },
+              to: [{ key_code: 'left_command' }],
+            },
+            {
+              from: { key_code: 'right_command' },
+              to: [{ key_code: 'left_option' }],
+            },
+            {
+              from: { key_code: 'right_option' },
+              to: [{ key_code: 'left_command' }],
             },
           ],
-          complex_modifications: {
-            rules: [
+        },
+      ],
+      fn_function_keys: [
+        { from: { key_code: 'f1' }, to: [{ key_code: 'f1' }] },
+        { from: { key_code: 'f2' }, to: [{ key_code: 'f2' }] },
+        { from: { key_code: 'f3' }, to: [{ key_code: 'f3' }] },
+        { from: { key_code: 'f4' }, to: [{ key_code: 'f4' }] },
+        { from: { key_code: 'f5' }, to: [{ key_code: 'f5' }] },
+        { from: { key_code: 'f7' }, to: [{ key_code: 'f7' }] },
+        { from: { key_code: 'f8' }, to: [{ key_code: 'f8' }] },
+        { from: { key_code: 'f9' }, to: [{ key_code: 'f9' }] },
+        { from: { key_code: 'f10' }, to: [{ key_code: 'f10' }] },
+        { from: { key_code: 'f11' }, to: [{ key_code: 'f11' }] },
+        { from: { key_code: 'f12' }, to: [{ key_code: 'f12' }] },
+      ],
+      simple_modifications: [
+        { from: { key_code: 'caps_lock' }, to: [{ key_code: 'f18' }] },
+        {
+          from: { key_code: 'grave_accent_and_tilde' },
+          to: [{ key_code: 'left_shift' }],
+        },
+        {
+          from: { key_code: 'non_us_backslash' },
+          to: [{ key_code: 'grave_accent_and_tilde' }],
+        },
+        {
+          from: { key_code: 'right_command' },
+          to: [{ key_code: 'left_command' }],
+        },
+        {
+          from: { key_code: 'right_option' },
+          to: [{ key_code: 'left_option' }],
+        },
+        { from: { key_code: 'right_shift' }, to: [{ key_code: 'left_shift' }] },
+      ],
+      complex_modifications: {
+        rules: [
+          { description: 'Mode VIM', manipulators: vimManipulators },
+          {
+            description: 'Mode Click',
+            manipulators: [
               {
-                description: 'Mode VIM',
-                manipulators: vimManipulators,
+                type: 'basic',
+                conditions: [
+                  { name: 'f18isDown', type: 'variable_if', value: 1 },
+                ],
+                from: {
+                  key_code: 'c',
+                  modifiers: { mandatory: ['left_option'], optional: ['any'] },
+                },
+                to: [{ pointing_button: 'button2' }],
               },
               {
-                description: 'Mode Click',
-                manipulators: [
-                  {
-                    conditions: [
-                      { name: 'f18isDown', type: 'variable_if', value: 1 },
-                    ],
-                    from: {
-                      key_code: 'c',
-                      modifiers: {
-                        mandatory: ['left_option'],
-                        optional: ['any'],
-                      },
-                    },
-                    to: [{ pointing_button: 'button2' }],
-                    type: 'basic',
+                type: 'basic',
+                from: {
+                  key_code: 'c',
+                  modifiers: { mandatory: ['left_option'], optional: ['any'] },
+                },
+                to: [{ pointing_button: 'button1' }],
+              },
+            ],
+          },
+          {
+            description: 'Global - CapsLock to F18',
+            manipulators: [
+              {
+                type: 'basic',
+                from: { key_code: 'f18', modifiers: { optional: ['any'] } },
+                parameters: { 'basic.to_if_alone_timeout_milliseconds': 300 },
+                to: [{ set_variable: { name: 'f18isDown', value: 1 } }],
+                to_after_key_up: [
+                  { set_variable: { name: 'f18isDown', value: 0 } },
+                ],
+                to_if_alone: [{ key_code: 'escape' }],
+              },
+            ],
+          },
+          {
+            description: 'Global - Capslock as Control for some keys',
+            manipulators: capsLockAsControlManipulators,
+          },
+          {
+            description: 'Global - Alt + H/L to Cmd + Left/Right',
+            manipulators: [
+              {
+                type: 'basic',
+                from: {
+                  key_code: 'h',
+                  modifiers: { mandatory: ['left_option'] },
+                },
+                to: [{ key_code: 'left_arrow', modifiers: ['left_command'] }],
+              },
+              {
+                type: 'basic',
+                from: {
+                  key_code: 'l',
+                  modifiers: { mandatory: ['left_option'] },
+                },
+                to: [{ key_code: 'right_arrow', modifiers: ['left_command'] }],
+              },
+            ],
+          },
+          {
+            description:
+              'Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Ctrl + J/K',
+            manipulators: [
+              {
+                type: 'basic',
+                from: {
+                  key_code: 'j',
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['left_shift', 'caps_lock'],
                   },
-                  {
-                    from: {
-                      key_code: 'c',
-                      modifiers: {
-                        mandatory: ['left_option'],
-                        optional: ['any'],
-                      },
-                    },
-                    to: [{ pointing_button: 'button1' }],
-                    type: 'basic',
+                },
+                to: [{ key_code: 'page_down' }],
+              },
+              {
+                type: 'basic',
+                from: {
+                  key_code: 'k',
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['left_shift', 'caps_lock'],
                   },
+                },
+                to: [{ key_code: 'page_up' }],
+              },
+              {
+                type: 'basic',
+                from: {
+                  key_code: 'j',
+                  modifiers: { mandatory: ['left_control'], optional: ['any'] },
+                },
+                to: [{ key_code: 'j', modifiers: ['left_command'] }],
+              },
+              {
+                type: 'basic',
+                from: {
+                  key_code: 'k',
+                  modifiers: { mandatory: ['left_control'], optional: ['any'] },
+                },
+                to: [{ key_code: 'k', modifiers: ['left_command'] }],
+              },
+            ],
+          },
+          {
+            description: 'Global - App Exposé',
+            manipulators: [
+              {
+                type: 'basic',
+                from: {
+                  key_code: 'j',
+                  modifiers: { mandatory: ['left_command', 'left_option'] },
+                },
+                to: [{ key_code: 'down_arrow', modifiers: ['left_control'] }],
+              },
+            ],
+          },
+          {
+            description: 'Global - Alt + m to mute mic',
+            manipulators: [
+              {
+                type: 'basic',
+                from: {
+                  key_code: 'm',
+                  modifiers: { mandatory: ['left_option'] },
+                },
+                to: [
+                  { key_code: 'm', modifiers: ['left_option', 'left_command'] },
+                ],
+              },
+            ],
+          },
+          {
+            description: 'Global - Double Shift to Capslock',
+            manipulators: [
+              {
+                type: 'basic',
+                conditions: [
+                  { name: 'g_shift_pressed', type: 'variable_if', value: 1 },
+                ],
+                from: {
+                  key_code: 'left_shift',
+                  modifiers: { optional: ['caps_lock'] },
+                },
+                to: [{ key_code: 'left_shift' }],
+                to_if_alone: [
+                  { key_code: 'caps_lock' },
+                  { set_variable: { name: 'g_shift_pressed', value: 0 } },
                 ],
               },
               {
-                description: 'Global - CapsLock to F18',
-                manipulators: [
-                  {
-                    from: { key_code: 'f18', modifiers: { optional: ['any'] } },
-                    parameters: {
-                      'basic.to_if_alone_timeout_milliseconds': 300,
-                    },
-                    to: [{ set_variable: { name: 'f18isDown', value: 1 } }],
-                    to_after_key_up: [
-                      { set_variable: { name: 'f18isDown', value: 0 } },
-                    ],
-                    to_if_alone: [{ key_code: 'escape' }],
-                    type: 'basic',
-                  },
+                type: 'basic',
+                from: {
+                  key_code: 'left_shift',
+                  modifiers: { optional: ['caps_lock'] },
+                },
+                to: [{ key_code: 'left_shift' }],
+                to_delayed_action: {
+                  to_if_canceled: [
+                    { set_variable: { name: 'g_shift_pressed', value: 0 } },
+                  ],
+                  to_if_invoked: [
+                    { set_variable: { name: 'g_shift_pressed', value: 0 } },
+                  ],
+                },
+                to_if_alone: [
+                  { set_variable: { name: 'g_shift_pressed', value: 1 } },
+                  { key_code: 'left_shift' },
                 ],
               },
+            ],
+          },
+          {
+            description: 'Global - Function Keys',
+            manipulators: [
               {
-                description: 'Global - Capslock as Control for some keys',
-                manipulators: capsLockAsControlManipulators,
+                type: 'basic',
+                from: { key_code: 'f1' },
+                to: [{ consumer_key_code: 'display_brightness_decrement' }],
               },
               {
-                description: 'Global - Alt + H/L to Cmd + Left/Right',
-                manipulators: [
+                type: 'basic',
+                from: { key_code: 'f2' },
+                to: [{ consumer_key_code: 'display_brightness_increment' }],
+              },
+              {
+                type: 'basic',
+                from: { key_code: 'f7' },
+                to: [{ consumer_key_code: 'rewind' }],
+              },
+              {
+                type: 'basic',
+                from: { key_code: 'f8' },
+                to: [{ consumer_key_code: 'play_or_pause' }],
+              },
+              {
+                type: 'basic',
+                from: { key_code: 'f9' },
+                to: [{ consumer_key_code: 'fast_forward' }],
+              },
+              {
+                type: 'basic',
+                from: { key_code: 'f10' },
+                to: [{ consumer_key_code: 'mute' }],
+              },
+              {
+                type: 'basic',
+                from: { key_code: 'f11' },
+                to: [{ consumer_key_code: 'volume_decrement' }],
+              },
+              {
+                type: 'basic',
+                from: { key_code: 'f12' },
+                to: [{ consumer_key_code: 'volume_increment' }],
+              },
+            ],
+          },
+          {
+            description:
+              'Apps (Google Chrome, Warp) - Cmd + H/L and F3/F4 to prev/next tab',
+            manipulators: f3f4TabNavigationManipulators,
+          },
+          {
+            description: 'Apps (Google Chrome) - Cmd + ; to Cmd + L',
+            manipulators: [
+              {
+                type: 'basic',
+                conditions: [
                   {
-                    from: {
-                      key_code: 'h',
-                      modifiers: { mandatory: ['left_option'] },
-                    },
-                    to: [
-                      { key_code: 'left_arrow', modifiers: ['left_command'] },
-                    ],
-                    type: 'basic',
-                  },
-                  {
-                    from: {
-                      key_code: 'l',
-                      modifiers: { mandatory: ['left_option'] },
-                    },
-                    to: [
-                      { key_code: 'right_arrow', modifiers: ['left_command'] },
-                    ],
-                    type: 'basic',
+                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
+                    type: 'frontmost_application_if',
                   },
                 ],
+                from: {
+                  key_code: 'semicolon',
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['caps_lock'],
+                  },
+                },
+                to: [{ key_code: 'l', modifiers: ['left_command'] }],
               },
+            ],
+          },
+          {
+            description:
+              'Apps (Google Chrome) - F5 to Alt + M and F6 to Alt + T',
+            manipulators: [
               {
-                description:
-                  'Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Ctrl + J/K',
-                manipulators: [
+                type: 'basic',
+                conditions: [
                   {
-                    from: {
-                      key_code: 'j',
-                      modifiers: {
-                        mandatory: ['left_command'],
-                        optional: ['left_shift', 'caps_lock'],
-                      },
-                    },
-                    to: [{ key_code: 'page_down' }],
-                    type: 'basic',
-                  },
-                  {
-                    from: {
-                      key_code: 'k',
-                      modifiers: {
-                        mandatory: ['left_command'],
-                        optional: ['left_shift', 'caps_lock'],
-                      },
-                    },
-                    to: [{ key_code: 'page_up' }],
-                    type: 'basic',
-                  },
-                  {
-                    from: {
-                      key_code: 'j',
-                      modifiers: {
-                        mandatory: ['left_control'],
-                        optional: ['any'],
-                      },
-                    },
-                    to: [
-                      {
-                        key_code: 'j',
-                        modifiers: ['left_command'],
-                      },
-                    ],
-                    type: 'basic',
-                  },
-                  {
-                    from: {
-                      key_code: 'k',
-                      modifiers: {
-                        mandatory: ['left_control'],
-                        optional: ['any'],
-                      },
-                    },
-                    to: [
-                      {
-                        key_code: 'k',
-                        modifiers: ['left_command'],
-                      },
-                    ],
-                    type: 'basic',
+                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
+                    type: 'frontmost_application_if',
                   },
                 ],
+                from: { key_code: 'f5' },
+                to: [{ key_code: 'm', modifiers: ['left_option'] }],
               },
               {
-                description: 'Global - App Exposé',
-                manipulators: [
+                type: 'basic',
+                conditions: [
                   {
-                    from: {
-                      key_code: 'j',
-                      modifiers: { mandatory: ['left_command', 'left_option'] },
-                    },
-                    to: [
-                      { key_code: 'down_arrow', modifiers: ['left_control'] },
-                    ],
-                    type: 'basic',
+                    type: 'frontmost_application_if',
+                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
                   },
                 ],
+                from: { key_code: 'f6' },
+                to: [{ key_code: 't', modifiers: ['left_option'] }],
               },
+            ],
+          },
+          {
+            description: 'Apps (Google Chrome) - Toggle full-screen',
+            manipulators: [
               {
-                description: 'Global - Alt + m to mute mic',
-                manipulators: [
+                type: 'basic',
+                conditions: [
                   {
-                    from: {
-                      key_code: 'm',
-                      modifiers: { mandatory: ['left_option'] },
-                    },
-                    to: [
-                      {
-                        key_code: 'm',
-                        modifiers: ['left_option', 'left_command'],
-                      },
-                    ],
-                    type: 'basic',
+                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
+                    type: 'frontmost_application_if',
                   },
                 ],
-              },
-              {
-                description: 'Global - double-tap shift key → caps lock toggle',
-                manipulators: [
+                from: {
+                  key_code: 'f',
+                  modifiers: { mandatory: ['left_command', 'left_option'] },
+                },
+                to: [
                   {
-                    conditions: [
-                      { name: 'shiftPressed', type: 'variable_if', value: 1 },
-                    ],
-                    from: {
-                      key_code: 'left_shift',
-                      modifiers: { optional: ['any'] },
-                    },
-                    to: [{ key_code: 'caps_lock' }],
-                    type: 'basic',
-                  },
-                  {
-                    from: {
-                      key_code: 'left_shift',
-                      modifiers: { optional: ['any'] },
-                    },
-                    to: [
-                      { set_variable: { name: 'shiftPressed', value: 1 } },
-                      { key_code: 'left_shift' },
-                    ],
-                    to_delayed_action: {
-                      to_if_canceled: [
-                        { set_variable: { name: 'shiftPressed', value: 0 } },
-                      ],
-                      to_if_invoked: [
-                        { set_variable: { name: 'shiftPressed', value: 0 } },
-                      ],
-                    },
-                    type: 'basic',
-                  },
-                ],
-              },
-              {
-                description: 'Global - Function Keys',
-                manipulators: [
-                  {
-                    type: 'basic',
-                    from: { key_code: 'f1' },
-                    to: [{ consumer_key_code: 'display_brightness_decrement' }],
-                  },
-                  {
-                    type: 'basic',
-                    from: { key_code: 'f2' },
-                    to: [{ consumer_key_code: 'display_brightness_increment' }],
-                  },
-                  {
-                    type: 'basic',
-                    from: { key_code: 'f7' },
-                    to: [{ consumer_key_code: 'rewind' }],
-                  },
-                  {
-                    type: 'basic',
-                    from: { key_code: 'f8' },
-                    to: [{ consumer_key_code: 'play_or_pause' }],
-                  },
-                  {
-                    type: 'basic',
-                    from: { key_code: 'f9' },
-                    to: [{ consumer_key_code: 'fast_forward' }],
-                  },
-                  {
-                    type: 'basic',
-                    from: { key_code: 'f10' },
-                    to: [{ consumer_key_code: 'mute' }],
-                  },
-                  {
-                    type: 'basic',
-                    from: { key_code: 'f11' },
-                    to: [{ consumer_key_code: 'volume_decrement' }],
-                  },
-                  {
-                    type: 'basic',
-                    from: { key_code: 'f12' },
-                    to: [{ consumer_key_code: 'volume_increment' }],
-                  },
-                ],
-              },
-              {
-                description:
-                  'Apps (Google Chrome, Warp) - Cmd + H/L and F3/F4 to prev/next tab',
-                manipulators: f3f4TabNavigationManipulators,
-              },
-              {
-                description: 'Apps (Google Chrome) - Cmd + ; to Cmd + L',
-                manipulators: [
-                  {
-                    type: 'basic',
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: {
-                      key_code: 'semicolon',
-                      modifiers: {
-                        mandatory: ['left_command'],
-                        optional: ['caps_lock'],
-                      },
-                    },
-                    to: [{ key_code: 'l', modifiers: ['left_command'] }],
-                  },
-                ],
-              },
-              {
-                description:
-                  'Apps (Google Chrome) - F5 to Alt + M and F6 to Alt + T',
-                manipulators: [
-                  {
-                    type: 'basic',
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: { key_code: 'f5' },
-                    to: [{ key_code: 'm', modifiers: ['left_option'] }],
-                  },
-                  {
-                    type: 'basic',
-                    conditions: [
-                      {
-                        type: 'frontmost_application_if',
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                      },
-                    ],
-                    from: { key_code: 'f6' },
-                    to: [{ key_code: 't', modifiers: ['left_option'] }],
-                  },
-                ],
-              },
-              {
-                description: 'Apps (Google Chrome) - Toggle full-screen',
-                manipulators: [
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: {
-                      key_code: 'f',
-                      modifiers: { mandatory: ['left_command', 'left_option'] },
-                    },
-                    to: [
-                      {
-                        key_code: 'f',
-                        modifiers: ['left_command', 'left_control'],
-                      },
-                    ],
-                    type: 'basic',
-                  },
-                ],
-              },
-              {
-                description: 'Apps (Google Chrome) - Unfocus omnibar',
-                manipulators: [
-                  {
-                    type: 'basic',
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: {
-                      key_code: 'e',
-                      modifiers: {
-                        mandatory: ['left_command'],
-                        optional: ['caps_lock'],
-                      },
-                    },
-                    to: [
-                      { key_code: 'l', modifiers: ['left_command'] },
-                      { key_code: 'j' },
-                      { key_code: 'a' },
-                      { key_code: 'v' },
-                      { key_code: 'a' },
-                      { key_code: 's' },
-                      { key_code: 'c' },
-                      { key_code: 'r' },
-                      { key_code: 'i' },
-                      { key_code: 'p' },
-                      { key_code: 't' },
-                      { key_code: 'semicolon', modifiers: ['left_shift'] },
-                      { key_code: 'semicolon' },
-                      { key_code: 'return_or_enter' },
-                    ],
-                  },
-                ],
-              },
-              {
-                description:
-                  'Apps (Google Chrome) - Cmd + shift + i to toggle dev tools',
-                manipulators: [
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: {
-                      key_code: 'i',
-                      modifiers: { mandatory: ['left_command', 'left_shift'] },
-                    },
-                    to: [
-                      {
-                        key_code: 'i',
-                        modifiers: ['left_command', 'left_option'],
-                      },
-                    ],
-                    type: 'basic',
-                  },
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: { key_code: 'f6' },
-                    to: [{ key_code: 't', modifiers: ['left_option'] }],
-                    type: 'basic',
-                  },
-                ],
-              },
-              {
-                description: 'Apps (Slack) - Cmd + P to search',
-                manipulators: [
-                  {
-                    type: 'basic',
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.tinyspeck\\.slackmacgap$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: {
-                      key_code: 'p',
-                      modifiers: { mandatory: ['left_command'] },
-                    },
-                    to: [{ key_code: 'k', modifiers: ['left_command'] }],
-                  },
-                ],
-              },
-              {
-                description: 'Apps (Starcraft2) - Modifications',
-                manipulators: [
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
-                        type: 'frontmost_application_if',
-                      },
-                    ],
-                    from: {
-                      key_code: 'd',
-                      modifiers: { mandatory: ['left_command'] },
-                    },
-                    to: [{ key_code: 'c', modifiers: ['left_option'] }],
-                    type: 'basic',
-                  },
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
-                        type: 'frontmost_application_unless',
-                      },
-                    ],
-                    from: {
-                      key_code: 'f1',
-                      modifiers: {
-                        mandatory: ['left_command'],
-                        optional: ['any'],
-                      },
-                    },
-                    to: [{ key_code: 'f1' }],
-                    type: 'basic',
-                  },
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
-                        type: 'frontmost_application_unless',
-                      },
-                    ],
-                    from: {
-                      key_code: 'f2',
-                      modifiers: {
-                        mandatory: ['left_command'],
-                        optional: ['any'],
-                      },
-                    },
-                    to: [{ key_code: 'f2' }],
-                    type: 'basic',
-                  },
-                  {
-                    conditions: [
-                      {
-                        bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
-                        type: 'frontmost_application_unless',
-                      },
-                    ],
-                    from: { key_code: 'f10' },
-                    to: [{ consumer_key_code: 'mute' }],
-                    type: 'basic',
+                    key_code: 'f',
+                    modifiers: ['left_command', 'left_control'],
                   },
                 ],
               },
             ],
           },
-        },
-        {
-          name: 'No maps',
-          virtual_hid_keyboard: { country_code: 0, keyboard_type_v2: 'ansi' },
-          complex_modifications: {
-            rules: [],
+          {
+            description: 'Apps (Google Chrome) - Unfocus omnibar',
+            manipulators: [
+              {
+                type: 'basic',
+                conditions: [
+                  {
+                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
+                    type: 'frontmost_application_if',
+                  },
+                ],
+                from: {
+                  key_code: 'e',
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['caps_lock'],
+                  },
+                },
+                to: [
+                  { key_code: 'l', modifiers: ['left_command'] },
+                  { key_code: 'j' },
+                  { key_code: 'a' },
+                  { key_code: 'v' },
+                  { key_code: 'a' },
+                  { key_code: 's' },
+                  { key_code: 'c' },
+                  { key_code: 'r' },
+                  { key_code: 'i' },
+                  { key_code: 'p' },
+                  { key_code: 't' },
+                  { key_code: 'semicolon', modifiers: ['left_shift'] },
+                  { key_code: 'semicolon' },
+                  { key_code: 'return_or_enter' },
+                ],
+              },
+            ],
           },
-        },
-      ],
+          {
+            description:
+              'Apps (Google Chrome) - Cmd + shift + i to toggle dev tools',
+            manipulators: [
+              {
+                type: 'basic',
+                conditions: [
+                  {
+                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
+                    type: 'frontmost_application_if',
+                  },
+                ],
+                from: {
+                  key_code: 'i',
+                  modifiers: { mandatory: ['left_command', 'left_shift'] },
+                },
+                to: [
+                  { key_code: 'i', modifiers: ['left_command', 'left_option'] },
+                ],
+              },
+              {
+                type: 'basic',
+                conditions: [
+                  {
+                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
+                    type: 'frontmost_application_if',
+                  },
+                ],
+                from: { key_code: 'f6' },
+                to: [{ key_code: 't', modifiers: ['left_option'] }],
+              },
+            ],
+          },
+          {
+            description: 'Apps (Slack) - Cmd + P to search',
+            manipulators: [
+              {
+                type: 'basic',
+                conditions: [
+                  {
+                    bundle_identifiers: ['^com\\.tinyspeck\\.slackmacgap$'],
+                    type: 'frontmost_application_if',
+                  },
+                ],
+                from: {
+                  key_code: 'p',
+                  modifiers: { mandatory: ['left_command'] },
+                },
+                to: [{ key_code: 'k', modifiers: ['left_command'] }],
+              },
+            ],
+          },
+          {
+            description: 'Apps (Starcraft2) - Modifications',
+            manipulators: [
+              {
+                type: 'basic',
+                conditions: [
+                  {
+                    bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
+                    type: 'frontmost_application_if',
+                  },
+                ],
+                from: {
+                  key_code: 'd',
+                  modifiers: { mandatory: ['left_command'] },
+                },
+                to: [{ key_code: 'c', modifiers: ['left_option'] }],
+              },
+              {
+                type: 'basic',
+                conditions: [
+                  {
+                    bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
+                    type: 'frontmost_application_unless',
+                  },
+                ],
+                from: {
+                  key_code: 'f1',
+                  modifiers: { mandatory: ['left_command'], optional: ['any'] },
+                },
+                to: [{ key_code: 'f1' }],
+              },
+              {
+                type: 'basic',
+                conditions: [
+                  {
+                    bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
+                    type: 'frontmost_application_unless',
+                  },
+                ],
+                from: {
+                  key_code: 'f2',
+                  modifiers: { mandatory: ['left_command'], optional: ['any'] },
+                },
+                to: [{ key_code: 'f2' }],
+              },
+              {
+                type: 'basic',
+                conditions: [
+                  {
+                    bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'],
+                    type: 'frontmost_application_unless',
+                  },
+                ],
+                from: { key_code: 'f10' },
+                to: [{ consumer_key_code: 'mute' }],
+              },
+            ],
+          },
+        ],
+      },
     },
-    null,
-    2
-  )
-);
+    {
+      name: 'No maps',
+      virtual_hid_keyboard: { country_code: 0, keyboard_type_v2: 'ansi' },
+      complex_modifications: { rules: [] },
+    },
+  ],
+};
+
+console.log(JSON.stringify(karabinerConfig, null, 2));

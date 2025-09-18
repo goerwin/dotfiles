@@ -487,6 +487,7 @@
             "description": "Mode Click",
             "manipulators": [
               {
+                "type": "basic",
                 "conditions": [
                   {
                     "name": "f18isDown",
@@ -509,10 +510,10 @@
                   {
                     "pointing_button": "button2"
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
                 "from": {
                   "key_code": "c",
                   "modifiers": {
@@ -528,8 +529,7 @@
                   {
                     "pointing_button": "button1"
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
@@ -537,6 +537,7 @@
             "description": "Global - CapsLock to F18",
             "manipulators": [
               {
+                "type": "basic",
                 "from": {
                   "key_code": "f18",
                   "modifiers": {
@@ -568,8 +569,7 @@
                   {
                     "key_code": "escape"
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
@@ -686,6 +686,7 @@
             "description": "Global - Alt + H/L to Cmd + Left/Right",
             "manipulators": [
               {
+                "type": "basic",
                 "from": {
                   "key_code": "h",
                   "modifiers": {
@@ -701,10 +702,10 @@
                       "left_command"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
                 "from": {
                   "key_code": "l",
                   "modifiers": {
@@ -720,8 +721,7 @@
                       "left_command"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
@@ -729,6 +729,7 @@
             "description": "Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Ctrl + J/K",
             "manipulators": [
               {
+                "type": "basic",
                 "from": {
                   "key_code": "j",
                   "modifiers": {
@@ -745,10 +746,10 @@
                   {
                     "key_code": "page_down"
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
                 "from": {
                   "key_code": "k",
                   "modifiers": {
@@ -765,10 +766,10 @@
                   {
                     "key_code": "page_up"
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
                 "from": {
                   "key_code": "j",
                   "modifiers": {
@@ -787,10 +788,10 @@
                       "left_command"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
                 "from": {
                   "key_code": "k",
                   "modifiers": {
@@ -809,8 +810,7 @@
                       "left_command"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
@@ -818,6 +818,7 @@
             "description": "Global - App Exposé",
             "manipulators": [
               {
+                "type": "basic",
                 "from": {
                   "key_code": "j",
                   "modifiers": {
@@ -834,8 +835,7 @@
                       "left_control"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
@@ -843,6 +843,7 @@
             "description": "Global - Alt + m to mute mic",
             "manipulators": [
               {
+                "type": "basic",
                 "from": {
                   "key_code": "m",
                   "modifiers": {
@@ -859,18 +860,18 @@
                       "left_command"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
           {
-            "description": "Global - double-tap shift key → caps lock toggle",
+            "description": "Global - Double Shift to Capslock",
             "manipulators": [
               {
+                "type": "basic",
                 "conditions": [
                   {
-                    "name": "shiftPressed",
+                    "name": "g_shift_pressed",
                     "type": "variable_if",
                     "value": 1
                   }
@@ -879,33 +880,38 @@
                   "key_code": "left_shift",
                   "modifiers": {
                     "optional": [
-                      "any"
+                      "caps_lock"
                     ]
                   }
                 },
                 "to": [
                   {
-                    "key_code": "caps_lock"
+                    "key_code": "left_shift"
                   }
                 ],
-                "type": "basic"
+                "to_if_alone": [
+                  {
+                    "key_code": "caps_lock"
+                  },
+                  {
+                    "set_variable": {
+                      "name": "g_shift_pressed",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               {
+                "type": "basic",
                 "from": {
                   "key_code": "left_shift",
                   "modifiers": {
                     "optional": [
-                      "any"
+                      "caps_lock"
                     ]
                   }
                 },
                 "to": [
-                  {
-                    "set_variable": {
-                      "name": "shiftPressed",
-                      "value": 1
-                    }
-                  },
                   {
                     "key_code": "left_shift"
                   }
@@ -914,7 +920,7 @@
                   "to_if_canceled": [
                     {
                       "set_variable": {
-                        "name": "shiftPressed",
+                        "name": "g_shift_pressed",
                         "value": 0
                       }
                     }
@@ -922,13 +928,23 @@
                   "to_if_invoked": [
                     {
                       "set_variable": {
-                        "name": "shiftPressed",
+                        "name": "g_shift_pressed",
                         "value": 0
                       }
                     }
                   ]
                 },
-                "type": "basic"
+                "to_if_alone": [
+                  {
+                    "set_variable": {
+                      "name": "g_shift_pressed",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "key_code": "left_shift"
+                  }
+                ]
               }
             ]
           },
@@ -1238,6 +1254,7 @@
             "description": "Apps (Google Chrome) - Toggle full-screen",
             "manipulators": [
               {
+                "type": "basic",
                 "conditions": [
                   {
                     "bundle_identifiers": [
@@ -1263,8 +1280,7 @@
                       "left_control"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
@@ -1349,6 +1365,7 @@
             "description": "Apps (Google Chrome) - Cmd + shift + i to toggle dev tools",
             "manipulators": [
               {
+                "type": "basic",
                 "conditions": [
                   {
                     "bundle_identifiers": [
@@ -1374,10 +1391,10 @@
                       "left_option"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
                 "conditions": [
                   {
                     "bundle_identifiers": [
@@ -1396,8 +1413,7 @@
                       "left_option"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           },
@@ -1437,6 +1453,7 @@
             "description": "Apps (Starcraft2) - Modifications",
             "manipulators": [
               {
+                "type": "basic",
                 "conditions": [
                   {
                     "bundle_identifiers": [
@@ -1460,10 +1477,10 @@
                       "left_option"
                     ]
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
                 "conditions": [
                   {
                     "bundle_identifiers": [
@@ -1487,10 +1504,10 @@
                   {
                     "key_code": "f1"
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
                 "conditions": [
                   {
                     "bundle_identifiers": [
@@ -1514,10 +1531,10 @@
                   {
                     "key_code": "f2"
                   }
-                ],
-                "type": "basic"
+                ]
               },
               {
+                "type": "basic",
                 "conditions": [
                   {
                     "bundle_identifiers": [
@@ -1533,8 +1550,7 @@
                   {
                     "consumer_key_code": "mute"
                   }
-                ],
-                "type": "basic"
+                ]
               }
             ]
           }

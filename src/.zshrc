@@ -221,6 +221,9 @@ zstyle ':completion:*' menu select
 # Make Ctrl-U (cmd+backspace) act as "delete to beginning of line" (backward-kill-line)
 bindkey "^U" backward-kill-line
 
+# disable caps lock delay
+hidutil property --set '{"CapsLockDelayOverride":0}'
+
 #//////////////////////////
 # Godaddy
 #//////////////////////////
