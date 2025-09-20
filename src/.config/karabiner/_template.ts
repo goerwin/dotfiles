@@ -8,103 +8,21 @@ const VIM_KEYS = [
 ];
 const VIM_SHIFT_KEY = 'f';
 
-const vimManipulators = VIM_KEYS.flatMap<any[]>(({ key, to }) => [
+const googleChromeConditions = [
   {
-    type: 'basic',
-    conditions: [
-      { name: F18_IS_DOWN, type: 'variable_if', value: 1 },
-      { name: VIM_SHIFT_DOWN, type: 'variable_if', value: 1 },
-    ],
-    from: { key_code: key, modifiers: { optional: ['any'] } },
-    to: { key_code: to, modifiers: ['left_shift'] },
+    type: 'frontmost_application_if',
+    bundle_identifiers: ['^com\\.google\\.Chrome$'],
   },
-  {
-    type: 'basic',
-    conditions: [{ name: F18_IS_DOWN, type: 'variable_if', value: 1 }],
-    from: { key_code: key, modifiers: { optional: ['any'] } },
-    to: { key_code: to },
-  },
-]).concat([
-  {
-    type: 'basic',
-    conditions: [{ name: F18_IS_DOWN, type: 'variable_if', value: 1 }],
-    from: { key_code: VIM_SHIFT_KEY, modifiers: { optional: ['any'] } },
-    to: [{ set_variable: { name: VIM_SHIFT_DOWN, value: 1 } }],
-    to_after_key_up: [{ set_variable: { name: VIM_SHIFT_DOWN, value: 0 } }],
-  },
-]);
+];
 
-const capsLockAsControlManipulators = ['c', 'v', 'spacebar', 'tab'].map(
-  (key) => ({
-    type: 'basic',
-    conditions: [{ name: F18_IS_DOWN, type: 'variable_if', value: 1 }],
-    from: { key_code: key, modifiers: { optional: ['any'] } },
-    to: [{ key_code: key, modifiers: ['left_control'] }],
-  })
-);
-
-const f3f4TabNavigationManipulators = [
+const googleChromeFinderWarpConditions = [
   {
-    type: 'basic',
-    conditions: [
-      {
-        type: 'frontmost_application_if',
-        bundle_identifiers: [
-          '^com\\.google\\.Chrome$',
-          '^dev\\.warp\\.Warp-Stable$',
-        ],
-      },
+    type: 'frontmost_application_if',
+    bundle_identifiers: [
+      '^com\\.google\\.Chrome$',
+      '^com\\.apple\\.finder$',
+      '^dev\\.warp\\.Warp-Stable$',
     ],
-    from: {
-      key_code: 'h',
-      modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] },
-    },
-    to: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
-  },
-  {
-    type: 'basic',
-    conditions: [
-      {
-        type: 'frontmost_application_if',
-        bundle_identifiers: [
-          '^com\\.google\\.Chrome$',
-          '^dev\\.warp\\.Warp-Stable$',
-        ],
-      },
-    ],
-    from: {
-      key_code: 'l',
-      modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] },
-    },
-    to: [{ key_code: 'tab', modifiers: ['left_control'] }],
-  },
-  {
-    type: 'basic',
-    conditions: [
-      {
-        type: 'frontmost_application_if',
-        bundle_identifiers: [
-          '^com\\.google\\.Chrome$',
-          '^dev\\.warp\\.Warp-Stable$',
-        ],
-      },
-    ],
-    from: { key_code: 'f3', modifiers: { optional: ['caps_lock'] } },
-    to: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
-  },
-  {
-    type: 'basic',
-    conditions: [
-      {
-        type: 'frontmost_application_if',
-        bundle_identifiers: [
-          '^com\\.google\\.Chrome$',
-          '^dev\\.warp\\.Warp-Stable$',
-        ],
-      },
-    ],
-    from: { key_code: 'f4', modifiers: { optional: ['caps_lock'] } },
-    to: [{ key_code: 'tab', modifiers: ['left_control'] }],
   },
 ];
 
@@ -176,7 +94,43 @@ const karabinerConfig = {
       ],
       complex_modifications: {
         rules: [
-          { description: 'Mode VIM', manipulators: vimManipulators },
+          {
+            description: 'Mode VIM',
+            manipulators: VIM_KEYS.flatMap<any[]>(({ key, to }) => [
+              {
+                type: 'basic',
+                conditions: [
+                  { name: F18_IS_DOWN, type: 'variable_if', value: 1 },
+                  { name: VIM_SHIFT_DOWN, type: 'variable_if', value: 1 },
+                ],
+                from: { key_code: key, modifiers: { optional: ['any'] } },
+                to: { key_code: to, modifiers: ['left_shift'] },
+              },
+              {
+                type: 'basic',
+                conditions: [
+                  { name: F18_IS_DOWN, type: 'variable_if', value: 1 },
+                ],
+                from: { key_code: key, modifiers: { optional: ['any'] } },
+                to: { key_code: to },
+              },
+            ]).concat([
+              {
+                type: 'basic',
+                conditions: [
+                  { name: F18_IS_DOWN, type: 'variable_if', value: 1 },
+                ],
+                from: {
+                  key_code: VIM_SHIFT_KEY,
+                  modifiers: { optional: ['any'] },
+                },
+                to: [{ set_variable: { name: VIM_SHIFT_DOWN, value: 1 } }],
+                to_after_key_up: [
+                  { set_variable: { name: VIM_SHIFT_DOWN, value: 0 } },
+                ],
+              },
+            ]),
+          },
           {
             description: 'Mode Click',
             manipulators: [
@@ -218,28 +172,14 @@ const karabinerConfig = {
           },
           {
             description: 'Global - Capslock as Control for some keys',
-            manipulators: capsLockAsControlManipulators,
-          },
-          {
-            description: 'Global - Alt + H/L to Cmd + Left/Right',
-            manipulators: [
-              {
-                type: 'basic',
-                from: {
-                  key_code: 'h',
-                  modifiers: { mandatory: ['left_option'] },
-                },
-                to: [{ key_code: 'left_arrow', modifiers: ['left_command'] }],
-              },
-              {
-                type: 'basic',
-                from: {
-                  key_code: 'l',
-                  modifiers: { mandatory: ['left_option'] },
-                },
-                to: [{ key_code: 'right_arrow', modifiers: ['left_command'] }],
-              },
-            ],
+            manipulators: ['c', 'v', 'e', 'spacebar', 'tab'].map((key) => ({
+              type: 'basic',
+              conditions: [
+                { name: F18_IS_DOWN, type: 'variable_if', value: 1 },
+              ],
+              from: { key_code: key, modifiers: { optional: ['any'] } },
+              to: [{ key_code: key, modifiers: ['left_control'] }],
+            })),
           },
           {
             description:
@@ -400,20 +340,91 @@ const karabinerConfig = {
           },
           {
             description:
-              'Apps (Google Chrome, Warp) - Cmd + H/L and F3/F4 to prev/next tab',
-            manipulators: f3f4TabNavigationManipulators,
+              'Apps (Finder, Google Chrome, Warp) - Cmd + H/L and F3/F4 to prev/next tab',
+            manipulators: [
+              {
+                type: 'basic',
+                conditions: googleChromeFinderWarpConditions,
+                from: {
+                  key_code: 'h',
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['caps_lock'],
+                  },
+                },
+                to: [
+                  {
+                    key_code: 'tab',
+                    modifiers: ['left_control', 'left_shift'],
+                  },
+                ],
+              },
+              {
+                type: 'basic',
+                conditions: googleChromeFinderWarpConditions,
+                from: {
+                  key_code: 'l',
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['caps_lock'],
+                  },
+                },
+                to: [{ key_code: 'tab', modifiers: ['left_control'] }],
+              },
+              {
+                type: 'basic',
+                conditions: googleChromeFinderWarpConditions,
+                from: {
+                  key_code: 'f3',
+                  modifiers: { optional: ['caps_lock'] },
+                },
+                to: [
+                  {
+                    key_code: 'tab',
+                    modifiers: ['left_control', 'left_shift'],
+                  },
+                ],
+              },
+              {
+                type: 'basic',
+                conditions: googleChromeFinderWarpConditions,
+                from: {
+                  key_code: 'f4',
+                  modifiers: { optional: ['caps_lock'] },
+                },
+                to: [{ key_code: 'tab', modifiers: ['left_control'] }],
+              },
+            ],
+          },
+          {
+            description: 'Apps (Google Chrome) - Alt + H/L to Cmd + Left/Right',
+            manipulators: [
+              {
+                type: 'basic',
+                conditions: googleChromeConditions,
+                from: {
+                  key_code: 'h',
+                  modifiers: { mandatory: ['left_option'] },
+                },
+                to: [{ key_code: 'left_arrow', modifiers: ['left_command'] }],
+              },
+              {
+                type: 'basic',
+                conditions: googleChromeConditions,
+                from: {
+                  key_code: 'l',
+                  modifiers: { mandatory: ['left_option'] },
+                },
+                to: [{ key_code: 'right_arrow', modifiers: ['left_command'] }],
+              },
+            ],
           },
           {
             description: 'Apps (Google Chrome) - Cmd + ; to Cmd + L',
             manipulators: [
               {
                 type: 'basic',
-                conditions: [
-                  {
-                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                    type: 'frontmost_application_if',
-                  },
-                ],
+                conditions: googleChromeConditions,
                 from: {
                   key_code: 'semicolon',
                   modifiers: {
@@ -431,23 +442,13 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: [
-                  {
-                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                    type: 'frontmost_application_if',
-                  },
-                ],
+                conditions: googleChromeConditions,
                 from: { key_code: 'f5' },
                 to: [{ key_code: 'm', modifiers: ['left_option'] }],
               },
               {
                 type: 'basic',
-                conditions: [
-                  {
-                    type: 'frontmost_application_if',
-                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                  },
-                ],
+                conditions: googleChromeConditions,
                 from: { key_code: 'f6' },
                 to: [{ key_code: 't', modifiers: ['left_option'] }],
               },
@@ -458,12 +459,7 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: [
-                  {
-                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                    type: 'frontmost_application_if',
-                  },
-                ],
+                conditions: googleChromeConditions,
                 from: {
                   key_code: 'f',
                   modifiers: { mandatory: ['left_command', 'left_option'] },
@@ -482,12 +478,7 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: [
-                  {
-                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                    type: 'frontmost_application_if',
-                  },
-                ],
+                conditions: googleChromeConditions,
                 from: {
                   key_code: 'e',
                   modifiers: {
@@ -520,12 +511,7 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: [
-                  {
-                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                    type: 'frontmost_application_if',
-                  },
-                ],
+                conditions: googleChromeConditions,
                 from: {
                   key_code: 'i',
                   modifiers: { mandatory: ['left_command', 'left_shift'] },
@@ -536,12 +522,7 @@ const karabinerConfig = {
               },
               {
                 type: 'basic',
-                conditions: [
-                  {
-                    bundle_identifiers: ['^com\\.google\\.Chrome$'],
-                    type: 'frontmost_application_if',
-                  },
-                ],
+                conditions: googleChromeConditions,
                 from: { key_code: 'f6' },
                 to: [{ key_code: 't', modifiers: ['left_option'] }],
               },
