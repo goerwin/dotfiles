@@ -232,7 +232,10 @@ const karabinerConfig = {
                 type: 'basic',
                 from: {
                   key_code: 'j',
-                  modifiers: { mandatory: ['left_command', 'left_option'] },
+                  modifiers: {
+                    mandatory: ['left_command', 'left_option'],
+                    optional: ['caps_lock'],
+                  },
                 },
                 to: [{ key_code: 'down_arrow', modifiers: ['left_control'] }],
               },
@@ -491,7 +494,10 @@ const karabinerConfig = {
                 conditions: googleChromeConditions,
                 from: {
                   key_code: 'i',
-                  modifiers: { mandatory: ['left_command', 'left_shift'] },
+                  modifiers: {
+                    mandatory: ['left_command', 'left_shift'],
+                    optional: ['caps_lock'],
+                  },
                 },
                 to: [
                   { key_code: 'i', modifiers: ['left_command', 'left_option'] },

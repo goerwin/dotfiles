@@ -808,6 +808,9 @@
                     "mandatory": [
                       "left_command",
                       "left_option"
+                    ],
+                    "optional": [
+                      "caps_lock"
                     ]
                   }
                 },
@@ -1367,6 +1370,9 @@
                     "mandatory": [
                       "left_command",
                       "left_shift"
+                    ],
+                    "optional": [
+                      "caps_lock"
                     ]
                   }
                 },
