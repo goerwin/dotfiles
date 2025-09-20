@@ -397,29 +397,6 @@ const karabinerConfig = {
             ],
           },
           {
-            description: 'Apps (Google Chrome) - Alt + H/L to Cmd + Left/Right',
-            manipulators: [
-              {
-                type: 'basic',
-                conditions: googleChromeConditions,
-                from: {
-                  key_code: 'h',
-                  modifiers: { mandatory: ['left_option'] },
-                },
-                to: [{ key_code: 'left_arrow', modifiers: ['left_command'] }],
-              },
-              {
-                type: 'basic',
-                conditions: googleChromeConditions,
-                from: {
-                  key_code: 'l',
-                  modifiers: { mandatory: ['left_option'] },
-                },
-                to: [{ key_code: 'right_arrow', modifiers: ['left_command'] }],
-              },
-            ],
-          },
-          {
             description: 'Apps (Google Chrome) - Cmd + ; to Cmd + L',
             manipulators: [
               {
