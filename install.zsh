@@ -23,7 +23,7 @@ homeDir=$(
 
 echo -e "\nCopying files..."
 
-ignoredItems=("vscode-cursor")
+ignoredItems=("vscode-cursor", "ai")
 
 for entry in $(ls -a ./src); do
   if [ $entry != "." ] && [ $entry != ".." ] && [ $entry != ".DS_Store" ] && [[ ! " ${ignoredItems[*]} " =~ " $entry " ]]; then
