@@ -1,0 +1,113 @@
+{
+  "editor.scrollBeyondLastLine": false,
+  "workbench.editor.enablePreviewFromQuickOpen": false,
+  "window.restoreWindows": "all",
+  "editor.cursorBlinking": "expand",
+
+  "gitlens.codeLens.scopes": ["document"],
+  "gitlens.currentLine.enabled": false,
+
+  "breadcrumbs.enabled": true,
+  "rest-client.previewOption": "exchange",
+  "eslint.enable": true,
+  "window.zoomLevel": -1,
+
+  // UI Modifications
+  // "editor.fontFamily": "xVictor Mono, Cascadia Code PL, Cascadia Code, xHack, FiraCode Nerd Font, Consolas, 'Courier New'",
+  "editor.fontLigatures": true,
+  "terminal.integrated.fontSize": 16,
+  "editor.lineHeight": 24,
+  "editor.fontSize": 16,
+  "workbench.startupEditor": "newUntitledFile",
+  "workbench.sideBar.location": "right",
+  "explorer.openEditors.visible": 1,
+  "workbench.commandPalette.preserveInput": true,
+  "window.title": "${activeEditorMedium} - ${folderName}",
+  "editor.tabSize": 2,
+
+  "editor.minimap.enabled": false,
+  "editor.minimap.showSlider": "always",
+
+  "emmet.showExpandedAbbreviation": "inMarkupAndStylesheetFilesOnly",
+  "editor.smoothScrolling": true,
+  "advancedNewFile.convenienceOptions": ["current", "last", "root"],
+  "git.autofetch": true,
+  "editor.wordWrap": "on",
+  "settingsSync.keybindingsPerPlatform": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "editor.multiCursorModifier": "alt",
+  "security.workspace.trust.untrustedFiles": "open",
+  "editor.suggestSelection": "first",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "editor.accessibilitySupport": "off",
+  "git.confirmSync": false,
+  "editor.unicodeHighlight.invisibleCharacters": false,
+  "git.suggestSmartCommit": false,
+  "workbench.editor.empty.hint": "hidden",
+  "terminal.integrated.env.linux": {},
+  "redhat.telemetry.enabled": false,
+
+  "git.openRepositoryInParentFolders": "never",
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+  "extensions.ignoreRecommendations": true,
+  "terminal.integrated.env.osx": {},
+  "workbench.colorTheme": "GitHub Dark Default",
+
+  "editor.cursorWidth": 3,
+  "workbench.colorCustomizations": {
+    "editorCursor.foreground": "#ffff00"
+  },
+
+  "files.associations": {
+    "css": "scss",
+    "json": "jsonc",
+    "*.svg": "html"
+  },
+
+  // this is for cursor so jumping between panels work
+  "workbench.activityBar.orientation": "vertical",
+
+  // FORMATTERS
+
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[astro]": {
+    "editor.defaultFormatter": "astro-build.astro-vscode"
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "mkhl.shfmt"
+  },
+  "[c]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "[cpp]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "[objective-c]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "[objective-cpp]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  }
+}

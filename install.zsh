@@ -23,12 +23,22 @@ homeDir=$(
 
 echo -e "\nCopying files..."
 
+ignoredItems=("vscode-cursor")
+
 for entry in $(ls -a ./src); do
-  if [ $entry != "." ] && [ $entry != ".." ] && [ $entry != ".DS_Store" ]; then
+  if [ $entry != "." ] && [ $entry != ".." ] && [ $entry != ".DS_Store" ] && [[ ! " ${ignoredItems[*]} " =~ " $entry " ]]; then
     cp -r ./src/$entry $homeDir
     echo "Copying $entry"
   fi
 done
 
-echo "Files copied into $homeDir"
+echo "\nFiles copied into $homeDir"
+
+# Copy VSCode/Cursor settings
+[ -d "./src/vscode-cursor" ] && {
+  [ -d "$HOME/Library/Application Support/Code/User" ] && cp -r ./src/vscode-cursor/* "$HOME/Library/Application Support/Code/User/"
+  [ -d "$HOME/Library/Application Support/Cursor/User" ] && cp -r ./src/vscode-cursor/* "$HOME/Library/Application Support/Cursor/User/"
+  echo "VSCode/Cursor settings copied"
+}
+
 echo "Success! source $homeDir/.zshrc or restart your terminal to apply changes"
