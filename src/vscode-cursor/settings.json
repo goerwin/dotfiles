@@ -8,7 +8,6 @@
   "gitlens.currentLine.enabled": false,
 
   "breadcrumbs.enabled": true,
-  "rest-client.previewOption": "exchange",
   "eslint.enable": true,
   "window.zoomLevel": -1,
 
@@ -33,7 +32,6 @@
   "advancedNewFile.convenienceOptions": ["current", "last", "root"],
   "git.autofetch": true,
   "editor.wordWrap": "on",
-  "settingsSync.keybindingsPerPlatform": false,
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.multiCursorModifier": "alt",
   "security.workspace.trust.untrustedFiles": "open",
