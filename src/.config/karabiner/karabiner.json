@@ -709,7 +709,7 @@
             ]
           },
           {
-            "description": "Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Ctrl + J/K",
+            "description": "Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Fn + J/K",
             "manipulators": [
               {
                 "type": "basic",
@@ -757,7 +757,7 @@
                   "key_code": "j",
                   "modifiers": {
                     "mandatory": [
-                      "left_control"
+                      "fn"
                     ],
                     "optional": [
                       "any"
@@ -779,7 +779,7 @@
                   "key_code": "k",
                   "modifiers": {
                     "mandatory": [
-                      "left_control"
+                      "fn"
                     ],
                     "optional": [
                       "any"

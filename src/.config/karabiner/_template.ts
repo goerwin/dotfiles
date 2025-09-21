@@ -183,7 +183,7 @@ const karabinerConfig = {
           },
           {
             description:
-              'Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Ctrl + J/K',
+              'Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Fn + J/K',
             manipulators: [
               {
                 type: 'basic',
@@ -211,7 +211,7 @@ const karabinerConfig = {
                 type: 'basic',
                 from: {
                   key_code: 'j',
-                  modifiers: { mandatory: ['left_control'], optional: ['any'] },
+                  modifiers: { mandatory: ['fn'], optional: ['any'] },
                 },
                 to: [{ key_code: 'j', modifiers: ['left_command'] }],
               },
@@ -219,7 +219,7 @@ const karabinerConfig = {
                 type: 'basic',
                 from: {
                   key_code: 'k',
-                  modifiers: { mandatory: ['left_control'], optional: ['any'] },
+                  modifiers: { mandatory: ['fn'], optional: ['any'] },
                 },
                 to: [{ key_code: 'k', modifiers: ['left_command'] }],
               },
