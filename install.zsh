@@ -11,34 +11,49 @@ if ! [ -d $homeDir ]; then
 fi
 
 # Generate karabiner.json from template automatically
-if command -v node &>/dev/null; then
-  node "src/.config/karabiner/_template.ts" > "src/.config/karabiner/karabiner.json" || exit 1
-  echo "Generated karabiner.json from template"
-fi
-
-homeDir=$(
-  cd $homeDir
-  pwd -P
-) # absolute path
-
-echo -e "\nCopying files..."
-
-ignoredItems=("vscode-cursor", "ai")
-
-for entry in $(ls -a ./src); do
-  if [ $entry != "." ] && [ $entry != ".." ] && [ $entry != ".DS_Store" ] && [[ ! " ${ignoredItems[*]} " =~ " $entry " ]]; then
-    cp -r ./src/$entry $homeDir
-    echo "Copying $entry"
+{
+  if command -v node &>/dev/null; then
+    node "src/.config/karabiner/_template.ts" >"src/.config/karabiner/karabiner.json" || exit 1
+    echo "Generated karabiner.json from template"
   fi
-done
+}
 
-echo "\nFiles copied into $homeDir"
+# Copy src files into homeDir
+{
+  homeDir=$(
+    cd $homeDir
+    pwd -P
+  ) # absolute path
+
+  echo -e "\nCopying files..."
+
+  setopt GLOB_DOTS # include dotfiles in globs
+  ignoredItems=("vscode-cursor" "ai" ".DS_Store")
+
+  for entry in ./src/*; do
+    entryName=$(basename "$entry")
+
+    case " ${ignoredItems[@]} " in
+    *" $entryName "*)
+      # skip
+      ;;
+    *)
+      cp -r "$entry" "$homeDir"
+      echo "Copying $entryName"
+      ;;
+    esac
+  done
+
+  echo "\nFiles copied into $homeDir"
+}
 
 # Copy VSCode/Cursor settings
-[ -d "./src/vscode-cursor" ] && {
-  [ -d "$HOME/Library/Application Support/Code/User" ] && cp -r ./src/vscode-cursor/* "$HOME/Library/Application Support/Code/User/"
-  [ -d "$HOME/Library/Application Support/Cursor/User" ] && cp -r ./src/vscode-cursor/* "$HOME/Library/Application Support/Cursor/User/"
-  echo "VSCode/Cursor settings copied"
+{
+  [ -d "./src/vscode-cursor" ] && {
+    [ -d "$HOME/Library/Application Support/Code/User" ] && cp -r ./src/vscode-cursor/* "$HOME/Library/Application Support/Code/User/"
+    [ -d "$HOME/Library/Application Support/Cursor/User" ] && cp -r ./src/vscode-cursor/* "$HOME/Library/Application Support/Cursor/User/"
+    echo "VSCode/Cursor settings copied"
+  }
 }
 
 echo "Success! source $homeDir/.zshrc or restart your terminal to apply changes"
