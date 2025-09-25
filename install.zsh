@@ -44,8 +44,13 @@ fi
     esac
   done
 
-  cp -r ./src/biome.template.json "$homeDir/biome.json"
-  echo "Copying biome.json from biome.template.json"
+  # NOTE: Ignoring biome.json for now since it can cause high
+  # cpu and memory usage when stored in the home directory,
+  # probably because it tracks all files in the home directory.
+
+  # cp -r ./src/biome.template.json "$homeDir/biome.json"
+  # echo "Copying biome.json from biome.template.json"
+
   echo "\nFiles copied into $homeDir"
 }
 
