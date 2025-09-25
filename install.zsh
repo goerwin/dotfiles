@@ -28,7 +28,7 @@ fi
   echo -e "\nCopying files..."
 
   setopt GLOB_DOTS # include dotfiles in globs
-  ignoredItems=("vscode-cursor" "ai" ".DS_Store")
+  ignoredItems=("vscode-cursor" "ai" ".DS_Store" "biome.template.json")
 
   for entry in ./src/*; do
     entryName=$(basename "$entry")
@@ -44,6 +44,8 @@ fi
     esac
   done
 
+  cp -r ./src/biome.template.json "$homeDir/biome.json"
+  echo "Copying biome.json from biome.template.json"
   echo "\nFiles copied into $homeDir"
 }
 
