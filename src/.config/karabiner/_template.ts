@@ -301,42 +301,42 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                from: { key_code: 'f1' },
+                from: { key_code: 'f1', modifiers: { optional: ['caps_lock'] } },
                 to: [{ consumer_key_code: 'display_brightness_decrement' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f2' },
+                from: { key_code: 'f2', modifiers: { optional: ['caps_lock'] } },
                 to: [{ consumer_key_code: 'display_brightness_increment' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f7' },
+                from: { key_code: 'f7', modifiers: { optional: ['caps_lock'] } },
                 to: [{ consumer_key_code: 'rewind' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f8' },
+                from: { key_code: 'f8', modifiers: { optional: ['caps_lock'] } },
                 to: [{ consumer_key_code: 'play_or_pause' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f9' },
+                from: { key_code: 'f9', modifiers: { optional: ['caps_lock'] } },
                 to: [{ consumer_key_code: 'fast_forward' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f10' },
+                from: { key_code: 'f10', modifiers: { optional: ['caps_lock'] } },
                 to: [{ consumer_key_code: 'mute' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f11' },
+                from: { key_code: 'f11', modifiers: { optional: ['caps_lock'] } },
                 to: [{ consumer_key_code: 'volume_decrement' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f12' },
+                from: { key_code: 'f12', modifiers: { optional: ['caps_lock'] } },
                 to: [{ consumer_key_code: 'volume_increment' }],
               },
             ],

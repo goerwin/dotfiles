@@ -940,7 +940,12 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "f1"
+                  "key_code": "f1",
+                  "modifiers": {
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
                 },
                 "to": [
                   {
@@ -951,7 +956,12 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "f2"
+                  "key_code": "f2",
+                  "modifiers": {
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
                 },
                 "to": [
                   {
@@ -962,7 +972,12 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "f7"
+                  "key_code": "f7",
+                  "modifiers": {
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
                 },
                 "to": [
                   {
@@ -973,7 +988,12 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "f8"
+                  "key_code": "f8",
+                  "modifiers": {
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
                 },
                 "to": [
                   {
@@ -984,7 +1004,12 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "f9"
+                  "key_code": "f9",
+                  "modifiers": {
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
                 },
                 "to": [
                   {
@@ -995,7 +1020,12 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "f10"
+                  "key_code": "f10",
+                  "modifiers": {
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
                 },
                 "to": [
                   {
@@ -1006,7 +1036,12 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "f11"
+                  "key_code": "f11",
+                  "modifiers": {
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
                 },
                 "to": [
                   {
@@ -1017,7 +1052,12 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "f12"
+                  "key_code": "f12",
+                  "modifiers": {
+                    "optional": [
+                      "caps_lock"
+                    ]
+                  }
                 },
                 "to": [
                   {
