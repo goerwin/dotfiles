@@ -201,5 +201,9 @@
   {
     "key": "cmd+e",
     "command": "-actions.findWithSelection"
+  },
+  {
+    "key": "cmd+e",
+    "command": "-cursor.composer.openAgentWindow"
   }
 ]
