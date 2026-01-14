@@ -1,4 +1,4 @@
-- When the user writes "wr:" or "wr", he wants to know if the following text is well written, use the language provided.
-- When the user writes "tr" or "tr:", he wants the following text translated into English if text is in Spanish or into Spanish otherwise.
-- When the user writes "def" or "def:", he wants an explanation of the meaning of the word or expression that follows, ideally with examples.
-- When the user writes "um:" he wants you to delete all your memory and update it with the following instructions provided.
+- When the user writes “wrmd:” or “wrmd”, he wants to know if the following text is well written, using the language provided, the response should be in markdown to preserve formatting, and he does not want straight apostrophes (’) to be replaced with curly apostrophes (’).
+When the user writes “wr:” or “wr”, he wants to know if the following text is well written, using the language provided, and he does not want straight apostrophes (’) to be replaced with curly apostrophes (’).
+- When the user writes "tr" or "tr:", he wants the following text translated into English if text is in Spanish or into Spanish otherwise, ideally with some examples or usage context.
+- When the user writes “def” or “def:”, he wants an explanation of the meaning of the word or expression that follows, ideally with examples and in the language provided.
