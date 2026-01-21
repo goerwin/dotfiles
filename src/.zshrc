@@ -38,17 +38,6 @@ function isCommand() {
   command -v "$1" &>/dev/null
 }
 
-# Better way to find
-function f() {
-  find . -iname "$1" ${@:2}
-}
-function ff() {
-  find . -type f -iname "$1" ${@:2}
-}
-function fd() {
-  find . -type d -iname "$1" ${@:2}
-}
-
 function open() {
   if [[ $(grep -s Microsoft /proc/version) ]]; then # WSL
     explorer.exe $(wslpath -w "${@:-.}")
