@@ -229,7 +229,8 @@ if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
   # AWS setup godaddy
   # https://pep-docs.uxp.gdcorp.tools/docs/onboarding/machine-setup/aws/
 
-  export USER=egaitan # user should be your godaddy email username
+  # NOTE: Maybe you need to uncomment this when needing to do AWS stuff
+  # export USER=egaitan # user should be your godaddy email username
   alias okta='OKTA_DOMAIN=godaddy.okta.com; KEY=$(openssl rand -hex 18); eval $(aws-okta-processor authenticate -e -o $OKTA_DOMAIN -u $USER -k $KEY -d 7200)'
   alias kasm='. kasm-wrapper'
   export AWS_REGION=us-west-2 # (ar does not set the region properly, so doing it manually)
