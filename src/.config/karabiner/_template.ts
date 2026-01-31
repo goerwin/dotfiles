@@ -33,6 +33,9 @@ const karabinerConfig = {
             { from: { key_code: 'right_option' }, to: [{ key_code: 'left_command' }] },
           ],
         },
+
+        // G10 Control
+        { identifiers: { is_pointing_device: true, product_id: 4133, vendor_id: 6421 }, ignore: false },
       ],
       fn_function_keys: [
         { from: { key_code: 'f1' }, to: [{ key_code: 'f1' }] },

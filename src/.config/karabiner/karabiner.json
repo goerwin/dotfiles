@@ -66,6 +66,14 @@
               ]
             }
           ]
+        },
+        {
+          "identifiers": {
+            "is_pointing_device": true,
+            "product_id": 4133,
+            "vendor_id": 6421
+          },
+          "ignore": false
         }
       ],
       "fn_function_keys": [
