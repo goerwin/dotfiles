@@ -262,16 +262,16 @@ const karabinerConfig = {
               {
                 type: 'basic',
                 conditions: [
-                  { name: 'g_shift_pressed', type: 'variable_if', value: 1 },
+                  { name: 'g_shift_pressed', type: 'variable_if', value: true },
                 ],
                 from: {
                   key_code: 'left_shift',
                   modifiers: { optional: ['caps_lock'] },
                 },
                 to: [{ key_code: 'left_shift' }],
-                to_if_alone: [
-                  { key_code: 'caps_lock' },
-                  { set_variable: { name: 'g_shift_pressed', value: 0 } },
+                to_if_alone: [{ key_code: 'caps_lock' }],
+                to_after_key_up: [
+                  { set_variable: { name: 'g_shift_pressed', value: false } },
                 ],
               },
               {
@@ -281,18 +281,21 @@ const karabinerConfig = {
                   modifiers: { optional: ['caps_lock'] },
                 },
                 to: [{ key_code: 'left_shift' }],
+                to_if_alone: [
+                  { set_variable: { name: 'g_shift_pressed', value: true } },
+                ],
                 to_delayed_action: {
                   to_if_canceled: [
-                    { set_variable: { name: 'g_shift_pressed', value: 0 } },
+                    { set_variable: { name: 'g_shift_pressed', value: false } },
                   ],
                   to_if_invoked: [
-                    { set_variable: { name: 'g_shift_pressed', value: 0 } },
+                    { set_variable: { name: 'g_shift_pressed', value: false } },
                   ],
                 },
-                to_if_alone: [
-                  { set_variable: { name: 'g_shift_pressed', value: 1 } },
-                  { key_code: 'left_shift' },
-                ],
+                parameters: {
+                  'basic.to_if_alone_timeout_milliseconds': 250,
+                  'basic.to_delayed_action_delay_milliseconds': 500,
+                },
               },
             ],
           },
@@ -301,42 +304,66 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                from: { key_code: 'f1', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f1',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'display_brightness_decrement' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f2', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f2',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'display_brightness_increment' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f7', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f7',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'rewind' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f8', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f8',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'play_or_pause' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f9', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f9',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'fast_forward' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f10', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f10',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'mute' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f11', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f11',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'volume_decrement' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f12', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f12',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'volume_increment' }],
               },
             ],

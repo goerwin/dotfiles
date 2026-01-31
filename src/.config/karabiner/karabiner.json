@@ -859,7 +859,7 @@
                   {
                     "name": "g_shift_pressed",
                     "type": "variable_if",
-                    "value": 1
+                    "value": true
                   }
                 ],
                 "from": {
@@ -878,11 +878,13 @@
                 "to_if_alone": [
                   {
                     "key_code": "caps_lock"
-                  },
+                  }
+                ],
+                "to_after_key_up": [
                   {
                     "set_variable": {
                       "name": "g_shift_pressed",
-                      "value": 0
+                      "value": false
                     }
                   }
                 ]
@@ -902,12 +904,20 @@
                     "key_code": "left_shift"
                   }
                 ],
+                "to_if_alone": [
+                  {
+                    "set_variable": {
+                      "name": "g_shift_pressed",
+                      "value": true
+                    }
+                  }
+                ],
                 "to_delayed_action": {
                   "to_if_canceled": [
                     {
                       "set_variable": {
                         "name": "g_shift_pressed",
-                        "value": 0
+                        "value": false
                       }
                     }
                   ],
@@ -915,22 +925,15 @@
                     {
                       "set_variable": {
                         "name": "g_shift_pressed",
-                        "value": 0
+                        "value": false
                       }
                     }
                   ]
                 },
-                "to_if_alone": [
-                  {
-                    "set_variable": {
-                      "name": "g_shift_pressed",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "key_code": "left_shift"
-                  }
-                ]
+                "parameters": {
+                  "basic.to_if_alone_timeout_milliseconds": 250,
+                  "basic.to_delayed_action_delay_milliseconds": 500
+                }
               }
             ]
           },
