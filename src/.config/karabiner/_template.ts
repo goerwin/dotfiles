@@ -35,7 +35,12 @@ const karabinerConfig = {
         },
 
         // G10 Control
-        { identifiers: { is_pointing_device: true, product_id: 4133, vendor_id: 6421 }, ignore: false },
+        {
+          identifiers: { is_pointing_device: true, product_id: 4133, vendor_id: 6421 },
+          ignore: false,
+          pointing_motion_wheels_multiplier: 0.5,
+          pointing_motion_xy_multiplier: 0.5,
+        },
       ],
       fn_function_keys: [
         { from: { key_code: 'f1' }, to: [{ key_code: 'f1' }] },
