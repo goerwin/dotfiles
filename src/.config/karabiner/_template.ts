@@ -476,7 +476,7 @@ const karabinerConfig = {
                 type: 'basic',
                 conditions: g10ControlConditions,
                 from: { key_code: 'page_up' },
-                to: [{ consumer_key_code: 'display_brightness_increment' }],
+                to: [{ consumer_key_code: 'volume_increment' }],
               },
               {
                 description: 'Volume Down to Brightness Down',
@@ -490,7 +490,7 @@ const karabinerConfig = {
                 type: 'basic',
                 conditions: g10ControlConditions,
                 from: { consumer_key_code: 'volume_increment' },
-                to: [{ key_code: 'page_up' }],
+                to: [{ consumer_key_code: 'display_brightness_increment' }],
               },
               {
                 description: 'Delete[Hold] to Ctrl + Shift + Tab [Close tab: Cmd + W]',
