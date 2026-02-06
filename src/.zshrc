@@ -38,16 +38,16 @@ function isCommand() {
   command -v "$1" &>/dev/null
 }
 
-function open() {
-  if [[ $(grep -s Microsoft /proc/version) ]]; then # WSL
-    explorer.exe $(wslpath -w "${@:-.}")
-  elif [[ $(grep -s WSL2 /proc/version) ]]; then # WSL2
-    explorer.exe $@
-  elif command -v open &>/dev/null; then # Mac
-    command open $@
-  else
-    echo "Open not found"
-  fi
+# Run a command only once
+runOnce() {
+  local _RUN_ONCE_DIR="$HOME/.cache/.run-once"
+  local key="$1"
+  shift
+
+  local flag="$_RUN_ONCE_DIR/.$key"
+  [[ -f "$flag" ]] && return 0
+  mkdir -p "$_RUN_ONCE_DIR" || return 1
+  "$@" && touch "$flag"
 }
 
 function zshCloneGitRepoToZshDir() {
@@ -86,7 +86,6 @@ alias g="git"
 alias gc="git commit"
 alias gcm="git commit -m"
 alias gcamend="git commit --amend -C HEAD"
-alias gcz="git cz"
 alias gs="git status"
 alias ga="git add"
 alias ga.="git add ."
@@ -103,71 +102,30 @@ alias gd="git diff"
 alias gd.="git diff ."
 alias gdc="git diff --cached"
 alias gds="git diff --staged"
-alias gclean="git clean . -f"
-alias go="git open"
-alias gstash="git stash --include-untracked"
-alias gstashpop="git stash pop"
-alias gstashlist="git stash list"
-alias gstashclear="git stash clear"
-alias gstashdrop="git stash drop"
-alias gstashapply="git stash apply"
-alias gstashbranch="git stash branch"
-alias gstashcheckout="git stash checkout"
-
-# Editor
-alias code.="$TEXT_EDITOR ."
-alias codezsh="$TEXT_EDITOR ~/.zshrc"
+alias gcleanf="git clean . -f"
 
 # NPM
-alias npmlsg="npm ls -g --depth=0"
-alias npmls="npm ls --depth=0"
 alias npmr="npm run"
 alias npmrd="npm run dev"
-alias npmrp="npm run prod"
 alias npmrs="npm run start"
-alias npmrsd="npm run start-dev"
 alias npmrt="npm run test"
 alias npmrb="npm run build"
-alias npmrbd="npm run build-dev"
-alias npmcu="npx npm-check-updates"
-alias npmcuDev="npmcu --dep dev"
-alias npmcuDevUpgrade="npmcuDev -u"
-alias npmcuProd="npmcu --dep prod"
-alias npmcuProdUpgrade="npmcuProd -u"
 alias npmi="npm install"
-alias npmig="npm install -g"
 alias npmis="npm install --save"
 alias npmisd="npm install --save-dev"
 alias npmu="npm uninstall"
-alias npmusd="npm uninstall --save-dev"
 alias npmus="npm uninstall --save"
+alias npmusd="npm uninstall --save-dev"
+alias npmig="npm install -g"
 alias npmug="npm uninstall -g"
-alias npmupdateg="npm update -g"
-# backup npm global
-alias npmbackup="npmlsg > ~/Dropbox/MacOS/backups/npmpackages.txt"
-alias npmopenbackup="$TEXT_EDITOR ~/Dropbox/MacOS/backups/npmpackages.txt"
-
-# Open
-alias open.="open ."
 
 # CD
 alias cd.="cd ."
-alias cdp="cd ~/projects"
-alias cdprojects="cd ~/projects"
 alias cdb="cd -"
 
 # Others
-alias killcam="sudo pkill "VDCAssistant""
 alias sourcezsh="source ~/.zshrc"
-alias rmf="rm -rf"
-alias airport="sudo /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport"
-alias airportlswifi="airport -s"
-alias cls=clear
-alias dc="docker-compose"
-alias dcb="dc build"
-alias dcu="dc up"
-alias dcd="dc down"
-alias matrix=cmatrix
+alias rmrf="rm -rf"
 
 #//////////////////////////
 # Main
@@ -219,7 +177,8 @@ zstyle ':completion:*' menu select
 bindkey "^U" backward-kill-line
 
 # disable caps lock delay only if not already set
-hidutil property --set '{"CapsLockDelayOverride":0}' >/dev/null 2>&1
+runOnce caps_lock_delay_override \
+  hidutil property --set '{"CapsLockDelayOverride":0}' >/dev/null 2>&1
 
 #//////////////////////////
 # Godaddy
