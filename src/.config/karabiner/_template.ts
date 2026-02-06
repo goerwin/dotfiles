@@ -4,11 +4,14 @@
  *  Use the .env at root to set the LOCAL_PW
  */
 
+// @ts-expect-error - no definitions
+import { fileURLToPath } from 'node:url';
+
 import { getKarabinerEventFromLetter } from './helper.ts';
 
 try {
   // @ts-expect-error - process.loadEnvFile is not defined in the type definitions
-  process.loadEnvFile('../../../.env');
+  process.loadEnvFile(fileURLToPath(import.meta.resolve('../../../.env')));
 } catch (error) {
   console.warn("Warning: couldn't load .env file, perhaps it doesn't exist:", error.message);
 }
@@ -99,7 +102,7 @@ const karabinerConfig = {
         rules: [
           {
             description: 'Mode - VIM',
-            manipulators: VIM_KEYS.flatMap<any[]>(({ key, to }) => [
+            manipulators: VIM_KEYS.flatMap<unknown[]>(({ key, to }) => [
               {
                 type: 'basic',
                 conditions: [
