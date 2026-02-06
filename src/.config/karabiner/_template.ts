@@ -1,3 +1,13 @@
+// Loads .env from root directory
+try {
+  // @ts-expect-error - process.loadEnvFile is not defined in the type definitions
+  process.loadEnvFile('../../../.env');
+} catch (error) {
+  console.error("Error loading .env file, perhaps it doesn't exist:", error.message);
+  // @ts-expect-error - process.exit is not defined in the type definitions
+  process.exit(1);
+}
+
 const F18_IS_DOWN = 'f18isDown';
 const VIM_SHIFT_DOWN = 'vimShiftDown';
 const VIM_KEYS = [
@@ -6,6 +16,9 @@ const VIM_KEYS = [
   { key: 'k', to: 'up_arrow' },
   { key: 'l', to: 'right_arrow' },
 ];
+
+// @ts-expect-error - process.env is not defined in the type definitions
+const LOCAL_PW = process.env.LOCAL_PW;
 const VIM_SHIFT_KEY = 'f';
 const googleChromeConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['^com\\.google\\.Chrome$'] }];
 const ankiLauncherConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['^net\\.ankiweb.launcher$'] }];
@@ -16,6 +29,56 @@ const googleChromeFinderWarpConditions = [
     bundle_identifiers: ['^com\\.google\\.Chrome$', '^com\\.apple\\.finder$', '^dev\\.warp\\.Warp-Stable$'],
   },
 ];
+
+const localPasswordRule = LOCAL_PW
+  ? {
+      description: 'Global - Local PW',
+      manipulators: [
+        {
+          from: {
+            key_code: 'v',
+            modifiers: { mandatory: ['left_option'] },
+          },
+          to: [
+            // convert $$G028d$G0 to karabiner key codes
+            ...LOCAL_PW.split('').map((char) => {
+              return {
+                key_code: char,
+                modifiers: ['left_shift'],
+              };
+            }),
+            {
+              key_code: '4',
+              modifiers: ['left_shift'],
+            },
+            {
+              key_code: '4',
+              modifiers: ['left_shift'],
+            },
+            {
+              key_code: 'g',
+              modifiers: ['left_shift'],
+            },
+            { key_code: '0' },
+            { key_code: '2' },
+            { key_code: '8' },
+            { key_code: 'd' },
+            {
+              key_code: '4',
+              modifiers: ['left_shift'],
+            },
+            {
+              key_code: 'g',
+              modifiers: ['left_shift'],
+            },
+            { key_code: '0' },
+          ],
+          type: 'basic',
+        },
+      ],
+    }
+  : undefined;
+
 const karabinerConfig = {
   profiles: [
     {
@@ -257,6 +320,8 @@ const karabinerConfig = {
               },
             ],
           },
+          localPasswordRule,
+
           {
             description: 'Apps (Finder, Google Chrome, Warp) - Cmd + H/L and F3/F4 to prev/next tab',
             manipulators: [
