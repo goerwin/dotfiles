@@ -1,11 +1,16 @@
-// Loads .env from root directory
+/**
+ *  This file is used to generate the karabiner.json file.
+ *  You can run it via node (eg. node _template.ts > karabiner.json)
+ *  Use the .env at root to set the LOCAL_PW
+ */
+
+import { getKarabinerEventFromLetter } from './helper.ts';
+
 try {
   // @ts-expect-error - process.loadEnvFile is not defined in the type definitions
   process.loadEnvFile('../../../.env');
 } catch (error) {
-  console.error("Error loading .env file, perhaps it doesn't exist:", error.message);
-  // @ts-expect-error - process.exit is not defined in the type definitions
-  process.exit(1);
+  console.warn("Warning: couldn't load .env file, perhaps it doesn't exist:", error.message);
 }
 
 const F18_IS_DOWN = 'f18isDown';
@@ -30,54 +35,18 @@ const googleChromeFinderWarpConditions = [
   },
 ];
 
-const localPasswordRule = LOCAL_PW
-  ? {
-      description: 'Global - Local PW',
-      manipulators: [
-        {
-          from: {
-            key_code: 'v',
-            modifiers: { mandatory: ['left_option'] },
-          },
-          to: [
-            // convert $$G028d$G0 to karabiner key codes
-            ...LOCAL_PW.split('').map((char) => {
-              return {
-                key_code: char,
-                modifiers: ['left_shift'],
-              };
-            }),
-            {
-              key_code: '4',
-              modifiers: ['left_shift'],
-            },
-            {
-              key_code: '4',
-              modifiers: ['left_shift'],
-            },
-            {
-              key_code: 'g',
-              modifiers: ['left_shift'],
-            },
-            { key_code: '0' },
-            { key_code: '2' },
-            { key_code: '8' },
-            { key_code: 'd' },
-            {
-              key_code: '4',
-              modifiers: ['left_shift'],
-            },
-            {
-              key_code: 'g',
-              modifiers: ['left_shift'],
-            },
-            { key_code: '0' },
-          ],
-          type: 'basic',
+const localPwManipulators = LOCAL_PW
+  ? [
+      {
+        type: 'basic',
+        from: {
+          key_code: 'v',
+          modifiers: { mandatory: ['left_option'] },
         },
-      ],
-    }
-  : undefined;
+        to: Array.from(LOCAL_PW).map(getKarabinerEventFromLetter),
+      },
+    ]
+  : [];
 
 const karabinerConfig = {
   profiles: [
@@ -320,7 +289,10 @@ const karabinerConfig = {
               },
             ],
           },
-          localPasswordRule,
+          {
+            description: 'Global - Local PW',
+            manipulators: localPwManipulators,
+          },
 
           {
             description: 'Apps (Finder, Google Chrome, Warp) - Cmd + H/L and F3/F4 to prev/next tab',
