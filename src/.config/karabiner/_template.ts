@@ -1,3 +1,21 @@
+/**
+ *  This file is used to generate the karabiner.json file.
+ *  You can run it via node (eg. node _template.ts > karabiner.json)
+ *  Use the .env at root to set the LOCAL_PW
+ */
+
+// @ts-expect-error - no definitions
+import { fileURLToPath } from 'node:url';
+
+import { getKarabinerEventFromLetter } from './helper.ts';
+
+try {
+  // @ts-expect-error - process.loadEnvFile is not defined in the type definitions
+  process.loadEnvFile(fileURLToPath(import.meta.resolve('../../../.env')));
+} catch (error) {
+  console.warn("Warning: couldn't load .env file, perhaps it doesn't exist:", error.message);
+}
+
 const F18_IS_DOWN = 'f18isDown';
 const VIM_SHIFT_DOWN = 'vimShiftDown';
 const VIM_KEYS = [
@@ -6,6 +24,9 @@ const VIM_KEYS = [
   { key: 'k', to: 'up_arrow' },
   { key: 'l', to: 'right_arrow' },
 ];
+
+// @ts-expect-error - process.env is not defined in the type definitions
+const LOCAL_PW = process.env.LOCAL_PW;
 const VIM_SHIFT_KEY = 'f';
 const googleChromeConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['^com\\.google\\.Chrome$'] }];
 const ankiLauncherConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['^net\\.ankiweb.launcher$'] }];
@@ -16,6 +37,20 @@ const googleChromeFinderWarpConditions = [
     bundle_identifiers: ['^com\\.google\\.Chrome$', '^com\\.apple\\.finder$', '^dev\\.warp\\.Warp-Stable$'],
   },
 ];
+
+const localPwManipulators = LOCAL_PW
+  ? [
+      {
+        type: 'basic',
+        from: {
+          key_code: 'v',
+          modifiers: { mandatory: ['left_option'] },
+        },
+        to: Array.from(LOCAL_PW).map(getKarabinerEventFromLetter),
+      },
+    ]
+  : [];
+
 const karabinerConfig = {
   profiles: [
     {
@@ -67,7 +102,7 @@ const karabinerConfig = {
         rules: [
           {
             description: 'Mode - VIM',
-            manipulators: VIM_KEYS.flatMap<any[]>(({ key, to }) => [
+            manipulators: VIM_KEYS.flatMap<unknown[]>(({ key, to }) => [
               {
                 type: 'basic',
                 conditions: [
@@ -257,6 +292,11 @@ const karabinerConfig = {
               },
             ],
           },
+          {
+            description: 'Global - Local PW',
+            manipulators: localPwManipulators,
+          },
+
           {
             description: 'Apps (Finder, Google Chrome, Warp) - Cmd + H/L and F3/F4 to prev/next tab',
             manipulators: [
