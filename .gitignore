@@ -7,4 +7,6 @@ src/KeyRemapper_*/*
 !src/KeyRemapper_*/*.json
 !src/KeyRemapper_*/*.md
 
+karabiner.json
+
 .env
