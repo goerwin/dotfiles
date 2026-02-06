@@ -1,7 +1,4 @@
 .DS_Store
-src/ShareX/**/*.exe
-src/ShareX/**/Backup
-src/ShareX/**/Logs
 
 src/KeyRemapper_*/*
 !src/KeyRemapper_*/*.json
