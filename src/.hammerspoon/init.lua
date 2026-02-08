@@ -1,3 +1,9 @@
+-- You need to install the hs ipc via:
+-- https://github.com/Hammerspoon/hammerspoon/blob/master/extensions/ipc/ipc.lua#L303
+-- ❯ sudo ln -s /Applications/Hammerspoon.app/Contents/Frameworks/hs/hs /usr/local/bin
+-- ❯ sudo ln -s /Applications/Hammerspoon.app/Contents/Resources/man/hs.man /usr/local/share/man/man1/hs.1
+require("hs.ipc")
+
 -- if t2 contains t1 (regardless of extra keys) then it is considered equal
 function deepCompare(t1, t2)
   local ty1 = type(t1)
@@ -138,6 +144,18 @@ function setNewWindowFrame(newWinIdx, direction, newWinIdxMaps)
 
   hs.window.animationDuration = 0
   return window:setFrame(windowFrames[newWinIdx])
+end
+
+function moveWindowToPreviousScreen()
+  hs.window.focusedWindow():moveToScreen(
+    hs.window.focusedWindow():screen():previous()
+  )
+end
+
+function moveWindowToNextScreen()
+  hs.window.focusedWindow():moveToScreen(
+    hs.window.focusedWindow():screen():next()
+  )
 end
 
 function handleCustomSlotsForWindows()
@@ -305,32 +323,6 @@ function handleCustomSlotsForWindows()
       windowManagement:exit()
   end)
 end
-
--- Toggle mic mute
--- function initToggleMic()
---     local inputDevice = hs.audiodevice.defaultInputDevice()
---     local initialVolume = inputDevice:volume()
---     local showOptions = {
---         strokeColor = {
---             white = 0
---         },
---         textSize = 16
---     }
---     local screen = hs.screen.mainScreen()
-
---     function toggleMic()
---         if (inputDevice:muted()) then
---             inputDevice:setMuted(false)
---             hs.alert.show(1, showOptions, screen, 0.2)
---         else
---             inputDevice:setMuted(true)
---             hs.alert.show(0, showOptions, screen, 0.2)
---         end
---     end
-
---     local modifiers = {'cmd', 'ctrl', 'shift', 'alt'}
---     hs.hotkey.bind(modifiers, 'x', toggleMic)
--- end
 
 handleCustomSlotsForWindows()
 
