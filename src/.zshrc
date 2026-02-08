@@ -180,6 +180,11 @@ bindkey "^U" backward-kill-line
 runOnce caps_lock_delay_override \
   hidutil property --set '{"CapsLockDelayOverride":0}' >/dev/null 2>&1
 
+# space between menu bar items
+# to restore it back: defaults -currentHost delete -globalDomain NSStatusItemSpacing
+runOnce menu_bar_item_spacing \
+  defaults -currentHost write -globalDomain NSStatusItemSpacing -int 12
+
 #//////////////////////////
 # Godaddy
 #//////////////////////////
