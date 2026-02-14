@@ -28,13 +28,13 @@ const VIM_KEYS = [
 // @ts-expect-error - process.env is not defined in the type definitions
 const LOCAL_PW = process.env.LOCAL_PW;
 const VIM_SHIFT_KEY = 'f';
-const googleChromeConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['^com\\.google\\.Chrome$'] }];
-const ankiLauncherConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['^net\\.ankiweb.launcher$'] }];
+const googleChromeConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['com.google.Chrome'] }];
+const ankiLauncherConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['net.ankiweb.launcher'] }];
 const g10ControlConditions = [{ type: 'device_if', identifiers: [{ vendor_id: 6421, product_id: 4133 }] }];
-const googleChromeFinderWarpConditions = [
+const googleChromeFinderWarpXcodeConditions = [
   {
     type: 'frontmost_application_if',
-    bundle_identifiers: ['^com\\.google\\.Chrome$', '^com\\.apple\\.finder$', '^dev\\.warp\\.Warp-Stable$'],
+    bundle_identifiers: ['com.google.Chrome', 'com.apple\\.finder', 'dev.warp.Warp-Stable', 'com.apple.dt.Xcode'],
   },
 ];
 
@@ -298,29 +298,29 @@ const karabinerConfig = {
           },
 
           {
-            description: 'Apps (Finder, Google Chrome, Warp) - Cmd + H/L and F3/F4 to prev/next tab',
+            description: 'Apps (Finder, Google Chrome, Warp, Xcode) - Cmd + H/L and F3/F4 to prev/next tab',
             manipulators: [
               {
                 type: 'basic',
-                conditions: googleChromeFinderWarpConditions,
+                conditions: googleChromeFinderWarpXcodeConditions,
                 from: { key_code: 'h', modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] } },
                 to: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
               },
               {
                 type: 'basic',
-                conditions: googleChromeFinderWarpConditions,
+                conditions: googleChromeFinderWarpXcodeConditions,
                 from: { key_code: 'l', modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] } },
                 to: [{ key_code: 'tab', modifiers: ['left_control'] }],
               },
               {
                 type: 'basic',
-                conditions: googleChromeFinderWarpConditions,
+                conditions: googleChromeFinderWarpXcodeConditions,
                 from: { key_code: 'f3', modifiers: { optional: ['caps_lock'] } },
                 to: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
               },
               {
                 type: 'basic',
-                conditions: googleChromeFinderWarpConditions,
+                conditions: googleChromeFinderWarpXcodeConditions,
                 from: { key_code: 'f4', modifiers: { optional: ['caps_lock'] } },
                 to: [{ key_code: 'tab', modifiers: ['left_control'] }],
               },
