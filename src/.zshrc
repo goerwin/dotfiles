@@ -173,8 +173,11 @@ autoload -U compinit bashcompinit && compinit && bashcompinit
 # keyboard navigation to autocompletions
 zstyle ':completion:*' menu select
 
-# Make Ctrl-U (cmd+backspace) act as "delete to beginning of line" (backward-kill-line)
-bindkey "^U" backward-kill-line
+# Use emacs keybindings (cmd + ←/→/⌫, alt + ⌫)
+bindkey -e
+
+# Cmd + O → clear screen
+bindkey '\eo' clear-screen
 
 # disable caps lock delay only if not already set
 runOnce caps_lock_delay_override \
