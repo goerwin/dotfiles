@@ -179,6 +179,9 @@ bindkey -e
 # Cmd + O → clear screen
 bindkey '\eo' clear-screen
 
+# Cmd + ⌫ → delete to beginning of line, instead of whole line
+bindkey "^U" backward-kill-line
+
 # disable caps lock delay only if not already set
 runOnce caps_lock_delay_override \
   hidutil property --set '{"CapsLockDelayOverride":0}' >/dev/null 2>&1
