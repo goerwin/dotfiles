@@ -18,7 +18,6 @@
   "editor.lineHeight": 24,
   "editor.fontSize": 16,
   "workbench.startupEditor": "newUntitledFile",
-  "workbench.sideBar.location": "right",
   "explorer.openEditors.visible": 1,
   "workbench.commandPalette.preserveInput": true,
   "window.title": "${activeEditorMedium} - ${folderName}",
