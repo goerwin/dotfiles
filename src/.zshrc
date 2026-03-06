@@ -185,9 +185,8 @@ bindkey "^U" backward-kill-line
 # case-insensitive completion
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
-# disable caps lock delay only if not already set
-runOnce caps_lock_delay_override \
-  hidutil property --set '{"CapsLockDelayOverride":0}' >/dev/null 2>&1
+# disable caps lock delay
+hidutil property --set '{"CapsLockDelayOverride":0}' >/dev/null 2>&1
 
 # space between menu bar items
 # to restore it back: defaults -currentHost delete -globalDomain NSStatusItemSpacing
