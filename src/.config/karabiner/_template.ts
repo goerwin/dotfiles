@@ -216,7 +216,7 @@ const karabinerConfig = {
               {
                 type: 'basic',
                 from: { key_code: 'm', modifiers: { mandatory: ['left_option'] } },
-                to: [{ key_code: 'm', modifiers: ['left_option', 'left_command'] }],
+                to: [{ key_code: '0', modifiers: ['left_option', 'left_command'] }],
               },
             ],
           },
