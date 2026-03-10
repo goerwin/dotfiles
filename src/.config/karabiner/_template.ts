@@ -221,6 +221,33 @@ const karabinerConfig = {
             ],
           },
           {
+            description: 'Global - Double Fn to Cmd + option + 9 (whisperer)',
+            manipulators: [
+              {
+                type: 'basic',
+                conditions: [{ name: 'g_fn_pressed', type: 'variable_if', value: true }],
+                from: { apple_vendor_top_case_key_code: 'keyboard_fn' },
+                // to: [{ apple_vendor_top_case_key_code: 'keyboard_fn' }],
+                to_if_alone: [{ key_code: '9', modifiers: ['left_command', 'left_option'] }],
+                to_after_key_up: [{ set_variable: { name: 'g_fn_pressed', value: false } }],
+              },
+              {
+                type: 'basic',
+                from: { apple_vendor_top_case_key_code: 'keyboard_fn' },
+                // to: [{ key_code: 'left_shift' }],
+                to_if_alone: [{ set_variable: { name: 'g_fn_pressed', value: true } }],
+                to_delayed_action: {
+                  to_if_canceled: [{ set_variable: { name: 'g_fn_pressed', value: false } }],
+                  to_if_invoked: [{ set_variable: { name: 'g_fn_pressed', value: false } }],
+                },
+                parameters: {
+                  'basic.to_if_alone_timeout_milliseconds': 250,
+                  'basic.to_delayed_action_delay_milliseconds': 500,
+                },
+              },
+            ],
+          },
+          {
             description: 'Global - Double Shift to Capslock',
             manipulators: [
               {
