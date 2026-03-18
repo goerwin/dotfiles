@@ -2,12 +2,13 @@
 
 homeDir=${HOME}
 
-echo "◆ Dotfiles Installer"
+echo "◆ Dotfiles Installer\n"
 
 # Generate karabiner.json from template
 if command -v node &>/dev/null; then
-  node "src/.config/karabiner/_template.ts" >"src/.config/karabiner/karabiner.json" || exit 1
-  echo "⚙️  karabiner.json generated"
+  generatedKarabinerDestination=".config/karabiner/karabiner.json"
+  node "src/.config/karabiner/_template.ts" >"src/$generatedKarabinerDestination" || exit 1
+  echo "⚙️  $generatedKarabinerDestination generated"
 fi
 
 # Copy src files into homeDir
