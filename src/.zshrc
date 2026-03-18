@@ -155,7 +155,7 @@ else
 fi
 
 # zsh-syntax-highlighting
-zshInstallPlugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-autosuggestions.git" "zsh-syntax-highlighting.zsh"
+zshInstallPlugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git" "zsh-syntax-highlighting.zsh"
 
 # zsh-autosuggestions
 zshInstallPlugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions.git" "zsh-autosuggestions.zsh"
