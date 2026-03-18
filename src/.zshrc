@@ -18,10 +18,6 @@ unsetopt beep
 # NOTE: This seems to not be doing anything
 # zstyle ':completion:*' menu select
 
-# Case insensitive tab completion
-# NOTE: This seems to not be doing anything
-# zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-
 #//////////////////////////
 # # Functions
 #//////////////////////////
