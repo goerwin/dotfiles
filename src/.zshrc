@@ -178,6 +178,12 @@ bindkey '\eo' clear-screen
 # Cmd + ⌫ → delete to beginning of line, instead of whole line
 bindkey "^U" backward-kill-line
 
+# Option + Left/Right for word navigation
+bindkey '^[^[[D' backward-word
+bindkey '^[^[[C' forward-word
+bindkey '^[[1;3D' backward-word
+bindkey '^[[1;3C' forward-word
+
 # case-insensitive completion
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
