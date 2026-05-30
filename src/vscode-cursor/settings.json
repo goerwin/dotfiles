@@ -42,11 +42,16 @@
   // "git.suggestSmartCommit": false,
   // "workbench.editor.empty.hint": "hidden",
 
+  //
   // Terminal
+  //
+
   "terminal.integrated.fontSize": 16,
-  // "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.confirmOnKill": "always",
   "terminal.integrated.confirmOnExit": "hasChildProcesses",
+  // fixes by claude code
+  "terminal.integrated.mouseWheelScrollSensitivity": 3,
+  "terminal.integrated.gpuAcceleration": "off",
 
   // "git.openRepositoryInParentFolders": "never",
   // "tailwindCSS.experimental.classRegex": [

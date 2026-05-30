@@ -229,3 +229,7 @@ if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
   # and also a region (already done above in AWS_REGION).
   # Then, it should ask you for SSO login.
 fi
+
+export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS="1"
+export ANTHROPIC_DEFAULT_OPUS_MODEL="claude-opus-4-7"
+export ANTHROPIC_MODEL="$ANTHROPIC_DEFAULT_OPUS_MODEL"
