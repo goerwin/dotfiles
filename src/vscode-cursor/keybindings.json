@@ -2,7 +2,7 @@
   // Tab navigation/manipulation
   {
     "key": "f3",
-    "command": "workbench.action.previousEditor"
+    "command": "workbench.action.previousEditor",
   },
   {
     "key": "f4",
@@ -47,13 +47,6 @@
   },
 
   {
-    "key": "ctrl+e",
-    "command": "editor.emmet.action.expandAbbreviation",
-    "when": "editorFocus"
-  },
-
-  // Sidebar
-  {
     "key": "cmd+shift+n",
     "command": "-workbench.action.newWindow"
   },
@@ -61,10 +54,7 @@
     "key": "cmd+shift+n",
     "command": "editor.action.moveSelectionToPreviousFindMatch"
   },
-  {
-    "key": "cmd+shift+i",
-    "command": "workbench.action.togglePanel"
-  },
+
   {
     "key": "cmd+shift+u",
     "command": "-workbench.action.output.toggleOutput"
@@ -73,6 +63,7 @@
     "key": "cmd+shift+u",
     "command": "cursorRedo"
   },
+
   {
     "key": "cmd+alt+n",
     "command": "workbench.action.newWindow"
@@ -113,65 +104,59 @@
     "when": "editorTextFocus"
   },
 
-  // text jump/selection
+  // Text jump/selection
 
   {
     "key": "alt+;",
     "command": "editor.action.jumpToBracket",
     "when": "editorTextFocus"
   },
-  {
-    "key": "alt+;",
-    // extension not available in cursor
-    "command": "selectby.swapActive",
-    "when": "editorHasSelection"
-  },
-  {
-    "key": "cmd+;",
-    "command": "findJump.activate"
-  },
-  {
-    "key": "shift+cmd+;",
-    "command": "findJump.activateWithSelection"
-  },
-
-  // Go to definition (CMD + G)
-  {
-    "key": "cmd+g",
-    "command": "editor.action.revealDefinition",
-    "when": "editorHasDefinitionProvider && editorTextFocus && !isInEmbeddedEditor"
-  },
-
-  // section/part jumping
-  // there are 2 ways, navigate[Up/Down/Left/Right] and focus[Previous/Next]Part
-  {
-    "key": "alt+p",
-    "command": "workbench.action.focusNextPart"
-  },
-  {
-    "key": "alt+shift+p",
-    "command": "workbench.action.focusPreviousPart"
-  },
 
   // Terminal
 
   {
-    "key": "alt+h",
+    "key": "cmd+e",
+    "command": "-actions.findWithSelection"
+  },
+  {
+    "key": "cmd+shift+i",
+    "command": "-cursor.composer.openAgentWindow"
+  },
+  {
+    "key": "cmd+e",
+    "command": "-cursor.composer.openAgentWindow"
+  },
+  {
+    "key": "cmd+e",
+    "command": "workbench.action.togglePanel"
+  },
+  {
+    "key": "f3",
     "command": "workbench.action.terminal.focusPrevious",
     "when": "terminalFocus"
   },
   {
-    "key": "alt+l",
+    "key": "f4",
     "command": "workbench.action.terminal.focusNext",
     "when": "terminalFocus"
   },
   {
-    "key": "alt+t",
+    "key": "cmd+h",
+    "command": "workbench.action.terminal.focusPrevious",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "cmd+l",
+    "command": "workbench.action.terminal.focusNext",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "cmd+t",
     "command": "workbench.action.terminal.new",
     "when": "terminalFocus"
   },
   {
-    "key": "alt+w",
+    "key": "cmd+w",
     "command": "workbench.action.terminal.kill",
     "when": "terminalFocus"
   },
@@ -186,24 +171,25 @@
   {
     "key": "shift+cmd+[",
     "command": "editor.fold",
-    "when": "editorTextFocus && foldingEnabled"
+    "when": "editorTextFocus"
   },
   {
     "key": "shift+cmd+]",
     "command": "editor.unfold",
-    "when": "editorTextFocus && foldingEnabled"
+    "when": "editorTextFocus"
   },
+
+  // Focus Git source control panel
   {
     "key": "shift+cmd+g",
     "command": "workbench.view.scm",
     "when": "workbench.scm.active"
   },
+
+  // Go to definition (CMD + G)
   {
-    "key": "cmd+e",
-    "command": "-actions.findWithSelection"
-  },
-  {
-    "key": "cmd+e",
-    "command": "-cursor.composer.openAgentWindow"
+    "key": "cmd+g",
+    "command": "editor.action.revealDefinition",
+    "when": "editorHasDefinitionProvider && editorTextFocus && !isInEmbeddedEditor"
   }
 ]
