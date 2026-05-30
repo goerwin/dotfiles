@@ -1,8 +1,56 @@
 [
+  //
+  // Unbinds
+  //
+
+  {
+    "key": "cmd+n",
+    "command": "-workbench.action.files.newUntitledFile"
+  },
+  {
+    "key": "cmd+shift+n",
+    "command": "-workbench.action.newWindow"
+  },
+  {
+    "key": "cmd+shift+u",
+    "command": "-workbench.action.output.toggleOutput"
+  },
+  {
+    "key": "cmd+e",
+    "command": "-actions.findWithSelection"
+  },
+  {
+    "key": "cmd+i",
+    "command": "-composer.startComposerPrompt"
+  },
+  {
+    "key": "cmd+i",
+    "command": "-editor.action.triggerSuggest"
+  },
+  {
+    "key": "cmd+shift+i",
+    "command": "-composer.newAgentChat"
+  },
+  {
+    "key": "cmd+e",
+    "command": "-cursor.composer.openAgentWindow"
+  },
+  {
+    "key": "cmd+shift+b",
+    "command": "-composer.openBrowserTab"
+  },
+  {
+    "key": "cmd+shift+b",
+    "command": "-workbench.action.tasks.build"
+  },
+
+  //
   // Tab navigation/manipulation
+  //
+
   {
     "key": "f3",
-    "command": "workbench.action.previousEditor",
+    "command": "workbench.action.previousEditor"
   },
   {
     "key": "f4",
@@ -38,32 +86,17 @@
   },
   {
     "key": "cmd+n",
-    "command": "-workbench.action.files.newUntitledFile"
-  },
-  {
-    "key": "cmd+n",
     "command": "editor.action.moveSelectionToNextFindMatch",
     "when": "editorFocus"
-  },
-
-  {
-    "key": "cmd+shift+n",
-    "command": "-workbench.action.newWindow"
   },
   {
     "key": "cmd+shift+n",
     "command": "editor.action.moveSelectionToPreviousFindMatch"
   },
-
-  {
-    "key": "cmd+shift+u",
-    "command": "-workbench.action.output.toggleOutput"
-  },
   {
     "key": "cmd+shift+u",
     "command": "cursorRedo"
   },
-
   {
     "key": "cmd+alt+n",
     "command": "workbench.action.newWindow"
@@ -105,27 +138,28 @@
   },
 
   // Text jump/selection
-
   {
     "key": "alt+;",
     "command": "editor.action.jumpToBracket",
     "when": "editorTextFocus"
   },
 
-  // Terminal
+  // fold/unfold
+  {
+    "key": "shift+cmd+[",
+    "command": "editor.fold",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "shift+cmd+]",
+    "command": "editor.unfold",
+    "when": "editorTextFocus"
+  },
 
-  {
-    "key": "cmd+e",
-    "command": "-actions.findWithSelection"
-  },
-  {
-    "key": "cmd+shift+i",
-    "command": "-cursor.composer.openAgentWindow"
-  },
-  {
-    "key": "cmd+e",
-    "command": "-cursor.composer.openAgentWindow"
-  },
+  //
+  // Terminal
+  //
+
   {
     "key": "cmd+e",
     "command": "workbench.action.togglePanel"
@@ -166,18 +200,9 @@
     "when": "terminalFocus"
   },
 
+  //
   // Others
-
-  {
-    "key": "shift+cmd+[",
-    "command": "editor.fold",
-    "when": "editorTextFocus"
-  },
-  {
-    "key": "shift+cmd+]",
-    "command": "editor.unfold",
-    "when": "editorTextFocus"
-  },
+  //
 
   // Focus Git source control panel
   {
