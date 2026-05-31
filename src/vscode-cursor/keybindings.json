@@ -28,6 +28,10 @@
     "command": "-editor.action.triggerSuggest"
   },
   {
+    "key": "cmd+i",
+    "command": "-continue.focusEdit"
+  },
+  {
     "key": "cmd+shift+i",
     "command": "-composer.newAgentChat"
   },
