@@ -1,50 +1,23 @@
 {
-  // "workbench.editor.enablePreviewFromQuickOpen": false,
+  "window.title": "${activeEditorMedium} - ${folderName}",
   "window.restoreWindows": "all",
-  "window.confirmBeforeClose": "always",
-
-  // "gitlens.codeLens.scopes": ["document"],
-  // "gitlens.currentLine.enabled": false,
-
-  // "breadcrumbs.enabled": true,
-  // "eslint.enable": true,
+  "window.confirmBeforeClose": "never",
+  "window.newWindowDimensions": "maximized",
   "window.zoomLevel": -1,
 
-  // UI Modifications
-  // "editor.fontFamily": "xVictor Mono, Cascadia Code PL, Cascadia Code, xHack, FiraCode Nerd Font, Consolas, 'Courier New'",
+  "workbench.startupEditor": "newUntitledFile",
+  "workbench.colorTheme": "GitHub Dark Default",
+  "workbench.colorCustomizations": {
+    "editorCursor.foreground": "#ffff00"
+  },
+
   "editor.fontLigatures": true,
   "editor.lineHeight": 24,
+  "editor.cursorWidth": 3,
   "editor.fontSize": 16,
   "editor.cursorBlinking": "expand",
   "editor.scrollBeyondLastLine": false,
-
-  "workbench.startupEditor": "newUntitledFile",
-  // "explorer.openEditors.visible": 1,
-  // "workbench.commandPalette.preserveInput": true,
-  "window.title": "${activeEditorMedium} - ${folderName}",
-  // "editor.tabSize": 2,
-
-  // "editor.minimap.enabled": false,
-  // "editor.minimap.showSlider": "always",
-
-  // "emmet.showExpandedAbbreviation": "inMarkupAndStylesheetFilesOnly",
-  // "editor.smoothScrolling": true,
-  "advancedNewFile.convenienceOptions": ["current", "last", "root"],
-  // "git.autofetch": true,
   "editor.wordWrap": "on",
-  // "diffEditor.ignoreTrimWhitespace": true,
-  // "editor.multiCursorModifier": "alt",
-  // "security.workspace.trust.untrustedFiles": "open",
-  // "editor.suggestSelection": "first",
-  // "editor.accessibilitySupport": "off",
-  // "git.confirmSync": false,
-  // "editor.unicodeHighlight.invisibleCharacters": false,
-  // "git.suggestSmartCommit": false,
-  // "workbench.editor.empty.hint": "hidden",
-
-  //
-  // Terminal
-  //
 
   "terminal.integrated.fontSize": 16,
   "terminal.integrated.confirmOnKill": "always",
@@ -53,63 +26,21 @@
   "terminal.integrated.mouseWheelScrollSensitivity": 3,
   "terminal.integrated.gpuAcceleration": "off",
 
-  // "git.openRepositoryInParentFolders": "never",
-  // "tailwindCSS.experimental.classRegex": [
-  //   ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-  //   ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  // ],
-  // "extensions.ignoreRecommendations": true,
-  "workbench.colorTheme": "GitHub Dark Default",
-
-  "editor.cursorWidth": 3,
-  "workbench.colorCustomizations": {
-    "editorCursor.foreground": "#ffff00"
-  },
-
   "files.associations": {
     "css": "scss",
     "json": "jsonc",
     "*.svg": "html"
   },
 
+  "advancedNewFile.convenienceOptions": ["current", "last", "root"],
+
+  //
   // FORMATTERS
+  //
 
   "editor.defaultFormatter": "esbenp.prettier-vscode",
 
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[astro]": {
-    "editor.defaultFormatter": "astro-build.astro-vscode"
-  },
   "[shellscript]": {
     "editor.defaultFormatter": "mkhl.shfmt"
-  },
-  "[c]": {
-    "editor.defaultFormatter": "xaver.clang-format"
-  },
-  "[cpp]": {
-    "editor.defaultFormatter": "xaver.clang-format"
-  },
-  "[objective-c]": {
-    "editor.defaultFormatter": "xaver.clang-format"
-  },
-  "[objective-cpp]": {
-    "editor.defaultFormatter": "xaver.clang-format"
   }
 }
