@@ -13,6 +13,7 @@
 
   "editor.fontLigatures": true,
   "editor.lineHeight": 24,
+  "editor.smoothScrolling": true,
   "editor.cursorWidth": 3,
   "editor.fontSize": 16,
   "editor.cursorBlinking": "expand",
