@@ -32,15 +32,17 @@
     "*.svg": "html"
   },
 
-  "advancedNewFile.convenienceOptions": ["current", "last", "root"],
-
-  //
-  // FORMATTERS
-  //
+  "git.autofetch": true,
 
   "editor.defaultFormatter": "esbenp.prettier-vscode",
 
   "[shellscript]": {
     "editor.defaultFormatter": "mkhl.shfmt"
-  }
+  },
+
+  //
+  // Extensions
+  //
+
+  "advancedNewFile.convenienceOptions": ["current", "last", "root"]
 }
