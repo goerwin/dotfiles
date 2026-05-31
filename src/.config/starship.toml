@@ -4,3 +4,6 @@ truncation_length=0
 
 [nodejs]
 symbol = "[⬢](bold green) "
+
+[git_branch]
+symbol = "🌱 "

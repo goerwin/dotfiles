@@ -1,5 +1,6 @@
 # .zshrc is sourced in interactive shells. It should contain commands to set up
 # aliases, functions, options, key bindings, etc.
+# .zshenv is sourced in interactive shells automatically. It should contain environment variables.
 
 ZSH_PATH=$HOME/.zsh
 TEXT_EDITOR="cursor"
@@ -127,11 +128,6 @@ alias rmrf="rm -rf"
 # Main
 #//////////////////////////
 
-# Create a .zshenv file in your home directory to load environment variables specific to your machine
-# For example: `export MACHINE_TYPE="work"`
-# Load environment variables from .zshenv file
-isFile ~/.zshenv && source ~/.zshenv
-
 # Homebrew
 if ! isCommand "brew"; then
   echo "Installing Homebrew..."
@@ -229,7 +225,3 @@ if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
   # and also a region (already done above in AWS_REGION).
   # Then, it should ask you for SSO login.
 fi
-
-export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS="1"
-export ANTHROPIC_DEFAULT_OPUS_MODEL="claude-opus-4-7"
-export ANTHROPIC_MODEL="$ANTHROPIC_DEFAULT_OPUS_MODEL"
