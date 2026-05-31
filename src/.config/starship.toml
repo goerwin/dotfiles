@@ -7,3 +7,6 @@ symbol = "[⬢](bold green) "
 
 [git_branch]
 symbol = "🌱 "
+
+[git_status]
+up_to_date = ''
