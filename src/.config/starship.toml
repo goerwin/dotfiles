@@ -2,6 +2,13 @@
 truncate_to_repo=false
 truncation_length=0
 
+[battery]
+full_symbol = "• "
+charging_symbol = "⇡ "
+discharging_symbol = "⇣ "
+unknown_symbol = "❓ "
+empty_symbol = "❗ "
+
 [nodejs]
 symbol = "[⬢](bold green) "
 
