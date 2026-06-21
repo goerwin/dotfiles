@@ -1,7 +1,7 @@
 {
   "window.title": "${activeEditorMedium} - ${folderName}",
   "window.restoreWindows": "all",
-  "window.confirmBeforeClose": "never",
+  "window.confirmBeforeClose": "always",
   "window.newWindowDimensions": "maximized",
   "window.zoomLevel": -1,
 
