@@ -33,7 +33,7 @@ done
   [ -d "$HOME/Library/Application Support/Cursor/User" ] && cp -r ./src/vscode-cursor/* "$HOME/Library/Application Support/Cursor/User/" && echo "  ✅ Cursor"
 }
 
-echo "\n🔄 Sourcing $homeDir/.zshrc"
 echo "\n🎉 Done!"
+echo "👉 Run 'source ~/.zshrc' to apply the changes."
 
 
