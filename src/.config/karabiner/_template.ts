@@ -79,10 +79,16 @@ const VIM_SHIFT_KEY = 'f';
 const googleChromeConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['com.google.Chrome'] }];
 const ankiLauncherConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['net.ankiweb.launcher'] }];
 const g10ControlConditions = [{ type: 'device_if', identifiers: [{ vendor_id: 6421, product_id: 4133 }] }];
-const googleChromeFinderWarpXcodeConditions = [
+const f3f4CmdHCmdLTabberConditions = [
   {
     type: 'frontmost_application_if',
-    bundle_identifiers: ['com.google.Chrome', 'com.apple\\.finder', 'dev.warp.Warp-Stable', 'com.apple.dt.Xcode'],
+    bundle_identifiers: [
+      'com.google.Chrome',
+      'com.apple\\.finder',
+      'dev.warp.Warp-Stable',
+      'com.apple.dt.Xcode',
+      'app.supabit.supacode',
+    ],
   },
 ];
 
@@ -340,25 +346,25 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: googleChromeFinderWarpXcodeConditions,
+                conditions: f3f4CmdHCmdLTabberConditions,
                 from: { key_code: 'h', modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] } },
                 to: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
               },
               {
                 type: 'basic',
-                conditions: googleChromeFinderWarpXcodeConditions,
+                conditions: f3f4CmdHCmdLTabberConditions,
                 from: { key_code: 'l', modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] } },
                 to: [{ key_code: 'tab', modifiers: ['left_control'] }],
               },
               {
                 type: 'basic',
-                conditions: googleChromeFinderWarpXcodeConditions,
+                conditions: f3f4CmdHCmdLTabberConditions,
                 from: { key_code: 'f3', modifiers: { optional: ['caps_lock'] } },
                 to: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
               },
               {
                 type: 'basic',
-                conditions: googleChromeFinderWarpXcodeConditions,
+                conditions: f3f4CmdHCmdLTabberConditions,
                 from: { key_code: 'f4', modifiers: { optional: ['caps_lock'] } },
                 to: [{ key_code: 'tab', modifiers: ['left_control'] }],
               },
