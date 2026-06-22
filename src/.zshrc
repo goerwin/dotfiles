@@ -96,6 +96,7 @@ alias gdc="git diff --cached"
 alias gds="git diff --staged"
 alias gclean="git clean"
 alias gcleanf="git clean . -f"
+alias gopenpr='gh pr view "${$(git rev-parse --abbrev-ref "@{u}" 2>/dev/null)#*/}" --web'
 
 # NPM
 alias npmr="npm run"
