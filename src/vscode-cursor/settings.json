@@ -41,6 +41,8 @@
     "editor.defaultFormatter": "mkhl.shfmt"
   },
 
+  "editor.accessibilitySupport": "off",
+
   //
   // Extensions
   //

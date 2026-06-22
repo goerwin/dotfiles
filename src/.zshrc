@@ -88,17 +88,13 @@ alias ga="git add"
 alias ga.="git add ."
 alias gp="git push"
 alias gpf="git push --force"
-alias gpo="git push origin"
-alias gpom="git push origin main"
-alias gpomf="git push origin main --force"
-alias greset="git reset"
-alias gcheckout="git checkout"
 alias gch="git checkout"
 alias gch.="git checkout ."
 alias gd="git diff"
 alias gd.="git diff ."
 alias gdc="git diff --cached"
 alias gds="git diff --staged"
+alias gclean="git clean"
 alias gcleanf="git clean . -f"
 
 # NPM
@@ -118,11 +114,12 @@ alias npmug="npm uninstall -g"
 
 # CD
 alias cd.="cd ."
-alias cdb="cd -"
+alias cdb="cd -" # go back to previous directory
 
 # Others
 alias sourcezsh="source ~/.zshrc"
 alias rmrf="rm -rf"
+alias cc="claude"
 
 #//////////////////////////
 # Main
