@@ -84,7 +84,7 @@ const f3f4CmdHCmdLTabberConditions = [
     type: 'frontmost_application_if',
     bundle_identifiers: [
       'com.google.Chrome',
-      'com.apple\\.finder',
+      'com.apple.finder',
       'dev.warp.Warp-Stable',
       'com.apple.dt.Xcode',
       'app.supabit.supacode',
@@ -461,9 +461,22 @@ const karabinerConfig = {
               {
                 type: 'basic',
                 conditions: [
-                  { bundle_identifiers: ['^com\\.tinyspeck\\.slackmacgap$'], type: 'frontmost_application_if' },
+                  { bundle_identifiers: ['com.tinyspeck.slackmacgap'], type: 'frontmost_application_if' },
                 ],
                 from: { key_code: 'p', modifiers: { mandatory: ['left_command'] } },
+                to: [{ key_code: 'k', modifiers: ['left_command'] }],
+              },
+            ],
+          },
+          {
+            description: 'Apps (Supacode) - Cmd + O to clear terminal',
+            manipulators: [
+              {
+                type: 'basic',
+                conditions: [
+                  { bundle_identifiers: ['app.supabit.supacode'], type: 'frontmost_application_if' },
+                ],
+                from: { key_code: 'o', modifiers: { mandatory: ['left_command'] } },
                 to: [{ key_code: 'k', modifiers: ['left_command'] }],
               },
             ],
@@ -474,7 +487,7 @@ const karabinerConfig = {
               {
                 type: 'basic',
                 conditions: [
-                  { bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'], type: 'frontmost_application_if' },
+                  { bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_if' },
                 ],
                 from: { key_code: 'd', modifiers: { mandatory: ['left_command'] } },
                 to: [{ key_code: 'c', modifiers: ['left_option'] }],
@@ -482,7 +495,7 @@ const karabinerConfig = {
               {
                 type: 'basic',
                 conditions: [
-                  { bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'], type: 'frontmost_application_unless' },
+                  { bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' },
                 ],
                 from: { key_code: 'f1', modifiers: { mandatory: ['left_command'], optional: ['any'] } },
                 to: [{ key_code: 'f1' }],
@@ -490,7 +503,7 @@ const karabinerConfig = {
               {
                 type: 'basic',
                 conditions: [
-                  { bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'], type: 'frontmost_application_unless' },
+                  { bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' },
                 ],
                 from: { key_code: 'f2', modifiers: { mandatory: ['left_command'], optional: ['any'] } },
                 to: [{ key_code: 'f2' }],
@@ -498,7 +511,7 @@ const karabinerConfig = {
               {
                 type: 'basic',
                 conditions: [
-                  { bundle_identifiers: ['^com\\.blizzard\\.starcraft2$'], type: 'frontmost_application_unless' },
+                  { bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' },
                 ],
                 from: { key_code: 'f10' },
                 to: [{ consumer_key_code: 'mute' }],
