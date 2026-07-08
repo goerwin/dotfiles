@@ -82,6 +82,7 @@ function zshRemovePlugins() {
 alias g="git"
 alias gc="git commit"
 alias gcm="git commit -m"
+gcmnv(){ git commit -m "$*" --no-verify; }
 alias gcamend="git commit --amend -C HEAD"
 alias gs="git status"
 alias ga="git add"
