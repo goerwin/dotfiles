@@ -33,6 +33,15 @@ done
   [ -d "$HOME/Library/Application Support/Cursor/User" ] && cp -r ./src/vscode-cursor/* "$HOME/Library/Application Support/Cursor/User/" && echo "  ✅ Cursor"
 }
 
+# Copy AGENTS.md and link for Claude/Codex
+[ -f "./src/ai/AGENTS.md" ] && {
+  echo "\n🤖 Syncing agent settings"
+  cp "./src/ai/AGENTS.md" "$homeDir/AGENTS.md" && echo "  ✅ AGENTS.md"
+  mkdir -p "$homeDir/.claude" "$homeDir/.codex"
+  ln -sf "../AGENTS.md" "$homeDir/.claude/CLAUDE.md" && echo "  ✅ .claude/CLAUDE.md → AGENTS.md"
+  ln -sf "../AGENTS.md" "$homeDir/.codex/AGENTS.md" && echo "  ✅ .codex/AGENTS.md → AGENTS.md"
+}
+
 echo "\n🎉 Done!"
 echo "👉 Run 'source ~/.zshrc' to apply the changes."
 
