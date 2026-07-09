@@ -166,7 +166,13 @@
 
   {
     "key": "cmd+e",
-    "command": "workbench.action.togglePanel"
+    "command": "workbench.action.terminal.focus",
+    "when": "!terminalFocus"
+  },
+  {
+    "key": "cmd+e",
+    "command": "workbench.action.togglePanel",
+    "when": "terminalFocus"
   },
   {
     "key": "f3",

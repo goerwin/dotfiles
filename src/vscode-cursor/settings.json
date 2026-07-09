@@ -23,6 +23,7 @@
   "terminal.integrated.fontSize": 16,
   "terminal.integrated.confirmOnKill": "always",
   "terminal.integrated.confirmOnExit": "hasChildProcesses",
+
   // fixes by claude code
   "terminal.integrated.mouseWheelScrollSensitivity": 3,
   "terminal.integrated.gpuAcceleration": "off",
@@ -42,6 +43,9 @@
   },
 
   "editor.accessibilitySupport": "off",
+
+  // Helps with the terminal not loading properly on new windows
+  "terminal.integrated.enablePersistentSessions": false,
 
   //
   // Extensions
