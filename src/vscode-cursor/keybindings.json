@@ -209,6 +209,13 @@
     "command": "workbench.action.terminal.clear",
     "when": "terminalFocus"
   },
+  {
+    // Send enter to terminal (fixed by claude code)
+    "key": "shift+enter",
+    "command": "workbench.action.terminal.sendSequence",
+    "when": "terminalFocus",
+    "args": { "text": "\u001b\r" }
+  },
 
   //
   // Others
@@ -228,11 +235,9 @@
     "when": "editorHasDefinitionProvider && editorTextFocus && !isInEmbeddedEditor"
   },
 
-  // Send enter to terminal (fixed by claude code)
+  // Toggle Agent Panel
   {
-    "key": "shift+enter",
-    "command": "workbench.action.terminal.sendSequence",
-    "when": "terminalFocus",
-    "args": { "text": "\u001b\r" }
+    "key": "cmd+i",
+    "command": "workbench.action.toggleAgentsFromKeyboard"
   }
 ]
