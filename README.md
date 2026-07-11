@@ -1,7 +1,25 @@
 # Dotfiles
 
-Copy all files from `src` into your `<homeDir>` using:
+Personal macOS configuration.
+
+## Install
 
 ```sh
-$ zsh install.zsh
+zsh install.zsh
+source ~/.zshrc
+```
+
+## What's included
+
+- Shell configuration
+- Window management
+- Karabiner and key remaps
+- VS Code / Cursor settings
+- AI agent configuration
+
+## Development
+
+```sh
+make lint
+make fix
 ```
