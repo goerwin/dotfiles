@@ -1,10 +1,11 @@
-// APP: https://github.com/kasper/phoenix
+/** Phoenix window grid manager. https://github.com/kasper/phoenix */
 
 const HOR_DIVISIONS = 16;
 const VER_DIVISIONS = 16;
 const GAP_W = 0;
 const GAP_H = 0;
 
+/** Splits a dimension into cell sizes and start positions. */
 function getDimensionMeasures(size, divisions, gap = 0) {
   const measures = [];
   const positions = [];
@@ -32,6 +33,7 @@ function getDimensionMeasures(size, divisions, gap = 0) {
   return { measures, positions };
 }
 
+/** Builds horizontal and vertical grid measures for a screen area. */
 function getGrid({ sizeW, sizeH, hDivisions, vDivisions, gapW, gapH }) {
   const { measures: widths, positions: horPositions } = getDimensionMeasures(
     sizeW,
@@ -48,6 +50,7 @@ function getGrid({ sizeW, sizeH, hDivisions, vDivisions, gapW, gapH }) {
   return { widths, horPositions, heights, verPositions };
 }
 
+/** Shows a short Phoenix modal message. */
 function showModal(msg, duration = 1) {
   const modal = new Modal();
   modal.message = JSON.stringify(msg);
@@ -55,6 +58,7 @@ function showModal(msg, duration = 1) {
   modal.show();
 }
 
+/** Returns the focused window and its screen frame, or null. */
 function getFocusedWindowInfo() {
   const window = Window.focused();
   const windowFrame = window?.frame?.();
@@ -66,6 +70,7 @@ function getFocusedWindowInfo() {
   return { window, windowFrame, screen, screenFrame };
 }
 
+/** Finds the grid start edges nearest the window's leading edge. */
 function getWindowStartEdges({ positions, windowStartEdge, screenStartEdge }) {
   const posLen = positions.length;
   let curWindowStartEdge = positions[0];
@@ -87,6 +92,7 @@ function getWindowStartEdges({ positions, windowStartEdge, screenStartEdge }) {
   return { curWindowStartEdge, prevWindowStartEdge, nextWindowStartEdge };
 }
 
+/** Finds the grid end edges nearest the window's trailing edge. */
 function getWindowEndEdges({
   positions,
   measures,
@@ -117,6 +123,7 @@ function getWindowEndEdges({
   return { curWindowEndEdge, prevWindowEndEdge, nextWindowEndEdge };
 }
 
+/** Resizes or moves a window to fit the target grid cells. */
 function forceWindowInGrid({
   onlyMove,
   dir,
@@ -193,6 +200,7 @@ function forceWindowInGrid({
   throw new Error('Could not force the window in Grid');
 }
 
+/** Resizes or moves the focused window along one grid axis. */
 function changeWindowSize(dir) {
   const focusedWindowInfo = getFocusedWindowInfo();
 
@@ -307,6 +315,7 @@ function changeWindowSize(dir) {
     });
 }
 
+/** Snaps the focused window to a preset half-screen layout. */
 function set4x4WindowFrame(newWinKey, direction, newWinMaps) {
   const focusedWindowInfo = getFocusedWindowInfo();
   if (!focusedWindowInfo) return;
