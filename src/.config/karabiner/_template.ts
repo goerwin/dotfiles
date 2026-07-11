@@ -9,24 +9,6 @@ import { fileURLToPath } from 'node:url';
 
 import { getKarabinerEventFromLetter } from './helper.ts';
 
-function longTapToManipupators(args: { key: string; to: unknown; type?: 'normal' | 'vendor' }) {
-  const { key, to, type = 'normal' } = args;
-  const keyType = type === 'normal' ? 'key_code' : 'apple_vendor_top_case_key_code';
-
-  return [
-    {
-      type: 'basic',
-      from: { [keyType]: key, modifiers: { optional: ['any'] } },
-      to_if_alone: [{ [keyType]: key }],
-      to_if_held_down: to,
-      parameters: {
-        'basic.to_if_alone_timeout_milliseconds': 200,
-        'basic.to_if_held_down_threshold_milliseconds': 200,
-      },
-    },
-  ];
-}
-
 function doubleTapToManipupators(args: { key: string; to: unknown; globalVar: string; type?: 'normal' | 'vendor' }) {
   const { key, to, globalVar, type = 'normal' } = args;
   const keyType = type === 'normal' ? 'key_code' : 'apple_vendor_top_case_key_code';
@@ -60,8 +42,8 @@ function doubleTapToManipupators(args: { key: string; to: unknown; globalVar: st
 try {
   // @ts-expect-error - process.loadEnvFile is not defined in the type definitions
   process.loadEnvFile(fileURLToPath(import.meta.resolve('../../../.env')));
-} catch (error) {
-  console.warn("Warning: couldn't load .env file, perhaps it doesn't exist:", error.message);
+} catch (error: unknown) {
+  console.warn("Warning: couldn't load .env file, perhaps it doesn't exist:", (error as Error)?.message);
 }
 
 const F18_IS_DOWN = 'f18isDown';
