@@ -39,9 +39,14 @@ export function getKarabinerEventFromLetter(letter: unknown) {
  *
  * @returns Karabiner event representation of the long tap to manipupators
  */
-export function longTapToManipupators(args: { key: string; to: unknown; type?: 'normal' | 'vendor' }) {
+export function longTapToManipupators(args: {
+  key: string;
+  to: unknown;
+  type?: 'normal' | 'vendor';
+}) {
   const { key, to, type = 'normal' } = args;
-  const keyType = type === 'normal' ? 'key_code' : 'apple_vendor_top_case_key_code';
+  const keyType =
+    type === 'normal' ? 'key_code' : 'apple_vendor_top_case_key_code';
 
   return [
     {

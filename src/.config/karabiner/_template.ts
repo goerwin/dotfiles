@@ -9,9 +9,15 @@ import { fileURLToPath } from 'node:url';
 
 import { getKarabinerEventFromLetter } from './helper.ts';
 
-function doubleTapToManipupators(args: { key: string; to: unknown; globalVar: string; type?: 'normal' | 'vendor' }) {
+function doubleTapToManipupators(args: {
+  key: string;
+  to: unknown;
+  globalVar: string;
+  type?: 'normal' | 'vendor';
+}) {
   const { key, to, globalVar, type = 'normal' } = args;
-  const keyType = type === 'normal' ? 'key_code' : 'apple_vendor_top_case_key_code';
+  const keyType =
+    type === 'normal' ? 'key_code' : 'apple_vendor_top_case_key_code';
 
   return [
     {
@@ -43,7 +49,10 @@ try {
   // @ts-expect-error - process.loadEnvFile is not defined in the type definitions
   process.loadEnvFile(fileURLToPath(import.meta.resolve('../../../.env')));
 } catch (error: unknown) {
-  console.warn("Warning: couldn't load .env file, perhaps it doesn't exist:", (error as Error)?.message);
+  console.warn(
+    "Warning: couldn't load .env file, perhaps it doesn't exist:",
+    (error as Error)?.message,
+  );
 }
 
 const F18_IS_DOWN = 'f18isDown';
@@ -58,9 +67,21 @@ const VIM_KEYS = [
 // @ts-expect-error - process.env is not defined in the type definitions
 const LOCAL_PW = process.env.LOCAL_PW;
 const VIM_SHIFT_KEY = 'f';
-const googleChromeConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['com.google.Chrome'] }];
-const ankiLauncherConditions = [{ type: 'frontmost_application_if', bundle_identifiers: ['net.ankiweb.launcher'] }];
-const g10ControlConditions = [{ type: 'device_if', identifiers: [{ vendor_id: 6421, product_id: 4133 }] }];
+const googleChromeConditions = [
+  {
+    type: 'frontmost_application_if',
+    bundle_identifiers: ['com.google.Chrome'],
+  },
+];
+const ankiLauncherConditions = [
+  {
+    type: 'frontmost_application_if',
+    bundle_identifiers: ['net.ankiweb.launcher'],
+  },
+];
+const g10ControlConditions = [
+  { type: 'device_if', identifiers: [{ vendor_id: 6421, product_id: 4133 }] },
+];
 const f3f4CmdHCmdLTabberConditions = [
   {
     type: 'frontmost_application_if',
@@ -97,17 +118,36 @@ const karabinerConfig = {
         {
           identifiers: { is_keyboard: true, product_id: 32, vendor_id: 9494 },
           simple_modifications: [
-            { from: { key_code: 'grave_accent_and_tilde' }, to: [{ key_code: 'grave_accent_and_tilde' }] },
-            { from: { key_code: 'left_command' }, to: [{ key_code: 'left_option' }] },
-            { from: { key_code: 'left_option' }, to: [{ key_code: 'left_command' }] },
-            { from: { key_code: 'right_command' }, to: [{ key_code: 'left_option' }] },
-            { from: { key_code: 'right_option' }, to: [{ key_code: 'left_command' }] },
+            {
+              from: { key_code: 'grave_accent_and_tilde' },
+              to: [{ key_code: 'grave_accent_and_tilde' }],
+            },
+            {
+              from: { key_code: 'left_command' },
+              to: [{ key_code: 'left_option' }],
+            },
+            {
+              from: { key_code: 'left_option' },
+              to: [{ key_code: 'left_command' }],
+            },
+            {
+              from: { key_code: 'right_command' },
+              to: [{ key_code: 'left_option' }],
+            },
+            {
+              from: { key_code: 'right_option' },
+              to: [{ key_code: 'left_command' }],
+            },
           ],
         },
 
         // G10 Control
         {
-          identifiers: { is_pointing_device: true, product_id: 4133, vendor_id: 6421 },
+          identifiers: {
+            is_pointing_device: true,
+            product_id: 4133,
+            vendor_id: 6421,
+          },
           ignore: false,
           pointing_motion_wheels_multiplier: 0.5,
           pointing_motion_xy_multiplier: 0.5,
@@ -128,10 +168,22 @@ const karabinerConfig = {
       ],
       simple_modifications: [
         { from: { key_code: 'caps_lock' }, to: [{ key_code: 'f18' }] },
-        { from: { key_code: 'grave_accent_and_tilde' }, to: [{ key_code: 'left_shift' }] },
-        { from: { key_code: 'non_us_backslash' }, to: [{ key_code: 'grave_accent_and_tilde' }] },
-        { from: { key_code: 'right_command' }, to: [{ key_code: 'left_command' }] },
-        { from: { key_code: 'right_option' }, to: [{ key_code: 'left_option' }] },
+        {
+          from: { key_code: 'grave_accent_and_tilde' },
+          to: [{ key_code: 'left_shift' }],
+        },
+        {
+          from: { key_code: 'non_us_backslash' },
+          to: [{ key_code: 'grave_accent_and_tilde' }],
+        },
+        {
+          from: { key_code: 'right_command' },
+          to: [{ key_code: 'left_command' }],
+        },
+        {
+          from: { key_code: 'right_option' },
+          to: [{ key_code: 'left_option' }],
+        },
         { from: { key_code: 'right_shift' }, to: [{ key_code: 'left_shift' }] },
       ],
       complex_modifications: {
@@ -150,17 +202,26 @@ const karabinerConfig = {
               },
               {
                 type: 'basic',
-                conditions: [{ name: F18_IS_DOWN, type: 'variable_if', value: 1 }],
+                conditions: [
+                  { name: F18_IS_DOWN, type: 'variable_if', value: 1 },
+                ],
                 from: { key_code: key, modifiers: { optional: ['any'] } },
                 to: { key_code: to },
               },
             ]).concat([
               {
                 type: 'basic',
-                conditions: [{ name: F18_IS_DOWN, type: 'variable_if', value: 1 }],
-                from: { key_code: VIM_SHIFT_KEY, modifiers: { optional: ['any'] } },
+                conditions: [
+                  { name: F18_IS_DOWN, type: 'variable_if', value: 1 },
+                ],
+                from: {
+                  key_code: VIM_SHIFT_KEY,
+                  modifiers: { optional: ['any'] },
+                },
                 to: [{ set_variable: { name: VIM_SHIFT_DOWN, value: 1 } }],
-                to_after_key_up: [{ set_variable: { name: VIM_SHIFT_DOWN, value: 0 } }],
+                to_after_key_up: [
+                  { set_variable: { name: VIM_SHIFT_DOWN, value: 0 } },
+                ],
               },
             ]),
           },
@@ -169,13 +230,21 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: [{ name: 'f18isDown', type: 'variable_if', value: 1 }],
-                from: { key_code: 'c', modifiers: { mandatory: ['left_option'], optional: ['any'] } },
+                conditions: [
+                  { name: 'f18isDown', type: 'variable_if', value: 1 },
+                ],
+                from: {
+                  key_code: 'c',
+                  modifiers: { mandatory: ['left_option'], optional: ['any'] },
+                },
                 to: [{ pointing_button: 'button2' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'c', modifiers: { mandatory: ['left_option'], optional: ['any'] } },
+                from: {
+                  key_code: 'c',
+                  modifiers: { mandatory: ['left_option'], optional: ['any'] },
+                },
                 to: [{ pointing_button: 'button1' }],
               },
             ],
@@ -188,7 +257,9 @@ const karabinerConfig = {
                 from: { key_code: 'f18', modifiers: { optional: ['any'] } },
                 parameters: { 'basic.to_if_alone_timeout_milliseconds': 300 },
                 to: [{ set_variable: { name: 'f18isDown', value: 1 } }],
-                to_after_key_up: [{ set_variable: { name: 'f18isDown', value: 0 } }],
+                to_after_key_up: [
+                  { set_variable: { name: 'f18isDown', value: 0 } },
+                ],
                 to_if_alone: [{ key_code: 'escape' }],
               },
             ],
@@ -197,19 +268,25 @@ const karabinerConfig = {
             description: 'Global - Capslock as Control for some keys',
             manipulators: ['c', 'v', 'e', 'spacebar', 'tab'].map((key) => ({
               type: 'basic',
-              conditions: [{ name: F18_IS_DOWN, type: 'variable_if', value: 1 }],
+              conditions: [
+                { name: F18_IS_DOWN, type: 'variable_if', value: 1 },
+              ],
               from: { key_code: key, modifiers: { optional: ['any'] } },
               to: [{ key_code: key, modifiers: ['left_control'] }],
             })),
           },
           {
-            description: 'Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Fn + J/K',
+            description:
+              'Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Fn + J/K',
             manipulators: [
               {
                 type: 'basic',
                 from: {
                   key_code: 'j',
-                  modifiers: { mandatory: ['left_command'], optional: ['left_shift', 'caps_lock'] },
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['left_shift', 'caps_lock'],
+                  },
                 },
                 to: [{ key_code: 'page_down' }],
               },
@@ -217,18 +294,27 @@ const karabinerConfig = {
                 type: 'basic',
                 from: {
                   key_code: 'k',
-                  modifiers: { mandatory: ['left_command'], optional: ['left_shift', 'caps_lock'] },
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['left_shift', 'caps_lock'],
+                  },
                 },
                 to: [{ key_code: 'page_up' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'j', modifiers: { mandatory: ['fn'], optional: ['any'] } },
+                from: {
+                  key_code: 'j',
+                  modifiers: { mandatory: ['fn'], optional: ['any'] },
+                },
                 to: [{ key_code: 'j', modifiers: ['left_command'] }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'k', modifiers: { mandatory: ['fn'], optional: ['any'] } },
+                from: {
+                  key_code: 'k',
+                  modifiers: { mandatory: ['fn'], optional: ['any'] },
+                },
                 to: [{ key_code: 'k', modifiers: ['left_command'] }],
               },
             ],
@@ -240,7 +326,10 @@ const karabinerConfig = {
                 type: 'basic',
                 from: {
                   key_code: 'j',
-                  modifiers: { mandatory: ['left_command', 'left_option'], optional: ['caps_lock'] },
+                  modifiers: {
+                    mandatory: ['left_command', 'left_option'],
+                    optional: ['caps_lock'],
+                  },
                 },
                 to: [{ key_code: 'down_arrow', modifiers: ['left_control'] }],
               },
@@ -251,8 +340,13 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                from: { key_code: 'm', modifiers: { mandatory: ['left_option'] } },
-                to: [{ key_code: '0', modifiers: ['left_option', 'left_command'] }],
+                from: {
+                  key_code: 'm',
+                  modifiers: { mandatory: ['left_option'] },
+                },
+                to: [
+                  { key_code: '0', modifiers: ['left_option', 'left_command'] },
+                ],
               },
             ],
           },
@@ -262,7 +356,9 @@ const karabinerConfig = {
               type: 'vendor',
               key: 'keyboard_fn',
               globalVar: 'g_whisperer_pressed',
-              to: [{ key_code: '9', modifiers: ['left_command', 'left_option'] }],
+              to: [
+                { key_code: '9', modifiers: ['left_command', 'left_option'] },
+              ],
             }),
           },
           {
@@ -278,42 +374,66 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                from: { key_code: 'f1', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f1',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'display_brightness_decrement' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f2', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f2',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'display_brightness_increment' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f7', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f7',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'rewind' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f8', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f8',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'play_or_pause' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f9', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f9',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'fast_forward' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f10', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f10',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'mute' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f11', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f11',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'volume_decrement' }],
               },
               {
                 type: 'basic',
-                from: { key_code: 'f12', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f12',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ consumer_key_code: 'volume_increment' }],
               },
             ],
@@ -324,30 +444,59 @@ const karabinerConfig = {
           },
 
           {
-            description: 'Apps (Finder, Google Chrome, Warp, Xcode) - Cmd + H/L and F3/F4 to prev/next tab',
+            description:
+              'Apps (Finder, Google Chrome, Warp, Xcode) - Cmd + H/L and F3/F4 to prev/next tab',
             manipulators: [
               {
                 type: 'basic',
                 conditions: f3f4CmdHCmdLTabberConditions,
-                from: { key_code: 'h', modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] } },
-                to: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
+                from: {
+                  key_code: 'h',
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['caps_lock'],
+                  },
+                },
+                to: [
+                  {
+                    key_code: 'tab',
+                    modifiers: ['left_control', 'left_shift'],
+                  },
+                ],
               },
               {
                 type: 'basic',
                 conditions: f3f4CmdHCmdLTabberConditions,
-                from: { key_code: 'l', modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'l',
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['caps_lock'],
+                  },
+                },
                 to: [{ key_code: 'tab', modifiers: ['left_control'] }],
               },
               {
                 type: 'basic',
                 conditions: f3f4CmdHCmdLTabberConditions,
-                from: { key_code: 'f3', modifiers: { optional: ['caps_lock'] } },
-                to: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
+                from: {
+                  key_code: 'f3',
+                  modifiers: { optional: ['caps_lock'] },
+                },
+                to: [
+                  {
+                    key_code: 'tab',
+                    modifiers: ['left_control', 'left_shift'],
+                  },
+                ],
               },
               {
                 type: 'basic',
                 conditions: f3f4CmdHCmdLTabberConditions,
-                from: { key_code: 'f4', modifiers: { optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'f4',
+                  modifiers: { optional: ['caps_lock'] },
+                },
                 to: [{ key_code: 'tab', modifiers: ['left_control'] }],
               },
             ],
@@ -358,13 +507,20 @@ const karabinerConfig = {
               {
                 type: 'basic',
                 conditions: googleChromeConditions,
-                from: { key_code: 'semicolon', modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'semicolon',
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['caps_lock'],
+                  },
+                },
                 to: [{ key_code: 'l', modifiers: ['left_command'] }],
               },
             ],
           },
           {
-            description: 'Apps (Google Chrome) - F5 to Alt + M and F6 to Alt + T',
+            description:
+              'Apps (Google Chrome) - F5 to Alt + M and F6 to Alt + T',
             manipulators: [
               {
                 type: 'basic',
@@ -386,8 +542,16 @@ const karabinerConfig = {
               {
                 type: 'basic',
                 conditions: googleChromeConditions,
-                from: { key_code: 'f', modifiers: { mandatory: ['left_command', 'left_option'] } },
-                to: [{ key_code: 'f', modifiers: ['left_command', 'left_control'] }],
+                from: {
+                  key_code: 'f',
+                  modifiers: { mandatory: ['left_command', 'left_option'] },
+                },
+                to: [
+                  {
+                    key_code: 'f',
+                    modifiers: ['left_command', 'left_control'],
+                  },
+                ],
               },
             ],
           },
@@ -397,7 +561,13 @@ const karabinerConfig = {
               {
                 type: 'basic',
                 conditions: googleChromeConditions,
-                from: { key_code: 'e', modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] } },
+                from: {
+                  key_code: 'e',
+                  modifiers: {
+                    mandatory: ['left_command'],
+                    optional: ['caps_lock'],
+                  },
+                },
                 to: [
                   { key_code: 'l', modifiers: ['left_command'] },
                   { key_code: 'j' },
@@ -418,16 +588,22 @@ const karabinerConfig = {
             ],
           },
           {
-            description: 'Apps (Google Chrome) - Cmd + shift + i to toggle dev tools',
+            description:
+              'Apps (Google Chrome) - Cmd + shift + i to toggle dev tools',
             manipulators: [
               {
                 type: 'basic',
                 conditions: googleChromeConditions,
                 from: {
                   key_code: 'i',
-                  modifiers: { mandatory: ['left_command', 'left_shift'], optional: ['caps_lock'] },
+                  modifiers: {
+                    mandatory: ['left_command', 'left_shift'],
+                    optional: ['caps_lock'],
+                  },
                 },
-                to: [{ key_code: 'i', modifiers: ['left_command', 'left_option'] }],
+                to: [
+                  { key_code: 'i', modifiers: ['left_command', 'left_option'] },
+                ],
               },
               {
                 type: 'basic',
@@ -442,8 +618,16 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: [{ bundle_identifiers: ['com.tinyspeck.slackmacgap'], type: 'frontmost_application_if' }],
-                from: { key_code: 'p', modifiers: { mandatory: ['left_command'] } },
+                conditions: [
+                  {
+                    bundle_identifiers: ['com.tinyspeck.slackmacgap'],
+                    type: 'frontmost_application_if',
+                  },
+                ],
+                from: {
+                  key_code: 'p',
+                  modifiers: { mandatory: ['left_command'] },
+                },
                 to: [{ key_code: 'k', modifiers: ['left_command'] }],
               },
             ],
@@ -453,8 +637,16 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: [{ bundle_identifiers: ['app.supabit.supacode'], type: 'frontmost_application_if' }],
-                from: { key_code: 'o', modifiers: { mandatory: ['left_command'] } },
+                conditions: [
+                  {
+                    bundle_identifiers: ['app.supabit.supacode'],
+                    type: 'frontmost_application_if',
+                  },
+                ],
+                from: {
+                  key_code: 'o',
+                  modifiers: { mandatory: ['left_command'] },
+                },
                 to: [{ key_code: 'k', modifiers: ['left_command'] }],
               },
             ],
@@ -464,25 +656,54 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: [{ bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_if' }],
-                from: { key_code: 'd', modifiers: { mandatory: ['left_command'] } },
+                conditions: [
+                  {
+                    bundle_identifiers: ['com.blizzard.starcraft2'],
+                    type: 'frontmost_application_if',
+                  },
+                ],
+                from: {
+                  key_code: 'd',
+                  modifiers: { mandatory: ['left_command'] },
+                },
                 to: [{ key_code: 'c', modifiers: ['left_option'] }],
               },
               {
                 type: 'basic',
-                conditions: [{ bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' }],
-                from: { key_code: 'f1', modifiers: { mandatory: ['left_command'], optional: ['any'] } },
+                conditions: [
+                  {
+                    bundle_identifiers: ['com.blizzard.starcraft2'],
+                    type: 'frontmost_application_unless',
+                  },
+                ],
+                from: {
+                  key_code: 'f1',
+                  modifiers: { mandatory: ['left_command'], optional: ['any'] },
+                },
                 to: [{ key_code: 'f1' }],
               },
               {
                 type: 'basic',
-                conditions: [{ bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' }],
-                from: { key_code: 'f2', modifiers: { mandatory: ['left_command'], optional: ['any'] } },
+                conditions: [
+                  {
+                    bundle_identifiers: ['com.blizzard.starcraft2'],
+                    type: 'frontmost_application_unless',
+                  },
+                ],
+                from: {
+                  key_code: 'f2',
+                  modifiers: { mandatory: ['left_command'], optional: ['any'] },
+                },
                 to: [{ key_code: 'f2' }],
               },
               {
                 type: 'basic',
-                conditions: [{ bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' }],
+                conditions: [
+                  {
+                    bundle_identifiers: ['com.blizzard.starcraft2'],
+                    type: 'frontmost_application_unless',
+                  },
+                ],
                 from: { key_code: 'f10' },
                 to: [{ consumer_key_code: 'mute' }],
               },
@@ -520,21 +741,46 @@ const karabinerConfig = {
                 to: [{ consumer_key_code: 'display_brightness_increment' }],
               },
               {
-                description: 'Delete[Hold] to Ctrl + Shift + Tab [Close tab: Cmd + W]',
+                description:
+                  'Delete[Hold] to Ctrl + Shift + Tab [Close tab: Cmd + W]',
                 type: 'basic',
                 conditions: g10ControlConditions,
                 from: { key_code: 'delete_or_backspace' },
-                to_if_alone: [{ key_code: 'tab', modifiers: ['left_control', 'left_shift'] }],
-                to_if_held_down: [{ key_code: 'w', modifiers: ['left_command'], repeat: false, halt: true }],
+                to_if_alone: [
+                  {
+                    key_code: 'tab',
+                    modifiers: ['left_control', 'left_shift'],
+                  },
+                ],
+                to_if_held_down: [
+                  {
+                    key_code: 'w',
+                    modifiers: ['left_command'],
+                    repeat: false,
+                    halt: true,
+                  },
+                ],
               },
               {
-                description: 'Mute[Hold] to Ctrl + Tab [App switcher: Cmd + Tab]',
+                description:
+                  'Mute[Hold] to Ctrl + Tab [App switcher: Cmd + Tab]',
                 type: 'basic',
                 conditions: g10ControlConditions,
                 from: { consumer_key_code: 'mute' },
-                to_if_alone: [{ key_code: 'tab', modifiers: ['left_control'], repeat: false }],
+                to_if_alone: [
+                  {
+                    key_code: 'tab',
+                    modifiers: ['left_control'],
+                    repeat: false,
+                  },
+                ],
                 to_if_held_down: [
-                  { key_code: 'tab', modifiers: ['left_command', 'left_shift'], repeat: false, halt: true },
+                  {
+                    key_code: 'tab',
+                    modifiers: ['left_command', 'left_shift'],
+                    repeat: false,
+                    halt: true,
+                  },
                 ],
               },
             ],
@@ -545,42 +791,60 @@ const karabinerConfig = {
               {
                 description: 'Left to 1',
                 type: 'basic',
-                conditions: [...ankiLauncherConditions, ...g10ControlConditions],
+                conditions: [
+                  ...ankiLauncherConditions,
+                  ...g10ControlConditions,
+                ],
                 from: { key_code: 'left_arrow' },
                 to: [{ key_code: '1' }],
               },
               {
                 description: 'Right to 4',
                 type: 'basic',
-                conditions: [...ankiLauncherConditions, ...g10ControlConditions],
+                conditions: [
+                  ...ankiLauncherConditions,
+                  ...g10ControlConditions,
+                ],
                 from: { key_code: 'right_arrow' },
                 to: [{ key_code: '4' }],
               },
               {
                 description: 'Back to D',
                 type: 'basic',
-                conditions: [...ankiLauncherConditions, ...g10ControlConditions],
+                conditions: [
+                  ...ankiLauncherConditions,
+                  ...g10ControlConditions,
+                ],
                 from: { consumer_key_code: 'ac_back' },
                 to: [{ key_code: 'd' }],
               },
               {
                 description: 'Down to Tab',
                 type: 'basic',
-                conditions: [...ankiLauncherConditions, ...g10ControlConditions],
+                conditions: [
+                  ...ankiLauncherConditions,
+                  ...g10ControlConditions,
+                ],
                 from: { key_code: 'down_arrow' },
                 to: [{ key_code: 'tab' }],
               },
               {
                 type: 'basic',
                 description: 'Up to Shift + Tab',
-                conditions: [...ankiLauncherConditions, ...g10ControlConditions],
+                conditions: [
+                  ...ankiLauncherConditions,
+                  ...g10ControlConditions,
+                ],
                 from: { key_code: 'up_arrow' },
                 to: [{ key_code: 'tab', modifiers: ['left_shift'] }],
               },
               {
                 type: 'basic',
                 description: 'Play/Pause to R',
-                conditions: [...ankiLauncherConditions, ...g10ControlConditions],
+                conditions: [
+                  ...ankiLauncherConditions,
+                  ...g10ControlConditions,
+                ],
                 from: { consumer_key_code: 'play_or_pause' },
                 to: [{ key_code: 'r' }],
               },
@@ -592,14 +856,20 @@ const karabinerConfig = {
               {
                 description: 'Enter to Space',
                 type: 'basic',
-                conditions: [...googleChromeConditions, ...g10ControlConditions],
+                conditions: [
+                  ...googleChromeConditions,
+                  ...g10ControlConditions,
+                ],
                 from: { key_code: 'return_or_enter' },
                 to: [{ key_code: 'spacebar' }],
               },
               {
                 description: 'Play/Pause to Alt + T',
                 type: 'basic',
-                conditions: [...googleChromeConditions, ...g10ControlConditions],
+                conditions: [
+                  ...googleChromeConditions,
+                  ...g10ControlConditions,
+                ],
                 from: { consumer_key_code: 'play_or_pause' },
                 to: [{ key_code: 't', modifiers: ['left_option'] }],
               },

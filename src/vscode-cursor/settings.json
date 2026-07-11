@@ -29,9 +29,7 @@
   "terminal.integrated.gpuAcceleration": "off",
 
   "files.associations": {
-    "css": "scss",
-    "json": "jsonc",
-    "*.svg": "html"
+    "*.json": "jsonc"
   },
 
   "git.autofetch": true,

@@ -77,7 +77,11 @@
     "if": { "AltL": true },
     "send": ["CtrlL:up PageUp CtrlL:down", null]
   },
-  { "keys": ["D"], "if": { "WinL": true }, "send": ["WinL:down D WinL:up", null] },
+  {
+    "keys": ["D"],
+    "if": { "WinL": true },
+    "send": ["WinL:down D WinL:up", null]
+  },
   {
     "keys": ["Backspace"],
     "if": { "AltL": true },
@@ -88,7 +92,11 @@
     "if": { "WinL": true },
     "send": ["CtrlL:down Backspace CtrlL:up", null]
   },
-  { "keys": ["Space"], "if": { "AltL": true }, "send": ["CtrlL:up WinL", null] },
+  {
+    "keys": ["Space"],
+    "if": { "AltL": true },
+    "send": ["CtrlL:up WinL", null]
+  },
 
   {
     "keys": ["H"],

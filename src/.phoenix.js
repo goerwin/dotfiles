@@ -38,13 +38,13 @@ function getGrid({ sizeW, sizeH, hDivisions, vDivisions, gapW, gapH }) {
   const { measures: widths, positions: horPositions } = getDimensionMeasures(
     sizeW,
     hDivisions,
-    gapW
+    gapW,
   );
 
   const { measures: heights, positions: verPositions } = getDimensionMeasures(
     sizeH,
     vDivisions,
-    gapH
+    gapH,
   );
 
   return { widths, horPositions, heights, verPositions };
@@ -421,7 +421,7 @@ Key.on('h', ['cmd', 'alt'], () =>
     halfLeft: 'topHalfLeft',
     topHalfLeft: 'bottomHalfLeft',
     bottomHalfLeft: 'halfLeft',
-  })
+  }),
 );
 
 Key.on('l', ['cmd', 'alt'], () =>
@@ -429,7 +429,7 @@ Key.on('l', ['cmd', 'alt'], () =>
     halfRight: 'topHalfRight',
     topHalfRight: 'bottomHalfRight',
     bottomHalfRight: 'halfRight',
-  })
+  }),
 );
 
 Key.on('h', ['ctrl'], () => changeWindowSize('moveLeft'));
@@ -460,7 +460,7 @@ Key.on('k', ['ctrl', 'shift'], () => changeWindowSize('top'));
       horPositions: [0, 5, 11, 17, 22],
       heights: [5, 5, 6, 5, 5],
       verPositions: [0, 5, 10, 16, 21],
-    }
+    },
   );
   expectDeepEqual(
     getGrid({ sizeW: 10, sizeH: 28, hDivisions: 2, vDivisions: 5 }),
@@ -469,7 +469,7 @@ Key.on('k', ['ctrl', 'shift'], () => changeWindowSize('top'));
       horPositions: [0, 5],
       heights: [5, 6, 6, 6, 5],
       verPositions: [0, 5, 11, 17, 23],
-    }
+    },
   );
   expectDeepEqual(
     getGrid({
@@ -485,7 +485,7 @@ Key.on('k', ['ctrl', 'shift'], () => changeWindowSize('top'));
       horPositions: [0, 6, 12, 18, 24],
       heights: [3, 4, 4, 4, 3],
       verPositions: [0, 5, 11, 17, 23],
-    }
+    },
   );
   expectDeepEqual(
     getGrid({
@@ -501,7 +501,7 @@ Key.on('k', ['ctrl', 'shift'], () => changeWindowSize('top'));
       horPositions: [0, 6, 12, 18, 24],
       heights: [3, 3, 3, 3, 2],
       verPositions: [0, 6, 12, 18, 24],
-    }
+    },
   );
   expectDeepEqual(
     getGrid({
@@ -517,7 +517,7 @@ Key.on('k', ['ctrl', 'shift'], () => changeWindowSize('top'));
       horPositions: [0, 6, 12, 19, 25],
       heights: [2, 2, 2, 2, 2],
       verPositions: [0, 6, 12, 18, 24],
-    }
+    },
   );
 
   expectDeepEqual(
@@ -534,7 +534,7 @@ Key.on('k', ['ctrl', 'shift'], () => changeWindowSize('top'));
       horPositions: [0, 5],
       heights: [5, 5, 5, 5, 4],
       verPositions: [0, 6, 12, 18, 24],
-    }
+    },
   );
   expectDeepEqual(
     getGrid({
@@ -550,7 +550,7 @@ Key.on('k', ['ctrl', 'shift'], () => changeWindowSize('top'));
       horPositions: [0, 6],
       heights: [4, 4, 4, 4, 4],
       verPositions: [0, 6, 12, 18, 24],
-    }
+    },
   );
   expectDeepEqual(
     getGrid({
@@ -566,7 +566,7 @@ Key.on('k', ['ctrl', 'shift'], () => changeWindowSize('top'));
       horPositions: [0, 6],
       heights: [3, 3, 4, 3, 3],
       verPositions: [0, 6, 12, 19, 25],
-    }
+    },
   );
   expectDeepEqual(
     getGrid({
@@ -582,7 +582,7 @@ Key.on('k', ['ctrl', 'shift'], () => changeWindowSize('top'));
       horPositions: [0, 7],
       heights: [2, 3, 3, 2, 2],
       verPositions: [0, 6, 13, 20, 26],
-    }
+    },
   );
 
   if (!allTestsPassed) {
