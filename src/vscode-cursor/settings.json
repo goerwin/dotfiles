@@ -36,8 +36,6 @@
 
   "git.autofetch": true,
 
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-
   "[shellscript]": {
     "editor.defaultFormatter": "mkhl.shfmt"
   },

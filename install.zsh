@@ -16,7 +16,7 @@ homeDir=$(cd $homeDir; pwd -P)
 echo "\n📂 Copying dotfiles → $homeDir"
 
 setopt GLOB_DOTS
-ignoredItems=("vscode-cursor" "ai" ".DS_Store" "biome.template.json")
+ignoredItems=("vscode-cursor" "ai" ".DS_Store")
 
 for entry in ./src/*; do
   entryName=$(basename "$entry")
