@@ -442,9 +442,7 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: [
-                  { bundle_identifiers: ['com.tinyspeck.slackmacgap'], type: 'frontmost_application_if' },
-                ],
+                conditions: [{ bundle_identifiers: ['com.tinyspeck.slackmacgap'], type: 'frontmost_application_if' }],
                 from: { key_code: 'p', modifiers: { mandatory: ['left_command'] } },
                 to: [{ key_code: 'k', modifiers: ['left_command'] }],
               },
@@ -455,9 +453,7 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: [
-                  { bundle_identifiers: ['app.supabit.supacode'], type: 'frontmost_application_if' },
-                ],
+                conditions: [{ bundle_identifiers: ['app.supabit.supacode'], type: 'frontmost_application_if' }],
                 from: { key_code: 'o', modifiers: { mandatory: ['left_command'] } },
                 to: [{ key_code: 'k', modifiers: ['left_command'] }],
               },
@@ -468,33 +464,25 @@ const karabinerConfig = {
             manipulators: [
               {
                 type: 'basic',
-                conditions: [
-                  { bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_if' },
-                ],
+                conditions: [{ bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_if' }],
                 from: { key_code: 'd', modifiers: { mandatory: ['left_command'] } },
                 to: [{ key_code: 'c', modifiers: ['left_option'] }],
               },
               {
                 type: 'basic',
-                conditions: [
-                  { bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' },
-                ],
+                conditions: [{ bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' }],
                 from: { key_code: 'f1', modifiers: { mandatory: ['left_command'], optional: ['any'] } },
                 to: [{ key_code: 'f1' }],
               },
               {
                 type: 'basic',
-                conditions: [
-                  { bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' },
-                ],
+                conditions: [{ bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' }],
                 from: { key_code: 'f2', modifiers: { mandatory: ['left_command'], optional: ['any'] } },
                 to: [{ key_code: 'f2' }],
               },
               {
                 type: 'basic',
-                conditions: [
-                  { bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' },
-                ],
+                conditions: [{ bundle_identifiers: ['com.blizzard.starcraft2'], type: 'frontmost_application_unless' }],
                 from: { key_code: 'f10' },
                 to: [{ consumer_key_code: 'mute' }],
               },
