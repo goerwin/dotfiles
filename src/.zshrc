@@ -193,6 +193,9 @@ hidutil property --set '{"CapsLockDelayOverride":0}' >/dev/null 2>&1
 runOnce menu_bar_item_spacing \
   defaults -currentHost write -globalDomain NSStatusItemSpacing -int 12
 
+# Enable tab focus highlight in MacOS UI
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+
 #//////////////////////////
 # Godaddy
 #//////////////////////////
