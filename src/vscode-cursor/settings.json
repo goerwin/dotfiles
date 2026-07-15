@@ -43,6 +43,8 @@
   // Helps with the terminal not loading properly on new windows
   "terminal.integrated.enablePersistentSessions": false,
 
+  "json.schemaDownload.enable": true,
+
   //
   // Extensions
   //
