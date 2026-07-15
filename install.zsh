@@ -33,13 +33,14 @@ done
   [ -d "$HOME/Library/Application Support/Cursor/User" ] && cp -r ./src/vscode-cursor/* "$HOME/Library/Application Support/Cursor/User/" && echo "  ✅ Cursor"
 }
 
-# Copy AGENTS.md and link for Claude/Codex
+# Copy AGENTS.md and link for Claude/Codex/OpenCode
 [ -f "./src/ai/AGENTS.md" ] && {
   echo "\n🤖 Syncing agent settings"
   cp "./src/ai/AGENTS.md" "$homeDir/AGENTS.md" && echo "  ✅ AGENTS.md"
-  mkdir -p "$homeDir/.claude" "$homeDir/.codex"
-  ln -sf "../AGENTS.md" "$homeDir/.claude/CLAUDE.md" && echo "  ✅ .claude/CLAUDE.md → AGENTS.md"
-  ln -sf "../AGENTS.md" "$homeDir/.codex/AGENTS.md" && echo "  ✅ .codex/AGENTS.md → AGENTS.md"
+  mkdir -p "$homeDir/.claude" "$homeDir/.codex" "$homeDir/.config/opencode"
+  ln -sf "$homeDir/AGENTS.md" "$homeDir/.claude/CLAUDE.md" && echo "  ✅ ~/.claude/CLAUDE.md → AGENTS.md"
+  ln -sf "$homeDir/AGENTS.md" "$homeDir/.codex/AGENTS.md" && echo "  ✅ ~/.codex/AGENTS.md → AGENTS.md"
+  ln -sf "$homeDir/AGENTS.md" "$homeDir/.config/opencode/AGENTS.md" && echo "  ✅ ~/.config/opencode/AGENTS.md → AGENTS.md"
 }
 
 echo "\n🎉 Done!"
