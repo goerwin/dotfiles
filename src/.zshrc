@@ -74,6 +74,35 @@ function zshRemovePlugins() {
   rm -rf "$ZSH_PATH" && source "$HOME/.zshrc"
 }
 
+# Commit with no verify
+function gitCommitNoVerify() {
+  git commit -m "$*" --no-verify
+}
+
+# Update a branch from remote origin in the background
+function gitUpdateBranch() {
+  # 1. Check if a branch name was provided
+  if [ -z "$1" ]; then
+    echo "❌ Error: Please specify a branch name (e.g., git update main)"
+    return 1
+  fi
+
+  # 2. Check if the working directory is clean
+  if ! git diff-index --quiet HEAD --; then
+    echo "⚠️  Warning: You have uncommitted changes. Please stash or commit them first."
+    return 1
+  fi
+
+  # 3. Attempt the background update
+  echo "🔄 Updating '$1' from remote origin in the background..."
+  if git fetch origin "$1":"$1" 2>/dev/null; then
+    echo "✅ Success: Local branch '$1' is now up to date with origin/$1!"
+  else
+    echo "❌ Error: Update failed. Either '$1' doesn't exist on origin, or your local branch has unpushed commits and cannot be fast-forwarded."
+    return 1
+  fi
+}
+
 #//////////////////////////
 # Aliases
 #//////////////////////////
@@ -82,19 +111,22 @@ function zshRemovePlugins() {
 alias g="git"
 alias gc="git commit"
 alias gcm="git commit -m"
-gcmnv(){ git commit -m "$*" --no-verify; }
+alias gcmnv="gitCommitNoVerify"
 alias gcamend="git commit --amend -C HEAD"
 alias gs="git status"
 alias ga="git add"
 alias ga.="git add ."
 alias gp="git push"
 alias gpf="git push --force"
+alias gpl="git pull"
+alias gplr="git pull --rebase"
 alias gch="git checkout"
 alias gch.="git checkout ."
 alias gd="git diff"
 alias gd.="git diff ."
-alias gdc="git diff --cached"
 alias gds="git diff --staged"
+alias gdsummary="git diff --compact-summary"
+alias gupdate="gitUpdateBranch"
 alias gclean="git clean"
 alias gcleanf="git clean . -f"
 alias gopen='gh browse'
