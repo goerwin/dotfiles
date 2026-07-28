@@ -2,6 +2,9 @@
 # aliases, functions, options, key bindings, etc.
 # .zshenv is sourced in interactive shells automatically. It should contain environment variables.
 
+# some binaries such as claude and herdr install their binaries here
+export PATH="$HOME/.local/bin:$PATH"
+
 ZSH_PATH=$HOME/.zsh
 TEXT_EDITOR="cursor"
 
