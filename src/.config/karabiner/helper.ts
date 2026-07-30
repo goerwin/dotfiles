@@ -61,3 +61,50 @@ export function longTapToManipupators(args: {
     },
   ];
 }
+
+/**
+ * Generates the Karabiner events for a double-tap-to-toggle behaviour.
+ *
+ * @param args - Arguments for the double tap to manipupators
+ * @param args.key - The key to be double-tapped
+ * @param args.to - The events emitted on the second tap
+ * @param args.globalVar - The variable name used to track the pressed state
+ * @param args.type - The type of key, either 'normal' or 'vendor'
+ *
+ * @returns Karabiner event representation of the double tap to manipupators
+ */
+export function doubleTapToManipupators(args: {
+  key: string;
+  to: unknown;
+  globalVar: string;
+  type?: 'normal' | 'vendor';
+}) {
+  const { key, to, globalVar, type = 'normal' } = args;
+  const keyType =
+    type === 'normal' ? 'key_code' : 'apple_vendor_top_case_key_code';
+
+  return [
+    {
+      type: 'basic',
+      conditions: [{ name: globalVar, type: 'variable_if', value: true }],
+      from: { [keyType]: key, modifiers: { optional: ['any'] } },
+      to: [{ [keyType]: key }],
+      to_if_alone: to,
+      to_after_key_up: [{ set_variable: { name: globalVar, value: false } }],
+    },
+    {
+      type: 'basic',
+      from: { [keyType]: key, modifiers: { optional: ['any'] } },
+      to: [{ [keyType]: key }],
+      to_if_alone: [{ set_variable: { name: globalVar, value: true } }],
+      to_delayed_action: {
+        to_if_canceled: [{ set_variable: { name: globalVar, value: false } }],
+        to_if_invoked: [{ set_variable: { name: globalVar, value: false } }],
+      },
+      parameters: {
+        'basic.to_if_alone_timeout_milliseconds': 250,
+        'basic.to_delayed_action_delay_milliseconds': 500,
+      },
+    },
+  ];
+}
