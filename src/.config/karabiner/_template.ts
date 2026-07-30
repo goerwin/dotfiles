@@ -809,25 +809,35 @@ const karabinerConfig = {
             description: 'Device - G10 Control - Apps (Vocabuler)',
             manipulators: [
               {
-                description: 'Del to Shift + Tab',
+                description: 'ac_back to Shift + Tab',
                 type: 'basic',
                 conditions: [
                   ...vocabulerApprConditions,
                   ...g10ControlConditions,
                 ],
-                from: { key_code: 'delete_or_backspace' },
+                from: { consumer_key_code: 'ac_back' },
                 to: [{ key_code: 'tab', modifiers: ['left_shift'] }],
               },
               {
-                description: 'Mute to Tab',
+                description: 'Application to Tab',
                 type: 'basic',
                 conditions: [
                   ...vocabulerApprConditions,
                   ...g10ControlConditions,
                 ],
-                from: { consumer_key_code: 'mute' },
+                from: { key_code: 'application' },
                 to: [{ key_code: 'tab', }],
               },
+              {
+                description: 'Play/Pause to `',
+                type: 'basic',
+                conditions: [
+                  ...vocabulerApprConditions,
+                  ...g10ControlConditions,
+                ],
+                from: { consumer_key_code: 'play_or_pause' },
+                to: [{ key_code: 'grave_accent_and_tilde' }],
+              }
             ],
           },
           {
