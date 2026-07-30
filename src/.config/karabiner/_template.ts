@@ -79,6 +79,12 @@ const ankiLauncherConditions = [
     bundle_identifiers: ['net.ankiweb.launcher'],
   },
 ];
+const vocabulerApprConditions = [
+  {
+    type: 'frontmost_application_if',
+    file_paths: ["/Vocabuler\\.app/"],
+  },
+];
 const g10ControlConditions = [
   { type: 'device_if', identifiers: [{ vendor_id: 6421, product_id: 4133 }] },
 ];
@@ -710,82 +716,6 @@ const karabinerConfig = {
             ],
           },
           {
-            description: 'Device - G10 Control',
-            manipulators: [
-              {
-                description: 'Page Down to Volume Down',
-                type: 'basic',
-                conditions: g10ControlConditions,
-                from: { key_code: 'page_down' },
-                to: [{ consumer_key_code: 'volume_decrement' }],
-              },
-              {
-                description: 'Page Up to Volume Up',
-                type: 'basic',
-                conditions: g10ControlConditions,
-                from: { key_code: 'page_up' },
-                to: [{ consumer_key_code: 'volume_increment' }],
-              },
-              {
-                description: 'Volume Down to Brightness Down',
-                type: 'basic',
-                conditions: g10ControlConditions,
-                from: { consumer_key_code: 'volume_decrement' },
-                to: [{ consumer_key_code: 'display_brightness_decrement' }],
-              },
-              {
-                description: 'Volume Up to Brightness Up',
-                type: 'basic',
-                conditions: g10ControlConditions,
-                from: { consumer_key_code: 'volume_increment' },
-                to: [{ consumer_key_code: 'display_brightness_increment' }],
-              },
-              {
-                description:
-                  'Delete[Hold] to Ctrl + Shift + Tab [Close tab: Cmd + W]',
-                type: 'basic',
-                conditions: g10ControlConditions,
-                from: { key_code: 'delete_or_backspace' },
-                to_if_alone: [
-                  {
-                    key_code: 'tab',
-                    modifiers: ['left_control', 'left_shift'],
-                  },
-                ],
-                to_if_held_down: [
-                  {
-                    key_code: 'w',
-                    modifiers: ['left_command'],
-                    repeat: false,
-                    halt: true,
-                  },
-                ],
-              },
-              {
-                description:
-                  'Mute[Hold] to Ctrl + Tab [App switcher: Cmd + Tab]',
-                type: 'basic',
-                conditions: g10ControlConditions,
-                from: { consumer_key_code: 'mute' },
-                to_if_alone: [
-                  {
-                    key_code: 'tab',
-                    modifiers: ['left_control'],
-                    repeat: false,
-                  },
-                ],
-                to_if_held_down: [
-                  {
-                    key_code: 'tab',
-                    modifiers: ['left_command', 'left_shift'],
-                    repeat: false,
-                    halt: true,
-                  },
-                ],
-              },
-            ],
-          },
-          {
             description: 'Device - G10 Control - Apps (Anki)',
             manipulators: [
               {
@@ -864,14 +794,115 @@ const karabinerConfig = {
                 to: [{ key_code: 'spacebar' }],
               },
               {
-                description: 'Play/Pause to Alt + T',
+                description: 'Play/Pause to Escape',
                 type: 'basic',
                 conditions: [
                   ...googleChromeConditions,
                   ...g10ControlConditions,
                 ],
                 from: { consumer_key_code: 'play_or_pause' },
-                to: [{ key_code: 't', modifiers: ['left_option'] }],
+                to: [{ key_code: 'escape' }],
+              },
+            ],
+          },
+          {
+            description: 'Device - G10 Control - Apps (Vocabuler)',
+            manipulators: [
+              {
+                description: 'Del to Shift + Tab',
+                type: 'basic',
+                conditions: [
+                  ...vocabulerApprConditions,
+                  ...g10ControlConditions,
+                ],
+                from: { key_code: 'delete_or_backspace' },
+                to: [{ key_code: 'tab', modifiers: ['left_shift'] }],
+              },
+              {
+                description: 'Mute to Tab',
+                type: 'basic',
+                conditions: [
+                  ...vocabulerApprConditions,
+                  ...g10ControlConditions,
+                ],
+                from: { consumer_key_code: 'mute' },
+                to: [{ key_code: 'tab', }],
+              },
+            ],
+          },
+          {
+            description: 'Device - G10 Control',
+            manipulators: [
+              {
+                description: 'Page Down to Volume Down',
+                type: 'basic',
+                conditions: g10ControlConditions,
+                from: { key_code: 'page_down' },
+                to: [{ consumer_key_code: 'volume_decrement' }],
+              },
+              {
+                description: 'Page Up to Volume Up',
+                type: 'basic',
+                conditions: g10ControlConditions,
+                from: { key_code: 'page_up' },
+                to: [{ consumer_key_code: 'volume_increment' }],
+              },
+              {
+                description: 'Volume Down to Brightness Down',
+                type: 'basic',
+                conditions: g10ControlConditions,
+                from: { consumer_key_code: 'volume_decrement' },
+                to: [{ consumer_key_code: 'display_brightness_decrement' }],
+              },
+              {
+                description: 'Volume Up to Brightness Up',
+                type: 'basic',
+                conditions: g10ControlConditions,
+                from: { consumer_key_code: 'volume_increment' },
+                to: [{ consumer_key_code: 'display_brightness_increment' }],
+              },
+              {
+                description:
+                  'Delete[Hold] to Ctrl + Shift + Tab [Close tab: Cmd + W]',
+                type: 'basic',
+                conditions: g10ControlConditions,
+                from: { key_code: 'delete_or_backspace' },
+                to_if_alone: [
+                  {
+                    key_code: 'tab',
+                    modifiers: ['left_control', 'left_shift'],
+                  },
+                ],
+                to_if_held_down: [
+                  {
+                    key_code: 'w',
+                    modifiers: ['left_command'],
+                    repeat: false,
+                    halt: true,
+                  },
+                ],
+              },
+              {
+                description:
+                  'Mute[Hold] to Ctrl + Tab [App switcher: Cmd + Tab]',
+                type: 'basic',
+                conditions: g10ControlConditions,
+                from: { consumer_key_code: 'mute' },
+                to_if_alone: [
+                  {
+                    key_code: 'tab',
+                    modifiers: ['left_control'],
+                    repeat: false,
+                  },
+                ],
+                to_if_held_down: [
+                  {
+                    key_code: 'tab',
+                    modifiers: ['left_command', 'left_shift'],
+                    repeat: false,
+                    halt: true,
+                  },
+                ],
               },
             ],
           },
