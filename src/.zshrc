@@ -96,12 +96,12 @@ function gitUpdateBranch() {
     return 1
   fi
 
-  # 3. Attempt the background update
-  echo "🔄 Updating '$1' from remote origin in the background..."
-  if git fetch origin "$1":"$1" 2>/dev/null; then
+  # 3. Attempt the update
+  echo "🔄 Updating '$1' from remote origin..."
+  if git fetch origin "$1":"$1"; then
     echo "✅ Success: Local branch '$1' is now up to date with origin/$1!"
   else
-    echo "❌ Error: Update failed. Either '$1' doesn't exist on origin, or your local branch has unpushed commits and cannot be fast-forwarded."
+    echo "❌ Error: Update failed (see git error above)."
     return 1
   fi
 }
