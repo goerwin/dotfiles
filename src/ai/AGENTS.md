@@ -17,6 +17,7 @@ Shortcuts (always respond using a Writing Block with `variant="standard"`):
 ## Work
 
 - Write commit messages using Conventional Commits (e.g. `feat: ...`). Keep them short and never add your agent name as a co-author unless explicitly requested.
+- When creating new branches, use conventional branch names (e.g. `feat/calendar`, `fix/button`, `chore/tooling...`).
 - When fixing a bug, first reproduce it in an end-to-end scenario that closely matches how an end user experiences it. Base the fix on the reproduced behavior.
 - Point out incorrect assumptions, mistakes, or misunderstandings when they affect the solution. Do not validate incorrect conclusions.
 - When making technical decisions, prioritize correctness, simplicity, robustness, scalability, and long-term maintainability over implementation effort, unless the user explicitly asks for the quickest or lowest-cost solution.
