@@ -16,7 +16,7 @@ homeDir=$(cd $homeDir; pwd -P)
 echo "\n📂 Copying dotfiles → $homeDir"
 
 setopt GLOB_DOTS
-ignoredItems=("vscode-cursor" "ai" ".DS_Store")
+ignoredItems=("vscode-cursor" ".DS_Store")
 
 for entry in ./src/*; do
   entryName=$(basename "$entry")
@@ -31,16 +31,6 @@ done
   echo "\n🖥️  Syncing editor settings"
   [ -d "$HOME/Library/Application Support/Code/User" ]   && cp -r ./src/vscode-cursor/* "$HOME/Library/Application Support/Code/User/"   && echo "  ✅ VSCode"
   [ -d "$HOME/Library/Application Support/Cursor/User" ] && cp -r ./src/vscode-cursor/* "$HOME/Library/Application Support/Cursor/User/" && echo "  ✅ Cursor"
-}
-
-# Copy AGENTS.md and link for Claude/Codex/OpenCode
-[ -f "./src/ai/AGENTS.md" ] && {
-  echo "\n🤖 Syncing agent settings"
-  cp "./src/ai/AGENTS.md" "$homeDir/AGENTS.md" && echo "  ✅ AGENTS.md"
-  mkdir -p "$homeDir/.claude" "$homeDir/.codex" "$homeDir/.config/opencode"
-  ln -sf "$homeDir/AGENTS.md" "$homeDir/.claude/CLAUDE.md" && echo "  ✅ ~/.claude/CLAUDE.md → AGENTS.md"
-  ln -sf "$homeDir/AGENTS.md" "$homeDir/.codex/AGENTS.md" && echo "  ✅ ~/.codex/AGENTS.md → AGENTS.md"
-  ln -sf "$homeDir/AGENTS.md" "$homeDir/.config/opencode/AGENTS.md" && echo "  ✅ ~/.config/opencode/AGENTS.md → AGENTS.md"
 }
 
 echo "\n🎉 Done!"

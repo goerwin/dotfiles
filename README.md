@@ -15,7 +15,6 @@ source ~/.zshrc
 - Window management
 - Karabiner and key remaps
 - VS Code / Cursor settings
-- AI agent configuration
 
 ## Development
 
