@@ -27,7 +27,9 @@
   // Keep IDE shortcuts working while TUIs (opencode/codex) run in the terminal
   "terminal.integrated.commandsToSkipShell": [
     "workbench.action.toggleSidebarVisibility",
-    "workbench.action.toggleAgentsFromKeyboard"
+    "workbench.action.toggleAgentsFromKeyboard",
+    "workbench.view.scm",
+    "workbench.view.explorer"
   ],
 
   // fixes by claude code
