@@ -24,6 +24,12 @@
   "terminal.integrated.confirmOnKill": "always",
   "terminal.integrated.confirmOnExit": "hasChildProcesses",
 
+  // Keep IDE shortcuts working while TUIs (opencode/codex) run in the terminal
+  "terminal.integrated.commandsToSkipShell": [
+    "workbench.action.toggleSidebarVisibility",
+    "workbench.action.toggleAgentsFromKeyboard"
+  ],
+
   // fixes by claude code
   "terminal.integrated.mouseWheelScrollSensitivity": 3,
   "terminal.integrated.gpuAcceleration": "off",
@@ -49,5 +55,11 @@
   // Extensions
   //
 
-  "advancedNewFile.convenienceOptions": ["current", "last", "root"]
+  "advancedNewFile.convenienceOptions": [
+    "current",
+    "last",
+    "root"
+  ],
+
+  "gitlens.views.searchAndCompare.files.layout": "tree"
 }
