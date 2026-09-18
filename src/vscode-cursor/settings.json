@@ -55,11 +55,7 @@
   // Extensions
   //
 
-  "advancedNewFile.convenienceOptions": [
-    "current",
-    "last",
-    "root"
-  ],
+  "advancedNewFile.convenienceOptions": ["current", "last", "root"],
 
   "gitlens.views.searchAndCompare.files.layout": "tree"
 }
