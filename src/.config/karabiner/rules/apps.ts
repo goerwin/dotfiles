@@ -145,6 +145,12 @@ export const appsRules = [
           // { key_code: 'escape' },
 
           { key_code: 'l', modifiers: ['left_command'] },
+          { key_code: 'vk_none', hold_down_milliseconds: 25 },
+          { key_code: 'semicolon' },
+          { key_code: 'vk_none', hold_down_milliseconds: 25 },
+          { key_code: 'escape' },
+          { key_code: 'vk_none', hold_down_milliseconds: 25 },
+          { key_code: 'escape' },
           { key_code: 'up_arrow', modifiers: ['left_command', 'left_option'] },
         ],
       },
