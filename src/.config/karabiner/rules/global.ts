@@ -105,19 +105,6 @@ export const globalRules = [
     ],
   },
   {
-    description: 'Global - Alt + m to mute mic',
-    manipulators: [
-      {
-        type: 'basic',
-        from: {
-          key_code: 'm',
-          modifiers: { mandatory: ['left_option'] },
-        },
-        to: [{ key_code: '0', modifiers: ['left_option', 'left_command'] }],
-      },
-    ],
-  },
-  {
     description: 'Global - Double Fn to Cmd + option + 9 (whisperer)',
     manipulators: doubleTapToManipupators({
       type: 'vendor',
