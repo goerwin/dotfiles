@@ -4,5 +4,44 @@
   { "key": "F18", "ifPressedNTimes": 3, "send": "Esc" },
   { "key": "F18", "ifPressedNTimes": 4, "send": "Esc" },
   { "key": "F18", "ifPressedNTimes": 5, "send": "Esc" },
-  { "key": "ShiftL", "ifPressedNTimes": 2, "send": "Caps" }
+  { "key": "ShiftL", "ifPressedNTimes": 2, "send": "Caps" },
+
+  // Whisperer
+  {
+    "key": "Fn",
+    "ifPressedNTimes": 2,
+    "send": "CmdL:down AltL:down 9 AltL:up CmdL:up"
+  },
+
+  // G10 Control: tap Backspace to go to the previous tab
+  {
+    "key": "Backspace",
+    "if": { "keyboard": "4133:6421" },
+    "ifPressedNTimes": 1,
+    "send": "CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up"
+  },
+  {
+    "key": "Backspace",
+    "if": { "keyboard": "4133:6421" },
+    "ifPressedNTimes": 2,
+    "send": "CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up"
+  },
+  {
+    "key": "Backspace",
+    "if": { "keyboard": "4133:6421" },
+    "ifPressedNTimes": 3,
+    "send": "CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up"
+  },
+  {
+    "key": "Backspace",
+    "if": { "keyboard": "4133:6421" },
+    "ifPressedNTimes": 4,
+    "send": "CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up"
+  },
+  {
+    "key": "Backspace",
+    "if": { "keyboard": "4133:6421" },
+    "ifPressedNTimes": 5,
+    "send": "CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up"
+  }
 ]

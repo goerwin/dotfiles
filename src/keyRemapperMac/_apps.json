@@ -1,19 +1,258 @@
 [
-  // Google Chrome
+  // Tab switching: Cmd+H/L and F3/F4 to prev/next tab
+  // (Google Chrome, Finder, Warp, Xcode, Supacode)
+
+  {
+    "keys": ["H"],
+    "if": {
+      "appName": "com.google.Chrome",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": [
+      "CmdL:up CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up CmdL:down",
+      "currentKey:up"
+    ]
+  },
+  {
+    "keys": ["L"],
+    "if": {
+      "appName": "com.google.Chrome",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CmdL:up CtrlL:down Tab CtrlL:up CmdL:down", "currentKey:up"]
+  },
   {
     "keys": ["F3"],
-    "if": { "appName": "com.google.Chrome" },
-    "send": ["CmdL:down 5 CmdL:up", "currentKey:up"]
+    "if": {
+      "appName": "com.google.Chrome",
+      "CmdL": false,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up", "currentKey:up"]
   },
   {
     "keys": ["F4"],
-    "if": { "appName": "com.google.Chrome" },
-    "send": ["CmdL:down 6 CmdL:up", "currentKey:up"]
+    "if": {
+      "appName": "com.google.Chrome",
+      "CmdL": false,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CtrlL:down Tab CtrlL:up", "currentKey:up"]
+  },
+
+  {
+    "keys": ["H"],
+    "if": {
+      "appName": "com.apple.finder",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": [
+      "CmdL:up CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up CmdL:down",
+      "currentKey:up"
+    ]
+  },
+  {
+    "keys": ["L"],
+    "if": {
+      "appName": "com.apple.finder",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CmdL:up CtrlL:down Tab CtrlL:up CmdL:down", "currentKey:up"]
+  },
+  {
+    "keys": ["F3"],
+    "if": {
+      "appName": "com.apple.finder",
+      "CmdL": false,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up", "currentKey:up"]
+  },
+  {
+    "keys": ["F4"],
+    "if": {
+      "appName": "com.apple.finder",
+      "CmdL": false,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CtrlL:down Tab CtrlL:up", "currentKey:up"]
+  },
+
+  {
+    "keys": ["H"],
+    "if": {
+      "appName": "dev.warp.Warp-Stable",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": [
+      "CmdL:up CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up CmdL:down",
+      "currentKey:up"
+    ]
+  },
+  {
+    "keys": ["L"],
+    "if": {
+      "appName": "dev.warp.Warp-Stable",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CmdL:up CtrlL:down Tab CtrlL:up CmdL:down", "currentKey:up"]
+  },
+  {
+    "keys": ["F3"],
+    "if": {
+      "appName": "dev.warp.Warp-Stable",
+      "CmdL": false,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up", "currentKey:up"]
+  },
+  {
+    "keys": ["F4"],
+    "if": {
+      "appName": "dev.warp.Warp-Stable",
+      "CmdL": false,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CtrlL:down Tab CtrlL:up", "currentKey:up"]
+  },
+
+  {
+    "keys": ["H"],
+    "if": {
+      "appName": "com.apple.dt.Xcode",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": [
+      "CmdL:up CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up CmdL:down",
+      "currentKey:up"
+    ]
+  },
+  {
+    "keys": ["L"],
+    "if": {
+      "appName": "com.apple.dt.Xcode",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CmdL:up CtrlL:down Tab CtrlL:up CmdL:down", "currentKey:up"]
+  },
+  {
+    "keys": ["F3"],
+    "if": {
+      "appName": "com.apple.dt.Xcode",
+      "CmdL": false,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up", "currentKey:up"]
+  },
+  {
+    "keys": ["F4"],
+    "if": {
+      "appName": "com.apple.dt.Xcode",
+      "CmdL": false,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CtrlL:down Tab CtrlL:up", "currentKey:up"]
+  },
+
+  {
+    "keys": ["H"],
+    "if": {
+      "appName": "app.supabit.supacode",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": [
+      "CmdL:up CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up CmdL:down",
+      "currentKey:up"
+    ]
+  },
+  {
+    "keys": ["L"],
+    "if": {
+      "appName": "app.supabit.supacode",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CmdL:up CtrlL:down Tab CtrlL:up CmdL:down", "currentKey:up"]
+  },
+  {
+    "keys": ["F3"],
+    "if": {
+      "appName": "app.supabit.supacode",
+      "CmdL": false,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up", "currentKey:up"]
+  },
+  {
+    "keys": ["F4"],
+    "if": {
+      "appName": "app.supabit.supacode",
+      "CmdL": false,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["CtrlL:down Tab CtrlL:up", "currentKey:up"]
+  },
+
+  // Google Chrome
+
+  {
+    "keys": ["Semicolon"],
+    "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": false },
+    "send": ["CmdL:down L CmdL:up CmdL:down", "currentKey:up"]
   },
   {
     "keys": ["F5"],
     "if": { "appName": "com.google.Chrome" },
-    "send": ["AltL:down S AltL:up", "currentKey:up"]
+    "send": ["AltL:down M AltL:up", "currentKey:up"]
   },
   {
     "keys": ["F6"],
@@ -21,32 +260,31 @@
     "send": ["AltL:down T AltL:up", "currentKey:up"]
   },
   {
-    "keys": ["H"],
-    "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": false },
-    "send": ["CmdL:down 5 CmdL:up CmdL:down", "currentKey:up"]
-  },
-  {
-    "keys": ["L"],
-    "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": false },
-    "send": ["CmdL:down 6 CmdL:up CmdL:down", "currentKey:up"]
-  },
-  {
-    "keys": ["Semicolon"],
-    "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": false },
-    "send": ["CmdL:down L CmdL:up CmdL:down", "currentKey:up"]
-  },
-  {
     // full screen
     "keys": ["F"],
-    "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": true },
-    "send": ["AltL:up CtrlL:down currentKey CtrlL:up AltL:up", "currentKey:up"]
+    "if": {
+      "appName": "com.google.Chrome",
+      "CmdL": true,
+      "AltL": true,
+      "ShiftL": false
+    },
+    "send": [
+      "AltL:up CtrlL:down currentKey CtrlL:up AltL:down",
+      "currentKey:up"
+    ]
   },
   {
-    // give focus back to page
+    // unfocus omnibar and give focus back to page
     "keys": ["E"],
-    "if": { "appName": "com.google.Chrome", "CmdL": true },
+    "if": {
+      "appName": "com.google.Chrome",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
     "send": [
-      "L CmdL:up SK:Delay:10 ShiftL:down 2 ShiftL:up U Space U Enter CmdL:down",
+      "L SK:Delay:25 CmdL:up Semicolon SK:Delay:25 Esc SK:Delay:25 Esc CmdL:down AltL:down UpArrow AltL:up",
       "currentKey:up"
     ]
   },
@@ -56,28 +294,20 @@
     "if": { "appName": "com.google.Chrome", "CmdL": true, "ShiftL": true },
     "send": ["ShiftL:up AltL:down I AltL:up ShiftL:down", "currentKey:up"]
   },
-  {
-    // faster bookmark bar tooggle
-    "keys": ["B"],
-    "if": { "appName": "com.google.Chrome", "CmdL": true },
-    "send": [
-      "CmdL:up CmdL:down ShiftL:down currentKey ShiftL:up",
-      "currentKey:up"
-    ]
-  },
 
   // Starcraft II
 
   {
-    "keys": ["F1", "F2", "F3", "F4", "F10", "F11", "F12"],
-    "if": { "appName": "com.blizzard.starcraft2" },
+    // keep cmd+F1/F2 as is (outside SC2 they are sent as plain F1/F2)
+    "keys": ["F1", "F2"],
+    "if": { "appName": "com.blizzard.starcraft2", "CmdL": true },
     "send": ["currentKey:down", "currentKey:up"]
   },
   {
     // this is for autorepair (c is the hotkey for repair, so cmd + d is for autorepair)
     "keys": ["D"],
     "if": { "appName": "com.blizzard.starcraft2", "CmdL": true },
-    "send": ["D:up AltL:down C AltL:up", null]
+    "send": ["CmdL:up AltL:down C AltL:up CmdL:down", "currentKey:up"]
   },
 
   // Slack
@@ -92,19 +322,18 @@
     "send": ["K", "currentKey:up"]
   },
 
-  // Warp
+  // Supacode
 
   {
-    "keys": ["H"],
-    "if": { "appName": "dev.warp.Warp-Stable", "CmdL": true, "AltL": false },
-    "send": [
-      "CmdL:up CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up CmdL:down",
-      "currentKey:up"
-    ]
-  },
-  {
-    "keys": ["L"],
-    "if": { "appName": "dev.warp.Warp-Stable", "CmdL": true, "AltL": false },
-    "send": ["CmdL:up CtrlL:down Tab CtrlL:up CmdL:down", "currentKey:up"]
+    // clear terminal
+    "keys": ["O"],
+    "if": {
+      "appName": "app.supabit.supacode",
+      "CmdL": true,
+      "AltL": false,
+      "CtrlL": false,
+      "ShiftL": false
+    },
+    "send": ["K", "currentKey:up"]
   }
 ]

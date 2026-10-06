@@ -1,0 +1,95 @@
+[
+  // G10 Control (keyboard: productId:vendorId)
+  // Only keyboard keys can be handled. Media buttons (back, play/pause, mic,
+  // mute, volume) and the application key aren't supported by KeyRemapper.
+
+  // Anki
+  {
+    "keys": ["LeftArrow"],
+    "if": { "keyboard": "4133:6421", "appName": "net.ankiweb.launcher" },
+    "send": ["1:down", "1:up"]
+  },
+  {
+    "keys": ["RightArrow"],
+    "if": { "keyboard": "4133:6421", "appName": "net.ankiweb.launcher" },
+    "send": ["4:down", "4:up"]
+  },
+  {
+    "keys": ["DownArrow"],
+    "if": { "keyboard": "4133:6421", "appName": "net.ankiweb.launcher" },
+    "send": ["Tab:down", "Tab:up"]
+  },
+  {
+    "keys": ["UpArrow"],
+    "if": { "keyboard": "4133:6421", "appName": "net.ankiweb.launcher" },
+    "send": ["ShiftL:down Tab ShiftL:up", null]
+  },
+
+  // Vocabuler
+  {
+    "keys": ["Enter"],
+    "if": {
+      "keyboard": "4133:6421",
+      "appName": "com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck"
+    },
+    "send": ["Space:down", "Space:up"]
+  },
+  {
+    "keys": ["UpArrow"],
+    "if": {
+      "keyboard": "4133:6421",
+      "appName": "com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck"
+    },
+    "send": ["1:down", "1:up"]
+  },
+  {
+    "keys": ["RightArrow"],
+    "if": {
+      "keyboard": "4133:6421",
+      "appName": "com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck"
+    },
+    "send": ["2:down", "2:up"]
+  },
+  {
+    "keys": ["DownArrow"],
+    "if": {
+      "keyboard": "4133:6421",
+      "appName": "com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck"
+    },
+    "send": ["3:down", "3:up"]
+  },
+  {
+    "keys": ["LeftArrow"],
+    "if": {
+      "keyboard": "4133:6421",
+      "appName": "com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck"
+    },
+    "send": ["4:down", "4:up"]
+  },
+
+  // Google Chrome
+  {
+    "keys": ["Enter"],
+    "if": { "keyboard": "4133:6421", "appName": "com.google.Chrome" },
+    "send": ["Space:down", "Space:up"]
+  },
+
+  // Any app
+  {
+    "keys": ["PageDown"],
+    "if": { "keyboard": "4133:6421" },
+    "send": ["VolumeDown:down", "VolumeDown:up"]
+  },
+  {
+    "keys": ["PageUp"],
+    "if": { "keyboard": "4133:6421" },
+    "send": ["VolumeUp:down", "VolumeUp:up"]
+  },
+  {
+    // tapping it goes to the previous tab (see _keyPresses.json),
+    // holding it can't be detected, so closing the tab is not supported
+    "keys": ["Backspace"],
+    "if": { "keyboard": "4133:6421" },
+    "send": [null, null]
+  }
+]

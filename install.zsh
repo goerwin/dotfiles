@@ -9,6 +9,10 @@ if command -v node &>/dev/null; then
   generatedKarabinerDestination=".config/karabiner/karabiner.json"
   node "src/.config/karabiner/_template.ts" >"src/$generatedKarabinerDestination" || exit 1
   echo "⚙️  $generatedKarabinerDestination generated"
+
+  generatedLocalPwDestination="keyRemapperMac/_localPw.json"
+  node "src/keyRemapperMac/_localPw.ts" >"src/$generatedLocalPwDestination" || exit 1
+  echo "⚙️  $generatedLocalPwDestination generated"
 fi
 
 # Copy src files into homeDir

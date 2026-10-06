@@ -7,24 +7,14 @@
       "keyRepeatInterval": 25,
       "remaps": "%array(_remaps.json)",
       "keyPresses": "%array(_keyPresses.json)",
-      "tests": [
-        ["Caps:down Caps:up", "Esc"],
-        ["Caps:down test_delay:100 Caps:up", "Esc"],
-        ["Caps:down test_delay:251 Caps:up", ""],
-        [
-          "ShiftL:down Caps:down Caps:up ShiftL:up",
-          "ShiftL:down Esc:down Esc:up ShiftL:up"
-        ],
-        [
-          "ShiftL:down Caps:down test_delay:251 Caps:up ShiftL:up",
-          "ShiftL:down ShiftL:up"
-        ]
-      ],
+      "tests": "%array(_tests.json)",
       "keyPressesDelay": 200,
       "keybindings": [
         "%dotdotdotArray(_vimMode.json)",
         "%dotdotdotArray(_clicksMode.json)",
+        "%dotdotdotArray(_devices.json)",
         "%dotdotdotArray(_apps.json)",
+        "%dotdotdotArray(_localPw.json)",
         "%dotdotdotArray(_globals.json)"
       ]
     },
@@ -38,7 +28,9 @@
       "keybindings": [
         "%dotdotdotArray(_vimMode.json)",
         "%dotdotdotArray(_clicksMode.json)",
+        "%dotdotdotArray(_devices.json)",
         "%dotdotdotArray(_apps.json)",
+        "%dotdotdotArray(_localPw.json)",
         "%dotdotdotArray(_globals.json)"
       ]
     }

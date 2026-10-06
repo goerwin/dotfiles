@@ -23,16 +23,9 @@
 
   // F18/Caps as control for some keys
   {
-    "keys": ["C", "Space", "V", "Tab", "W", "E", "R", "D", "U", "I", "O", "P"],
+    "keys": ["C", "V", "E", "Space", "Tab"],
     "if": { "F18": true },
     "send": ["CtrlL:down currentKey CtrlL:up", "currentKey:up"]
-  },
-
-  // Mute mic
-  {
-    "keys": ["M"],
-    "if": { "AltL": true },
-    "send": ["CmdL:down M CmdL:up", "currentKey:up"]
   },
 
   // App exposé
@@ -43,31 +36,6 @@
       "CmdL:up AltL:up CtrlL:down DownArrow CtrlL:up CmdL:down AltL:down",
       "currentKey:up"
     ]
-  },
-
-  // Go to back/forward page in browser/finder navigation
-  {
-    "keys": ["H"],
-    "if": { "AltL": true, "CmdL": false, "ShiftL": false },
-    "send": ["AltL:up CmdL:down BracketL CmdL:up AltL:down", "currentKey:up"]
-  },
-  {
-    "keys": ["L"],
-    "if": { "AltL": true, "CmdL": false, "ShiftL": false },
-    "send": ["AltL:up CmdL:down BracketR CmdL:up AltL:down", "currentKey:up"]
-  },
-  {
-    // fallback for when you need alt+h/l you can use fn+h/l
-    "keys": ["H", "L"],
-    "if": { "Fn": true },
-    "send": ["Fn:up AltL:down currentKey:down AltL:up Fn:down", "currentKey:up"]
-  },
-
-  // Alfred stop active workflows
-  {
-    "keys": ["S"],
-    "if": { "F18": true },
-    "send": ["CmdL:down AltL:down S AltL:up CmdL:up", "currentKey:up"]
   },
 
   // Media Keys
@@ -95,6 +63,28 @@
     "send": ["ForwardDelete:down", "ForwardDelete:up currentKey:up"]
   },
 
+  // macOS fn+arrows, lost because the keyboard is seized
+  {
+    "keys": ["UpArrow"],
+    "if": { "Fn": true },
+    "send": ["PageUp:down", "PageUp:up currentKey:up"]
+  },
+  {
+    "keys": ["DownArrow"],
+    "if": { "Fn": true },
+    "send": ["PageDown:down", "PageDown:up currentKey:up"]
+  },
+  {
+    "keys": ["LeftArrow"],
+    "if": { "Fn": true },
+    "send": ["Home:down", "Home:up currentKey:up"]
+  },
+  {
+    "keys": ["RightArrow"],
+    "if": { "Fn": true },
+    "send": ["End:down", "End:up currentKey:up"]
+  },
+
   {
     "keys": ["J"],
     "send": ["currentKey:down", "PageDown:up DownArrow:up currentKey:up"]
@@ -114,5 +104,21 @@
   {
     "keys": ["Backspace"],
     "send": ["currentKey:down", "ForwardDelete:up currentKey:up"]
+  },
+  {
+    "keys": ["UpArrow"],
+    "send": ["currentKey:down", "PageUp:up currentKey:up"]
+  },
+  {
+    "keys": ["DownArrow"],
+    "send": ["currentKey:down", "PageDown:up currentKey:up"]
+  },
+  {
+    "keys": ["LeftArrow"],
+    "send": ["currentKey:down", "Home:up currentKey:up"]
+  },
+  {
+    "keys": ["RightArrow"],
+    "send": ["currentKey:down", "End:up currentKey:up"]
   }
 ]

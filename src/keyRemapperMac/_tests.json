@@ -1,0 +1,130 @@
+[
+  // [input key events, expected key events sent to the OS]
+  // appName:<bundleId> and keyboard:<productId:vendorId> set the context (_ to clear)
+
+  // F18 (Caps) tap to Esc
+  ["Caps:down Caps:up", "Esc"],
+  ["Caps:down test_delay:100 Caps:up", "Esc"],
+  ["Caps:down test_delay:251 Caps:up", ""],
+  [
+    "ShiftL:down Caps:down Caps:up ShiftL:up",
+    "ShiftL:down Esc:down Esc:up ShiftL:up"
+  ],
+  [
+    "ShiftL:down Caps:down test_delay:251 Caps:up ShiftL:up",
+    "ShiftL:down ShiftL:up"
+  ],
+
+  // F18 as control only for C, V, E, Space, Tab
+  ["F18:down C:down C:up F18:up", "CtrlL:down C:down C:up CtrlL:up C:up"],
+  ["F18:down D:down D:up F18:up", "D:down D:up"],
+
+  // Alt+M is not remapped
+  ["AltL:down M:down M:up AltL:up", "AltL:down M:down M:up AltL:up"],
+
+  // Double Fn to Cmd+Alt+9 (Whisperer)
+  [
+    "Fn:down Fn:up Fn:down Fn:up",
+    "Fn:down Fn:up Fn:down Fn:up CmdL:down AltL:down 9 AltL:up CmdL:up"
+  ],
+
+  // Fn+arrows
+  [
+    "Fn:down UpArrow:down UpArrow:up Fn:up",
+    "Fn:down PageUp:down PageUp:up UpArrow:up Fn:up"
+  ],
+  [
+    "Fn:down LeftArrow:down LeftArrow:up Fn:up",
+    "Fn:down Home:down Home:up LeftArrow:up Fn:up"
+  ],
+
+  // Cmd+F1 to F1 outside Starcraft II
+  [
+    "CmdL:down F1:down F1:up CmdL:up",
+    "CmdL:down CmdL:up F1 CmdL:down F1:up CmdL:up"
+  ],
+
+  // Tab switching
+  [
+    "appName:com.google.Chrome CmdL:down H:down H:up CmdL:up",
+    "CmdL:down CmdL:up CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up CmdL:down H:up CmdL:up"
+  ],
+  [
+    "appName:com.apple.finder CmdL:down L:down L:up CmdL:up",
+    "CmdL:down CmdL:up CtrlL:down Tab CtrlL:up CmdL:down L:up CmdL:up"
+  ],
+  [
+    "appName:com.apple.dt.Xcode F3:down F3:up",
+    "CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up F3:up"
+  ],
+  [
+    "appName:app.supabit.supacode F4:down F4:up",
+    "CtrlL:down Tab CtrlL:up F4:up"
+  ],
+  [
+    "appName:dev.warp.Warp-Stable CmdL:down ShiftL:down H:down H:up ShiftL:up CmdL:up",
+    "CmdL:down ShiftL:down H:down LeftArrow:up H:up ShiftL:up CmdL:up"
+  ],
+
+  // Google Chrome
+  ["appName:com.google.Chrome F5:down F5:up", "AltL:down M AltL:up F5:up"],
+  [
+    "appName:com.google.Chrome CmdL:down AltL:down F:down F:up AltL:up CmdL:up",
+    "CmdL:down AltL:down AltL:up CtrlL:down F CtrlL:up AltL:down F:up AltL:up CmdL:up"
+  ],
+  [
+    "appName:com.google.Chrome CmdL:down E:down E:up CmdL:up",
+    "CmdL:down L SK:Delay:25 CmdL:up Semicolon SK:Delay:25 Esc SK:Delay:25 Esc CmdL:down AltL:down UpArrow AltL:up E:up CmdL:up"
+  ],
+  [
+    "appName:com.google.Chrome CmdL:down B:down B:up CmdL:up",
+    "CmdL:down B:down B:up CmdL:up"
+  ],
+
+  // Starcraft II
+  [
+    "appName:com.blizzard.starcraft2 CmdL:down D:down D:up CmdL:up",
+    "CmdL:down CmdL:up AltL:down C AltL:up CmdL:down D:up CmdL:up"
+  ],
+  [
+    "appName:com.blizzard.starcraft2 CmdL:down F1:down F1:up CmdL:up",
+    "CmdL:down F1:down F1:up CmdL:up"
+  ],
+
+  // Supacode
+  [
+    "appName:app.supabit.supacode CmdL:down O:down O:up CmdL:up",
+    "CmdL:down K O:up CmdL:up"
+  ],
+
+  // G10 Control
+  [
+    "keyboard:4133:6421 appName:net.ankiweb.launcher LeftArrow:down LeftArrow:up",
+    "1:down 1:up"
+  ],
+  [
+    "keyboard:4133:6421 appName:net.ankiweb.launcher UpArrow:down UpArrow:up",
+    "ShiftL:down Tab ShiftL:up"
+  ],
+  [
+    "keyboard:4133:6421 appName:com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck Enter:down Enter:up RightArrow:down RightArrow:up",
+    "Space:down Space:up 2:down 2:up"
+  ],
+  [
+    "keyboard:4133:6421 appName:com.google.Chrome Enter:down Enter:up",
+    "Space:down Space:up"
+  ],
+  [
+    "keyboard:4133:6421 PageDown:down PageDown:up",
+    "VolumeDown:down VolumeDown:up"
+  ],
+  [
+    "keyboard:4133:6421 Backspace:down Backspace:up",
+    "CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up"
+  ],
+  ["keyboard:4133:6421 Backspace:down test_delay:250 Backspace:up", ""],
+  [
+    "keyboard:_ appName:net.ankiweb.launcher LeftArrow:down LeftArrow:up",
+    "LeftArrow:down Home:up LeftArrow:up"
+  ]
+]
