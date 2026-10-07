@@ -3,22 +3,16 @@
 [
   // Device - G10 Control - Apps (Anki)
   {
-    "keys": ["LeftArrow", "RightArrow", "Back", "DownArrow", "PlayPause"],
-    "mappedKeys": ["1", "4", "D", "Tab", "R"],
-    "if": { "keyboard": "4133:6421", "appName": "net.ankiweb.launcher" },
-    "send": ["mappedKey:down", "mappedKey:up"]
-  },
-  {
-    // Up to Shift + Tab
-    "keys": ["UpArrow"],
-    "if": { "keyboard": "4133:6421", "appName": "net.ankiweb.launcher" },
-    "send": ["ShiftL:down Tab ShiftL:up", null]
+    "from": ["LeftArrow", "RightArrow", "Back", "DownArrow", "UpArrow", "PlayPause"],
+    "keyboard": "4133:6421",
+    "app": "net.ankiweb.launcher",
+    "to": ["1", "4", "D", "Tab", "ShiftL+Tab", "R"]
   },
 
   // Device - G10 Control - Apps (Vocabuler)
   {
-    // Mic to Enter, Play/Pause to `
-    "keys": [
+    "from": [
+      "Back",
       "Application",
       "Enter",
       "Dictation",
@@ -28,45 +22,49 @@
       "DownArrow",
       "LeftArrow"
     ],
-    "mappedKeys": ["Tab", "Space", "Enter", "GraveAccent", "1", "2", "3", "4"],
-    "if": {
-      "keyboard": "4133:6421",
-      "appName": "com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck"
-    },
-    "send": ["mappedKey:down", "mappedKey:up"]
-  },
-  {
-    // Back to Shift + Tab
-    "keys": ["Back"],
-    "if": {
-      "keyboard": "4133:6421",
-      "appName": "com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck"
-    },
-    "send": ["ShiftL:down Tab:down", "Tab:up ShiftL:up"]
+    "keyboard": "4133:6421",
+    "app": "com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck",
+    "to": [
+      "ShiftL+Tab",
+      "Tab",
+      "Space",
+      "Enter",
+      "GraveAccent",
+      "1",
+      "2",
+      "3",
+      "4"
+    ]
   },
 
   // Device - G10 Control - Apps (Google Chrome)
   {
-    "keys": ["Enter", "PlayPause"],
-    "mappedKeys": ["Space", "Esc"],
-    "if": { "keyboard": "4133:6421", "appName": "com.google.Chrome" },
-    "send": ["mappedKey:down", "mappedKey:up"]
+    "from": ["Enter", "PlayPause"],
+    "keyboard": "4133:6421",
+    "app": "com.google.Chrome",
+    "to": ["Space", "Esc"]
   },
 
   // Device - G10 Control
   {
     // Page Down/Up to Volume Down/Up, Volume Down/Up to Brightness Down/Up
-    "keys": ["PageDown", "PageUp", "VolumeDown", "VolumeUp"],
-    "mappedKeys": ["VolumeDown", "VolumeUp", "BrightnessDown", "BrightnessUp"],
-    "if": { "keyboard": "4133:6421" },
-    "send": ["mappedKey:down", "mappedKey:up"]
+    "from": ["PageDown", "PageUp", "VolumeDown", "VolumeUp"],
+    "keyboard": "4133:6421",
+    "to": ["VolumeDown", "VolumeUp", "BrightnessDown", "BrightnessUp"]
   },
   {
     // Delete[Hold] to Ctrl + Shift + Tab [Close tab: Cmd + W]
-    // Mute[Hold] to Ctrl + Tab [App switcher: Cmd + Shift + Tab]
-    // tap and hold are in _keyPresses.json, this only silences the keys
-    "keys": ["Backspace", "Mute"],
-    "if": { "keyboard": "4133:6421" },
-    "send": [null, null]
+    "from": ["Backspace"],
+    "keyboard": "4133:6421",
+    "tap": "CtrlL+ShiftL+Tab",
+    "hold": "CmdL+W"
+  },
+  {
+    // Mute[Hold] to Ctrl + Tab [App switcher: Cmd + Shift + Tab, open until
+    // Mute is released]
+    "from": ["Mute"],
+    "keyboard": "4133:6421",
+    "tap": "CtrlL+Tab",
+    "hold": "CmdL+ShiftL+Tab"
   }
 ]

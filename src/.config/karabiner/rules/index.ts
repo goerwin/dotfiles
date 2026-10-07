@@ -1,7 +1,7 @@
 /**
  * Ordered list of all complex modification rules.
  * Most specific first (Mode -> Devices -> Apps -> Global), same order as
- * keyRemapperMac/config.json keybindings.
+ * keyRemapperMac/config.json rules.
  */
 
 import { appsRules } from './apps.ts';

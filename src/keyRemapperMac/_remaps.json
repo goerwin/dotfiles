@@ -1,15 +1,11 @@
 // Mirrors .config/karabiner/profile.ts (devices and simple_modifications)
 [
   // Keyboard 32:9494
-  {
-    "from": "GraveAccent",
-    "to": "GraveAccent",
-    "if": { "keyboard": "32:9494" }
-  },
-  { "from": "CmdL", "to": "AltL", "if": { "keyboard": "32:9494" } },
-  { "from": "AltL", "to": "CmdL", "if": { "keyboard": "32:9494" } },
-  { "from": "CmdR", "to": "AltL", "if": { "keyboard": "32:9494" } },
-  { "from": "AltR", "to": "CmdL", "if": { "keyboard": "32:9494" } },
+  { "from": "GraveAccent", "to": "GraveAccent", "keyboard": "32:9494" },
+  { "from": "CmdL", "to": "AltL", "keyboard": "32:9494" },
+  { "from": "AltL", "to": "CmdL", "keyboard": "32:9494" },
+  { "from": "CmdR", "to": "AltL", "keyboard": "32:9494" },
+  { "from": "AltR", "to": "CmdL", "keyboard": "32:9494" },
 
   // Any keyboard
   { "from": "Caps", "to": "F18" },

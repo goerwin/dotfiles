@@ -23,25 +23,20 @@ const LOCAL_PW: string | undefined = process.env.LOCAL_PW;
 function getKeyEventsFromLetter(letter: string) {
   if (/[a-z]/.test(letter)) return letter.toUpperCase();
   if (/[0-9]/.test(letter)) return letter;
-  if (/[A-Z]/.test(letter)) return `ShiftL:down ${letter} ShiftL:up`;
-  if (letter === '$') return 'ShiftL:down 4 ShiftL:up';
+  if (/[A-Z]/.test(letter)) return `ShiftL+${letter}`;
+  if (letter === '$') return 'ShiftL+4';
 
   throw new Error(`LOCAL_PW has an unsupported character: ${letter}`);
 }
 
-// %dotdotdotArray can't spread an empty array, so a keybinding without keys
-// is used as a placeholder when LOCAL_PW is not set
-const keybindings = LOCAL_PW
+const rules = LOCAL_PW
   ? [
       {
-        keys: ['V'],
-        if: { AltL: true, CmdL: false, CtrlL: false, ShiftL: false },
-        send: [
-          `AltL:up ${Array.from(LOCAL_PW).map(getKeyEventsFromLetter).join(' ')} AltL:down`,
-          'currentKey:up',
-        ],
+        from: ['V'],
+        modifiers: ['AltL'],
+        to: Array.from(LOCAL_PW).map(getKeyEventsFromLetter).join(' '),
       },
     ]
-  : [{ keys: [], send: [null, null] }];
+  : [];
 
-console.log(JSON.stringify(keybindings, null, 2));
+console.log(JSON.stringify(rules, null, 2));

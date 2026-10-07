@@ -1,71 +1,85 @@
 // "Global - *" rules (mirrors .config/karabiner/rules/global.ts)
 [
-  // Global - CapsLock to F18: see _remaps.json and _keyPresses.json
+  // Global - CapsLock to F18 (see _remaps.json), tap to Esc
+  { "from": ["F18"], "optional": ["any"], "tap": "Esc" },
 
   // Global - Capslock as Control for some keys
   {
-    "keys": ["C", "V", "E", "Space", "Tab"],
-    "if": { "F18": true },
-    "send": ["CtrlL:down currentKey CtrlL:up", "currentKey:up"]
+    "from": ["C", "V", "E", "Space", "Tab"],
+    "modifiers": ["F18"],
+    "optional": ["any"],
+    "to": "CtrlL+currentKey"
   },
 
   // Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Fn + J/K
   {
-    "keys": ["J", "K"],
-    "mappedKeys": ["PageDown", "PageUp"],
-    "if": { "CmdL": true, "AltL": false },
-    "send": ["CmdL:up mappedKey:down", "mappedKey:up currentKey:up CmdL:down"]
+    "from": ["J", "K"],
+    "modifiers": ["CmdL"],
+    "optional": ["ShiftL"],
+    "to": ["PageDown", "PageUp"]
   },
   {
-    "keys": ["J", "K"],
-    "if": { "Fn": true },
-    "send": ["Fn:up CmdL:down currentKey:down CmdL:up Fn:down", "currentKey:up"]
+    "from": ["J", "K"],
+    "modifiers": ["Fn"],
+    "optional": ["any"],
+    "to": "CmdL+currentKey"
   },
 
   // Global - App Exposé
   {
-    "keys": ["J"],
-    "if": { "CmdL": true, "AltL": true, "ShiftL": false },
-    "send": [
-      "CmdL:up AltL:up CtrlL:down DownArrow CtrlL:up CmdL:down AltL:down",
-      "currentKey:up"
-    ]
+    "from": ["J"],
+    "modifiers": ["CmdL", "AltL"],
+    "to": "CtrlL+DownArrow"
   },
 
-  // Global - Double Fn to Cmd + option + 9 (whisperer): see _keyPresses.json
+  // Global - Double Fn to Cmd + option + 9 (whisperer)
+  {
+    "from": ["Fn"],
+    "optional": ["any"],
+    "to": "Fn",
+    "doubleTap": "CmdL+AltL+9"
+  },
 
-  // Global - Double Shift to Capslock: see _keyPresses.json
+  // Global - Double Shift to Capslock
+  {
+    "from": ["ShiftL"],
+    "optional": ["any"],
+    "to": "ShiftL",
+    "doubleTap": "Caps"
+  },
 
   // Global - Function Keys
   {
     // Cmd + F-key sends the plain F-key (Apps (Starcraft2) overrides F1/F2)
-    "keys": ["F1", "F2", "F7", "F8", "F9", "F10", "F11", "F12"],
-    "if": { "CmdL": true },
-    "send": ["CmdL:up currentKey CmdL:down", "currentKey:up"]
+    "from": ["F1", "F2", "F7", "F8", "F9", "F10", "F11", "F12"],
+    "modifiers": ["CmdL"],
+    "optional": ["any"],
+    "to": "currentKey"
   },
   {
-    // held down, so they repeat
-    "keys": ["F1", "F2", "F11", "F12"],
-    "mappedKeys": ["BrightnessDown", "BrightnessUp", "VolumeDown", "VolumeUp"],
-    "send": ["mappedKey:down", "mappedKey:up"]
-  },
-  {
-    // tapped, so they don't repeat
-    "keys": ["F7", "F8", "F9", "F10"],
-    "mappedKeys": ["Rewind", "PlayPause", "FastForward", "Mute"],
-    "send": ["mappedKey", null]
+    "from": ["F1", "F2", "F7", "F8", "F9", "F10", "F11", "F12"],
+    "to": [
+      "BrightnessDown",
+      "BrightnessUp",
+      "Rewind",
+      "PlayPause",
+      "FastForward",
+      "Mute",
+      "VolumeDown",
+      "VolumeUp"
+    ]
   },
 
   // Global - Local PW (generated from _localPw.ts)
-  "%dotdotdotArray(_localPw.json)",
+  "%import(_localPw.json)",
 
   // KeyRemapper only (Karabiner doesn't need these)
 
   // macOS fn+backspace/arrows, lost because the keyboard is seized
   {
-    "keys": ["Backspace", "UpArrow", "DownArrow", "LeftArrow", "RightArrow"],
-    "mappedKeys": ["ForwardDelete", "PageUp", "PageDown", "Home", "End"],
-    "if": { "Fn": true },
-    "send": ["mappedKey:down", "mappedKey:up currentKey:up"]
+    "from": ["Backspace", "UpArrow", "DownArrow", "LeftArrow", "RightArrow"],
+    "modifiers": ["Fn"],
+    "optional": ["any"],
+    "to": ["ForwardDelete", "PageUp", "PageDown", "Home", "End"]
   }
 ]

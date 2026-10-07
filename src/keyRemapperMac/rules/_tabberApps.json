@@ -1,0 +1,8 @@
+// Apps where Cmd + H/L and F3/F4 switch tabs
+[
+  "com.apple.finder",
+  "com.google.Chrome",
+  "app.supabit.supacode",
+  "dev.warp.Warp-Stable",
+  "com.apple.dt.Xcode"
+]

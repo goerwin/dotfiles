@@ -1,6 +1,6 @@
 /**
  * "Device - *" complex modification rules (scoped to specific hardware).
- * Mirrored in keyRemapperMac/rules/devices.json and keyRemapperMac/_keyPresses.json
+ * Mirrored in keyRemapperMac/rules/devices.json
  */
 
 import {

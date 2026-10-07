@@ -2,170 +2,87 @@
 [
   // Apps (Finder, Google Chrome, Supacode, Warp, Xcode) - Cmd + H/L and F3/F4 to prev/next tab
   {
-    "keys": ["H"],
-    "if": {
-      "appName": [
-        "com.apple.finder",
-        "com.google.Chrome",
-        "app.supabit.supacode",
-        "dev.warp.Warp-Stable",
-        "com.apple.dt.Xcode"
-      ],
-      "CmdL": true,
-      "AltL": false,
-      "CtrlL": false,
-      "ShiftL": false
-    },
-    "send": [
-      "CmdL:up CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up CmdL:down",
-      "currentKey:up"
-    ]
+    "from": ["H", "L"],
+    "modifiers": ["CmdL"],
+    "app": "%import(_tabberApps.json)",
+    "to": ["CtrlL+ShiftL+Tab", "CtrlL+Tab"]
   },
   {
-    "keys": ["L"],
-    "if": {
-      "appName": [
-        "com.apple.finder",
-        "com.google.Chrome",
-        "app.supabit.supacode",
-        "dev.warp.Warp-Stable",
-        "com.apple.dt.Xcode"
-      ],
-      "CmdL": true,
-      "AltL": false,
-      "CtrlL": false,
-      "ShiftL": false
-    },
-    "send": ["CmdL:up CtrlL:down Tab CtrlL:up CmdL:down", "currentKey:up"]
-  },
-  {
-    "keys": ["F3"],
-    "if": {
-      "appName": [
-        "com.apple.finder",
-        "com.google.Chrome",
-        "app.supabit.supacode",
-        "dev.warp.Warp-Stable",
-        "com.apple.dt.Xcode"
-      ],
-      "CmdL": false,
-      "AltL": false,
-      "CtrlL": false,
-      "ShiftL": false
-    },
-    "send": ["CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up", "currentKey:up"]
-  },
-  {
-    "keys": ["F4"],
-    "if": {
-      "appName": [
-        "com.apple.finder",
-        "com.google.Chrome",
-        "app.supabit.supacode",
-        "dev.warp.Warp-Stable",
-        "com.apple.dt.Xcode"
-      ],
-      "CmdL": false,
-      "AltL": false,
-      "CtrlL": false,
-      "ShiftL": false
-    },
-    "send": ["CtrlL:down Tab CtrlL:up", "currentKey:up"]
+    "from": ["F3", "F4"],
+    "app": "%import(_tabberApps.json)",
+    "to": ["CtrlL+ShiftL+Tab", "CtrlL+Tab"]
   },
 
   // Apps (Google Chrome) - Cmd + ; to Cmd + L
   {
-    "keys": ["Semicolon"],
-    "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": false },
-    "send": ["CmdL:down L CmdL:up CmdL:down", "currentKey:up"]
+    "from": ["Semicolon"],
+    "modifiers": ["CmdL"],
+    "app": "com.google.Chrome",
+    "to": "CmdL+L"
   },
 
   // Apps (Google Chrome) - F5 to Alt + U and F6 to Alt + T
   {
-    "keys": ["F5"],
-    "if": { "appName": "com.google.Chrome" },
-    "send": ["AltL:down U AltL:up", "currentKey:up"]
-  },
-  {
-    "keys": ["F6"],
-    "if": { "appName": "com.google.Chrome" },
-    "send": ["AltL:down T AltL:up", "currentKey:up"]
+    "from": ["F5", "F6"],
+    "app": "com.google.Chrome",
+    "to": ["AltL+U", "AltL+T"]
   },
 
   // Apps (Google Chrome) - Toggle full-screen
   {
-    "keys": ["F"],
-    "if": {
-      "appName": "com.google.Chrome",
-      "CmdL": true,
-      "AltL": true,
-      "ShiftL": false
-    },
-    "send": [
-      "AltL:up CtrlL:down currentKey CtrlL:up AltL:down",
-      "currentKey:up"
-    ]
+    "from": ["F"],
+    "modifiers": ["CmdL", "AltL"],
+    "app": "com.google.Chrome",
+    "to": "CmdL+CtrlL+F"
   },
 
   // Apps (Google Chrome) - Unfocus omnibar
   {
     // gives focus back to the page
-    "keys": ["E"],
-    "if": {
-      "appName": "com.google.Chrome",
-      "CmdL": true,
-      "AltL": false,
-      "CtrlL": false,
-      "ShiftL": false
-    },
-    "send": [
-      "L SK:Delay:25 CmdL:up Semicolon SK:Delay:25 Esc SK:Delay:25 Esc CmdL:down AltL:down UpArrow AltL:up",
-      "currentKey:up"
-    ]
+    "from": ["E"],
+    "modifiers": ["CmdL"],
+    "app": "com.google.Chrome",
+    "to": "CmdL+L delay:25 Semicolon delay:25 Esc delay:25 Esc CmdL+AltL+UpArrow"
   },
 
   // Apps (Google Chrome) - Cmd + shift + i to toggle dev tools
   {
-    "keys": ["I"],
-    "if": { "appName": "com.google.Chrome", "CmdL": true, "ShiftL": true },
-    "send": ["ShiftL:up AltL:down I AltL:up ShiftL:down", "currentKey:up"]
+    "from": ["I"],
+    "modifiers": ["CmdL", "ShiftL"],
+    "app": "com.google.Chrome",
+    "to": "CmdL+AltL+I"
   },
 
   // Apps (Slack) - Cmd + P to search
   {
-    "keys": ["P"],
-    "if": {
-      "appName": "com.tinyspeck.slackmacgap",
-      "CmdL": true,
-      "AltL": false
-    },
-    "send": ["K", "currentKey:up"]
+    "from": ["P"],
+    "modifiers": ["CmdL"],
+    "app": "com.tinyspeck.slackmacgap",
+    "to": "CmdL+K"
   },
 
   // Apps (Supacode) - Cmd + O to clear terminal
   {
-    "keys": ["O"],
-    "if": {
-      "appName": "app.supabit.supacode",
-      "CmdL": true,
-      "AltL": false,
-      "CtrlL": false,
-      "ShiftL": false
-    },
-    "send": ["K", "currentKey:up"]
+    "from": ["O"],
+    "modifiers": ["CmdL"],
+    "app": "app.supabit.supacode",
+    "to": "CmdL+K"
   },
 
   // Apps (Starcraft2) - Modifications
   {
     // this is for autorepair (c is the hotkey for repair, so cmd + d is for autorepair)
-    "keys": ["D"],
-    "if": { "appName": "com.blizzard.starcraft2", "CmdL": true },
-    "send": ["CmdL:up AltL:down C AltL:up CmdL:down", "currentKey:up"]
+    "from": ["D"],
+    "modifiers": ["CmdL"],
+    "app": "com.blizzard.starcraft2",
+    "to": "AltL+C"
   },
   {
     // keep cmd+F1/F2 as is (outside SC2 they are sent as plain F1/F2)
-    "keys": ["F1", "F2"],
-    "if": { "appName": "com.blizzard.starcraft2", "CmdL": true },
-    "send": ["currentKey:down", "currentKey:up"]
+    "from": ["F1", "F2"],
+    "modifiers": ["CmdL"],
+    "optional": ["any"],
+    "app": "com.blizzard.starcraft2",
+    "to": "CmdL+currentKey"
   }
 ]

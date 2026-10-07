@@ -1,6 +1,6 @@
 /**
  * "Global - *" complex modification rules (active regardless of app/device).
- * Mirrored in keyRemapperMac/rules/global.json and keyRemapperMac/_keyPresses.json
+ * Mirrored in keyRemapperMac/rules/global.json
  */
 
 import { F18_IS_DOWN, LOCAL_PW } from '../constants.ts';

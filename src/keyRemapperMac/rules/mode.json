@@ -2,52 +2,35 @@
 [
   // Mode - VIM
   {
-    "keys": ["F18"],
-    "set": { "_vimMode": true },
-    "setOnKeyUp": { "_vimMode": false },
-    "send": [null, null]
+    "from": ["H", "J", "K", "L"],
+    "modifiers": ["F18", "F"],
+    "optional": ["any"],
+    "to": [
+      "ShiftL+LeftArrow",
+      "ShiftL+DownArrow",
+      "ShiftL+UpArrow",
+      "ShiftL+RightArrow"
+    ]
   },
   {
-    "keys": ["H", "J", "K", "L"],
-    "mappedKeys": ["LeftArrow", "DownArrow", "UpArrow", "RightArrow"],
-    "if": { "_vimMode": true },
-    "send": ["mappedKey:down", "mappedKey:up"]
+    "from": ["H", "J", "K", "L"],
+    "modifiers": ["F18"],
+    "optional": ["any"],
+    "to": ["LeftArrow", "DownArrow", "UpArrow", "RightArrow"]
   },
-  {
-    "keys": ["F"],
-    "if": { "_vimMode": true },
-    "set": { "_vimModeShiftL": true },
-    "setOnKeyUp": { "_vimModeShiftL": false },
-    "send": ["ShiftL:down", "ShiftL:up"]
-  },
+  { "from": ["F"], "modifiers": ["F18"], "optional": ["any"] },
 
   // Mode - Click
   {
-    "keys": ["C"],
-    "if": { "AltL": true, "F18": true },
-    "set": { "rightClickMode": true },
-    "setOnKeyUp": { "rightClickMode": false },
-    "send": ["AltL:up RightClick:down", "RightClick:up"],
-    "afterKeyUp": "AltL:down"
+    "from": ["C"],
+    "modifiers": ["AltL", "F18"],
+    "optional": ["any"],
+    "to": "RightClick"
   },
   {
-    "keys": ["C"],
-    "if": { "AltL": true },
-    "set": { "leftClickMode": true },
-    "setOnKeyUp": { "leftClickMode": false },
-    "send": ["AltL:up LeftClick:down", "LeftClick:up"],
-    "afterKeyUp": "AltL:down"
-  },
-  {
-    "keys": ["AltL"],
-    "if": { "isKeyDown": false, "leftClickMode": true },
-    "setOnKeyUp": { "leftClickMode": false },
-    "send": [null, "LeftClick:up AltL:up"]
-  },
-  {
-    "keys": ["AltL"],
-    "if": { "isKeyDown": false, "rightClickMode": true },
-    "setOnKeyUp": { "rightClickMode": false },
-    "send": [null, "RightClick:up AltL:up"]
+    "from": ["C"],
+    "modifiers": ["AltL"],
+    "optional": ["any"],
+    "to": "LeftClick"
   }
 ]

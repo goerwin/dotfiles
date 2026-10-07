@@ -5,14 +5,12 @@
       "doubleClickSpeed": 500,
       "delayUntilRepeat": 300,
       "keyRepeatInterval": 25,
-      "remaps": "%array(_remaps.json)",
-      "keyPresses": "%array(_keyPresses.json)",
-      "keyPressesDelay": 200,
-      "keybindings": [
-        "%dotdotdotArray(rules/mode.json)",
-        "%dotdotdotArray(rules/devices.json)",
-        "%dotdotdotArray(rules/apps.json)",
-        "%dotdotdotArray(rules/global.json)"
+      "remaps": "%import(_remaps.json)",
+      "rules": [
+        "%import(rules/mode.json)",
+        "%import(rules/devices.json)",
+        "%import(rules/apps.json)",
+        "%import(rules/global.json)"
       ]
     }
   ]
