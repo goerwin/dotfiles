@@ -133,6 +133,14 @@
     "R:down R:up"
   ],
   [
+    "keyboard:4133:6421 appName:net.ankiweb.launcher Back:down Back:up",
+    "D:down D:up"
+  ],
+  [
+    "keyboard:4133:6421 appName:com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck Back:down Back:up",
+    "ShiftL:down Tab ShiftL:up"
+  ],
+  [
     "keyboard:4133:6421 appName:com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck Application:down Application:up Dictation:down Dictation:up PlayPause:down PlayPause:up",
     "Tab:down Tab:up Enter:down Enter:up GraveAccent:down GraveAccent:up"
   ],

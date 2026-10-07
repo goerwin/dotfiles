@@ -1,6 +1,5 @@
 // "Device - *" rules (mirrors .config/karabiner/rules/devices.ts)
 // G10 Control (keyboard: productId:vendorId)
-// The G10 has no Back (ac_back) button, so those manipulators are left out
 [
   // Device - G10 Control - Apps (Anki)
   {
@@ -14,6 +13,12 @@
     "keys": ["RightArrow"],
     "if": { "keyboard": "4133:6421", "appName": "net.ankiweb.launcher" },
     "send": ["4:down", "4:up"]
+  },
+  {
+    // Back to D
+    "keys": ["Back"],
+    "if": { "keyboard": "4133:6421", "appName": "net.ankiweb.launcher" },
+    "send": ["D:down", "D:up"]
   },
   {
     // Down to Tab
@@ -35,6 +40,15 @@
   },
 
   // Device - G10 Control - Apps (Vocabuler)
+  {
+    // Back to Shift + Tab
+    "keys": ["Back"],
+    "if": {
+      "keyboard": "4133:6421",
+      "appName": "com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck"
+    },
+    "send": ["ShiftL:down Tab ShiftL:up", null]
+  },
   {
     // Application to Tab
     "keys": ["Application"],
