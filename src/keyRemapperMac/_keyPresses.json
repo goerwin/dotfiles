@@ -44,4 +44,12 @@
     "ifPressedNTimes": 5,
     "send": "CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up"
   }
+
+  // G10 Control: hold Backspace to close the tab (needs KeyRemapper 6.1+)
+  // {
+  //   "key": "Backspace",
+  //   "if": { "keyboard": "4133:6421" },
+  //   "ifHeldFor": 400,
+  //   "send": "CmdL:down W CmdL:up"
+  // }
 ]

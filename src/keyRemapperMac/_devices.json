@@ -87,7 +87,7 @@
   },
   {
     // tapping it goes to the previous tab (see _keyPresses.json),
-    // holding it can't be detected, so closing the tab is not supported
+    // holding it closes the tab (commented out in _keyPresses.json)
     "keys": ["Backspace"],
     "if": { "keyboard": "4133:6421" },
     "send": [null, null]
