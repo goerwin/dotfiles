@@ -7,7 +7,6 @@
       "keyRepeatInterval": 25,
       "remaps": "%array(_remaps.json)",
       "keyPresses": "%array(_keyPresses.json)",
-      "tests": "%array(_tests.json)",
       "keyPressesDelay": 200,
       "keybindings": [
         "%dotdotdotArray(rules/mode.json)",
