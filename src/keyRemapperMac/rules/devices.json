@@ -3,7 +3,14 @@
 [
   // Device - G10 Control - Apps (Anki)
   {
-    "from": ["LeftArrow", "RightArrow", "Back", "DownArrow", "UpArrow", "PlayPause"],
+    "from": [
+      "LeftArrow",
+      "RightArrow",
+      "Back",
+      "DownArrow",
+      "UpArrow",
+      "PlayPause"
+    ],
     "keyboard": "4133:6421",
     "app": "net.ankiweb.launcher",
     "to": ["1", "4", "D", "Tab", "ShiftL+Tab", "R"]

@@ -1,4 +1,4 @@
-BIOME := npx @biomejs/biome@2.5.3
+BIOME := npm_config_registry=https://registry.npmjs.org npx @biomejs/biome@2.5.3
 
 .PHONY: format check
 
