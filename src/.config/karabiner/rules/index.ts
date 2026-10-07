@@ -1,6 +1,7 @@
 /**
  * Ordered list of all complex modification rules.
- * Order is preserved from the original config (Mode -> Global -> Apps -> Device).
+ * Most specific first (Mode -> Devices -> Apps -> Global), same order as
+ * keyRemapperMac/config.json keybindings.
  */
 
 import { appsRules } from './apps.ts';
@@ -10,7 +11,7 @@ import { modeRules } from './mode.ts';
 
 export const rules = [
   ...modeRules,
-  ...globalRules,
-  ...appsRules,
   ...deviceRules,
+  ...appsRules,
+  ...globalRules,
 ];

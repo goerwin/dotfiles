@@ -1,4 +1,6 @@
+// "Mode - *" rules (mirrors .config/karabiner/rules/mode.ts)
 [
+  // Mode - VIM
   {
     "keys": ["F18"],
     "if": { "isKeyDown": false, "_vimMode": true, "_vimModeShiftL": true },
@@ -40,5 +42,35 @@
     "set": { "_vimModeShiftL": true },
     "setOnKeyUp": { "_vimModeShiftL": false },
     "send": ["ShiftL:down", "ShiftL:up"]
+  },
+
+  // Mode - Click
+  {
+    "keys": ["C"],
+    "if": { "AltL": true, "F18": true },
+    "set": { "rightClickMode": true },
+    "setOnKeyUp": { "rightClickMode": false },
+    "send": ["AltL:up RightClick:down", "RightClick:up"],
+    "afterKeyUp": "AltL:down"
+  },
+  {
+    "keys": ["C"],
+    "if": { "AltL": true },
+    "set": { "leftClickMode": true },
+    "setOnKeyUp": { "leftClickMode": false },
+    "send": ["AltL:up LeftClick:down", "LeftClick:up"],
+    "afterKeyUp": "AltL:down"
+  },
+  {
+    "keys": ["AltL"],
+    "if": { "isKeyDown": false, "leftClickMode": true },
+    "setOnKeyUp": { "leftClickMode": false },
+    "send": [null, "LeftClick:up AltL:up"]
+  },
+  {
+    "keys": ["AltL"],
+    "if": { "isKeyDown": false, "rightClickMode": true },
+    "setOnKeyUp": { "rightClickMode": false },
+    "send": [null, "RightClick:up AltL:up"]
   }
 ]

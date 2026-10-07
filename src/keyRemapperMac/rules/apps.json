@@ -1,7 +1,6 @@
+// "Apps (...)" rules (mirrors .config/karabiner/rules/apps.ts)
 [
-  // Tab switching: Cmd+H/L and F3/F4 to prev/next tab
-  // (Google Chrome, Finder, Warp, Xcode, Supacode)
-
+  // Apps (Finder, Google Chrome, Supacode, Warp, Xcode) - Cmd + H/L and F3/F4 to prev/next tab
   {
     "keys": ["H"],
     "if": {
@@ -242,25 +241,27 @@
     "send": ["CtrlL:down Tab CtrlL:up", "currentKey:up"]
   },
 
-  // Google Chrome
-
+  // Apps (Google Chrome) - Cmd + ; to Cmd + L
   {
     "keys": ["Semicolon"],
     "if": { "appName": "com.google.Chrome", "CmdL": true, "AltL": false },
     "send": ["CmdL:down L CmdL:up CmdL:down", "currentKey:up"]
   },
+
+  // Apps (Google Chrome) - F5 to Alt + U and F6 to Alt + T
   {
     "keys": ["F5"],
     "if": { "appName": "com.google.Chrome" },
-    "send": ["AltL:down M AltL:up", "currentKey:up"]
+    "send": ["AltL:down U AltL:up", "currentKey:up"]
   },
   {
     "keys": ["F6"],
     "if": { "appName": "com.google.Chrome" },
     "send": ["AltL:down T AltL:up", "currentKey:up"]
   },
+
+  // Apps (Google Chrome) - Toggle full-screen
   {
-    // full screen
     "keys": ["F"],
     "if": {
       "appName": "com.google.Chrome",
@@ -273,8 +274,10 @@
       "currentKey:up"
     ]
   },
+
+  // Apps (Google Chrome) - Unfocus omnibar
   {
-    // unfocus omnibar and give focus back to page
+    // gives focus back to the page
     "keys": ["E"],
     "if": {
       "appName": "com.google.Chrome",
@@ -288,30 +291,15 @@
       "currentKey:up"
     ]
   },
+
+  // Apps (Google Chrome) - Cmd + shift + i to toggle dev tools
   {
-    // cmd+shift+i for toggling dev tools
     "keys": ["I"],
     "if": { "appName": "com.google.Chrome", "CmdL": true, "ShiftL": true },
     "send": ["ShiftL:up AltL:down I AltL:up ShiftL:down", "currentKey:up"]
   },
 
-  // Starcraft II
-
-  {
-    // keep cmd+F1/F2 as is (outside SC2 they are sent as plain F1/F2)
-    "keys": ["F1", "F2"],
-    "if": { "appName": "com.blizzard.starcraft2", "CmdL": true },
-    "send": ["currentKey:down", "currentKey:up"]
-  },
-  {
-    // this is for autorepair (c is the hotkey for repair, so cmd + d is for autorepair)
-    "keys": ["D"],
-    "if": { "appName": "com.blizzard.starcraft2", "CmdL": true },
-    "send": ["CmdL:up AltL:down C AltL:up CmdL:down", "currentKey:up"]
-  },
-
-  // Slack
-
+  // Apps (Slack) - Cmd + P to search
   {
     "keys": ["P"],
     "if": {
@@ -322,10 +310,8 @@
     "send": ["K", "currentKey:up"]
   },
 
-  // Supacode
-
+  // Apps (Supacode) - Cmd + O to clear terminal
   {
-    // clear terminal
     "keys": ["O"],
     "if": {
       "appName": "app.supabit.supacode",
@@ -335,5 +321,19 @@
       "ShiftL": false
     },
     "send": ["K", "currentKey:up"]
+  },
+
+  // Apps (Starcraft2) - Modifications
+  {
+    // this is for autorepair (c is the hotkey for repair, so cmd + d is for autorepair)
+    "keys": ["D"],
+    "if": { "appName": "com.blizzard.starcraft2", "CmdL": true },
+    "send": ["CmdL:up AltL:down C AltL:up CmdL:down", "currentKey:up"]
+  },
+  {
+    // keep cmd+F1/F2 as is (outside SC2 they are sent as plain F1/F2)
+    "keys": ["F1", "F2"],
+    "if": { "appName": "com.blizzard.starcraft2", "CmdL": true },
+    "send": ["currentKey:down", "currentKey:up"]
   }
 ]

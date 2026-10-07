@@ -1,17 +1,21 @@
+// Mirrors .config/karabiner/profile.ts (devices and simple_modifications)
 [
-  { "from": "AltL", "to": "CmdL", "if": { "keyboard": "32:9494" } },
-  { "from": "CmdL", "to": "AltL", "if": { "keyboard": "32:9494" } },
-  { "from": "AltR", "to": "CmdL", "if": { "keyboard": "32:9494" } },
-  { "from": "CmdR", "to": "AltL", "if": { "keyboard": "32:9494" } },
+  // Keyboard 32:9494
   {
     "from": "GraveAccent",
     "to": "GraveAccent",
     "if": { "keyboard": "32:9494" }
   },
+  { "from": "CmdL", "to": "AltL", "if": { "keyboard": "32:9494" } },
+  { "from": "AltL", "to": "CmdL", "if": { "keyboard": "32:9494" } },
+  { "from": "CmdR", "to": "AltL", "if": { "keyboard": "32:9494" } },
+  { "from": "AltR", "to": "CmdL", "if": { "keyboard": "32:9494" } },
+
+  // Any keyboard
   { "from": "Caps", "to": "F18" },
+  { "from": "GraveAccent", "to": "ShiftL" },
+  { "from": "NonUSBackslash", "to": "GraveAccent" },
   { "from": "CmdR", "to": "CmdL" },
   { "from": "AltR", "to": "AltL" },
-  { "from": "ShiftR", "to": "ShiftL" },
-  { "from": "GraveAccent", "to": "ShiftL" },
-  { "from": "NonUSBackslash", "to": "GraveAccent" }
+  { "from": "ShiftR", "to": "ShiftL" }
 ]

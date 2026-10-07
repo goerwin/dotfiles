@@ -1,5 +1,6 @@
 /**
  * "Device - *" complex modification rules (scoped to specific hardware).
+ * Mirrored in keyRemapperMac/rules/devices.json and keyRemapperMac/_keyPresses.json
  */
 
 import {
@@ -103,7 +104,7 @@ export const deviceRules = [
         to: [{ key_code: '1' }],
       },
       {
-        description: 'Arrow left to 2',
+        description: 'Arrow right to 2',
         type: 'basic',
         conditions: [...vocabulerApprConditions, ...g10ControlConditions],
         from: { key_code: 'right_arrow' },
@@ -117,7 +118,7 @@ export const deviceRules = [
         to: [{ key_code: '3' }],
       },
       {
-        description: 'Arrow right to 4',
+        description: 'Arrow left to 4',
         type: 'basic',
         conditions: [...vocabulerApprConditions, ...g10ControlConditions],
         from: { key_code: 'left_arrow' },

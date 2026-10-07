@@ -67,7 +67,7 @@
   ],
 
   // Google Chrome
-  ["appName:com.google.Chrome F5:down F5:up", "AltL:down M AltL:up F5:up"],
+  ["appName:com.google.Chrome F5:down F5:up", "AltL:down U AltL:up F5:up"],
   [
     "appName:com.google.Chrome CmdL:down AltL:down F:down F:up AltL:up CmdL:up",
     "CmdL:down AltL:down AltL:up CtrlL:down F CtrlL:up AltL:down F:up AltL:up CmdL:up"
@@ -123,6 +123,27 @@
     "CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up"
   ],
   ["keyboard:4133:6421 Backspace:down test_delay:250 Backspace:up", ""],
+  [
+    "keyboard:4133:6421 appName:net.ankiweb.launcher PlayPause:down PlayPause:up",
+    "R:down R:up"
+  ],
+  [
+    "keyboard:4133:6421 appName:com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck Application:down Application:up Dictation:down Dictation:up PlayPause:down PlayPause:up",
+    "Tab:down Tab:up Enter:down Enter:up GraveAccent:down GraveAccent:up"
+  ],
+  [
+    "keyboard:4133:6421 appName:com.google.Chrome PlayPause:down PlayPause:up",
+    "Esc:down Esc:up"
+  ],
+  [
+    "keyboard:4133:6421 VolumeDown:down VolumeDown:up VolumeUp:down VolumeUp:up",
+    "BrightnessDown:down BrightnessDown:up BrightnessUp:down BrightnessUp:up"
+  ],
+  [
+    "keyboard:4133:6421 Mute:down Mute:up",
+    "CtrlL:down Tab CtrlL:up"
+  ],
+  ["keyboard:_ Mute:down Mute:up", "Mute:down Mute:up"],
   [
     "keyboard:_ appName:net.ankiweb.launcher LeftArrow:down LeftArrow:up",
     "LeftArrow:down Home:up LeftArrow:up"

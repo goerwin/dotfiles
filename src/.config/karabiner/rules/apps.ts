@@ -1,5 +1,6 @@
 /**
  * "Apps (...)" complex modification rules (scoped to the frontmost app).
+ * Mirrored in keyRemapperMac/rules/apps.json
  */
 
 import {
@@ -10,7 +11,7 @@ import {
 export const appsRules = [
   {
     description:
-      'Apps (Finder, Google Chrome, Warp, Xcode) - Cmd + H/L and F3/F4 to prev/next tab',
+      'Apps (Finder, Google Chrome, Supacode, Warp, Xcode) - Cmd + H/L and F3/F4 to prev/next tab',
     manipulators: [
       {
         type: 'basic',
@@ -84,13 +85,13 @@ export const appsRules = [
     ],
   },
   {
-    description: 'Apps (Google Chrome) - F5 to Alt + M and F6 to Alt + T',
+    description: 'Apps (Google Chrome) - F5 to Alt + U and F6 to Alt + T',
     manipulators: [
       {
         type: 'basic',
         conditions: googleChromeConditions,
         from: { key_code: 'f5' },
-        to: [{ key_code: 'm', modifiers: ['left_option'] }],
+        to: [{ key_code: 'u', modifiers: ['left_option'] }],
       },
       {
         type: 'basic',
@@ -171,12 +172,6 @@ export const appsRules = [
         },
         to: [{ key_code: 'i', modifiers: ['left_command', 'left_option'] }],
       },
-      {
-        type: 'basic',
-        conditions: googleChromeConditions,
-        from: { key_code: 'f6' },
-        to: [{ key_code: 't', modifiers: ['left_option'] }],
-      },
     ],
   },
   {
@@ -234,45 +229,21 @@ export const appsRules = [
         },
         to: [{ key_code: 'c', modifiers: ['left_option'] }],
       },
-      {
+      // keep cmd+F1/F2 as is (outside SC2 they are sent as plain F1/F2)
+      ...['f1', 'f2'].map((key) => ({
         type: 'basic',
         conditions: [
           {
             bundle_identifiers: ['com.blizzard.starcraft2'],
-            type: 'frontmost_application_unless',
+            type: 'frontmost_application_if',
           },
         ],
         from: {
-          key_code: 'f1',
+          key_code: key,
           modifiers: { mandatory: ['left_command'], optional: ['any'] },
         },
-        to: [{ key_code: 'f1' }],
-      },
-      {
-        type: 'basic',
-        conditions: [
-          {
-            bundle_identifiers: ['com.blizzard.starcraft2'],
-            type: 'frontmost_application_unless',
-          },
-        ],
-        from: {
-          key_code: 'f2',
-          modifiers: { mandatory: ['left_command'], optional: ['any'] },
-        },
-        to: [{ key_code: 'f2' }],
-      },
-      {
-        type: 'basic',
-        conditions: [
-          {
-            bundle_identifiers: ['com.blizzard.starcraft2'],
-            type: 'frontmost_application_unless',
-          },
-        ],
-        from: { key_code: 'f10' },
-        to: [{ consumer_key_code: 'mute' }],
-      },
+        to: [{ key_code: key, modifiers: ['left_command'] }],
+      })),
     ],
   },
 ];

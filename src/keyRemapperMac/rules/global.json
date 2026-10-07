@@ -1,6 +1,15 @@
+// "Global - *" rules (mirrors .config/karabiner/rules/global.ts)
 [
-  // Use cmd+j/k for pageDown/pageUp
-  // This is just for ergonomics
+  // Global - CapsLock to F18: see _remaps.json and _keyPresses.json
+
+  // Global - Capslock as Control for some keys
+  {
+    "keys": ["C", "V", "E", "Space", "Tab"],
+    "if": { "F18": true },
+    "send": ["CtrlL:down currentKey CtrlL:up", "currentKey:up"]
+  },
+
+  // Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Fn + J/K
   {
     "keys": ["J"],
     "if": { "CmdL": true, "AltL": false },
@@ -15,20 +24,12 @@
     "afterKeyUp": "CmdL:down"
   },
   {
-    // fallback for when you need cmd+j/k you can use fn+j/k
     "keys": ["J", "K"],
     "if": { "Fn": true },
     "send": ["Fn:up CmdL:down currentKey:down CmdL:up Fn:down", "currentKey:up"]
   },
 
-  // F18/Caps as control for some keys
-  {
-    "keys": ["C", "V", "E", "Space", "Tab"],
-    "if": { "F18": true },
-    "send": ["CtrlL:down currentKey CtrlL:up", "currentKey:up"]
-  },
-
-  // App exposé
+  // Global - App Exposé
   {
     "keys": ["J"],
     "if": { "CmdL": true, "AltL": true, "ShiftL": false },
@@ -38,9 +39,13 @@
     ]
   },
 
-  // Media Keys
+  // Global - Double Fn to Cmd + option + 9 (whisperer): see _keyPresses.json
 
+  // Global - Double Shift to Capslock: see _keyPresses.json
+
+  // Global - Function Keys
   {
+    // Cmd + F-key sends the plain F-key (Apps (Starcraft2) overrides F1/F2)
     "keys": ["F1", "F2", "F7", "F8", "F9", "F10", "F11", "F12"],
     "if": { "CmdL": true },
     "send": ["CmdL:up currentKey CmdL:down", "currentKey:up"]
@@ -54,16 +59,17 @@
   { "keys": ["F11"], "send": ["VolumeDown:down", "VolumeDown:up"] },
   { "keys": ["F12"], "send": ["VolumeUp:down", "VolumeUp:up"] },
 
-  // NOTE: at the very end, release all possible keys
-  // that can still be on down on other shortcuts
+  // Global - Local PW (generated from _localPw.ts)
+  "%dotdotdotArray(_localPw.json)",
 
+  // KeyRemapper only (Karabiner doesn't need these)
+
+  // macOS fn+backspace/arrows, lost because the keyboard is seized
   {
     "keys": ["Backspace"],
     "if": { "Fn": true },
     "send": ["ForwardDelete:down", "ForwardDelete:up currentKey:up"]
   },
-
-  // macOS fn+arrows, lost because the keyboard is seized
   {
     "keys": ["UpArrow"],
     "if": { "Fn": true },
@@ -85,6 +91,8 @@
     "send": ["End:down", "End:up currentKey:up"]
   },
 
+  // NOTE: at the very end, release all possible keys
+  // that can still be on down on other shortcuts
   {
     "keys": ["J"],
     "send": ["currentKey:down", "PageDown:up DownArrow:up currentKey:up"]

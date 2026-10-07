@@ -1,5 +1,6 @@
 /**
  * "Global - *" complex modification rules (active regardless of app/device).
+ * Mirrored in keyRemapperMac/rules/global.json and keyRemapperMac/_keyPresses.json
  */
 
 import { F18_IS_DOWN, LOCAL_PW } from '../constants.ts';
@@ -124,6 +125,15 @@ export const globalRules = [
   {
     description: 'Global - Function Keys',
     manipulators: [
+      // Cmd + F-key sends the plain F-key (Apps (Starcraft2) overrides F1/F2)
+      ...['f1', 'f2', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12'].map((key) => ({
+        type: 'basic',
+        from: {
+          key_code: key,
+          modifiers: { mandatory: ['left_command'], optional: ['any'] },
+        },
+        to: [{ key_code: key }],
+      })),
       {
         type: 'basic',
         from: {

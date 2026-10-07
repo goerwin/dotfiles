@@ -10,8 +10,8 @@ if command -v node &>/dev/null; then
   node "src/.config/karabiner/_template.ts" >"src/$generatedKarabinerDestination" || exit 1
   echo "⚙️  $generatedKarabinerDestination generated"
 
-  generatedLocalPwDestination="keyRemapperMac/_localPw.json"
-  node "src/keyRemapperMac/_localPw.ts" >"src/$generatedLocalPwDestination" || exit 1
+  generatedLocalPwDestination="keyRemapperMac/rules/_localPw.json"
+  node "src/keyRemapperMac/rules/_localPw.ts" >"src/$generatedLocalPwDestination" || exit 1
   echo "⚙️  $generatedLocalPwDestination generated"
 fi
 

@@ -1,5 +1,6 @@
 /**
  * "Mode - *" complex modification rules.
+ * Mirrored in keyRemapperMac/rules/mode.json
  */
 
 import {

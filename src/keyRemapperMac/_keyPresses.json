@@ -1,19 +1,22 @@
 [
+  // Global - CapsLock to F18 (tap to Esc)
   { "key": "F18", "ifPressedNTimes": 1, "send": "Esc" },
   { "key": "F18", "ifPressedNTimes": 2, "send": "Esc" },
   { "key": "F18", "ifPressedNTimes": 3, "send": "Esc" },
   { "key": "F18", "ifPressedNTimes": 4, "send": "Esc" },
   { "key": "F18", "ifPressedNTimes": 5, "send": "Esc" },
-  { "key": "ShiftL", "ifPressedNTimes": 2, "send": "Caps" },
 
-  // Whisperer
+  // Global - Double Fn to Cmd + option + 9 (whisperer)
   {
     "key": "Fn",
     "ifPressedNTimes": 2,
     "send": "CmdL:down AltL:down 9 AltL:up CmdL:up"
   },
 
-  // G10 Control: tap Backspace to go to the previous tab
+  // Global - Double Shift to Capslock
+  { "key": "ShiftL", "ifPressedNTimes": 2, "send": "Caps" },
+
+  // Device - G10 Control: Delete[Hold] to Ctrl + Shift + Tab [Close tab: Cmd + W]
   {
     "key": "Backspace",
     "if": { "keyboard": "4133:6421" },
@@ -43,13 +46,51 @@
     "if": { "keyboard": "4133:6421" },
     "ifPressedNTimes": 5,
     "send": "CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up"
-  }
+  },
+  {
+    "key": "Backspace",
+    "if": { "keyboard": "4133:6421" },
+    "ifHeldFor": 400,
+    "send": "CmdL:down W CmdL:up"
+  },
 
-  // G10 Control: hold Backspace to close the tab (needs KeyRemapper 6.1+)
-  // {
-  //   "key": "Backspace",
-  //   "if": { "keyboard": "4133:6421" },
-  //   "ifHeldFor": 400,
-  //   "send": "CmdL:down W CmdL:up"
-  // }
+  // Device - G10 Control: Mute[Hold] to Ctrl + Tab [App switcher: Cmd + Shift + Tab]
+  {
+    "key": "Mute",
+    "if": { "keyboard": "4133:6421" },
+    "ifPressedNTimes": 1,
+    "send": "CtrlL:down Tab CtrlL:up"
+  },
+  {
+    "key": "Mute",
+    "if": { "keyboard": "4133:6421" },
+    "ifPressedNTimes": 2,
+    "send": "CtrlL:down Tab CtrlL:up"
+  },
+  {
+    "key": "Mute",
+    "if": { "keyboard": "4133:6421" },
+    "ifPressedNTimes": 3,
+    "send": "CtrlL:down Tab CtrlL:up"
+  },
+  {
+    "key": "Mute",
+    "if": { "keyboard": "4133:6421" },
+    "ifPressedNTimes": 4,
+    "send": "CtrlL:down Tab CtrlL:up"
+  },
+  {
+    "key": "Mute",
+    "if": { "keyboard": "4133:6421" },
+    "ifPressedNTimes": 5,
+    "send": "CtrlL:down Tab CtrlL:up"
+  },
+  {
+    // The switcher stays open until Mute is released
+    "key": "Mute",
+    "if": { "keyboard": "4133:6421" },
+    "ifHeldFor": 400,
+    "send": "CmdL:down ShiftL:down Tab",
+    "afterKeyUp": "ShiftL:up CmdL:up"
+  }
 ]

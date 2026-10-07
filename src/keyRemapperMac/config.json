@@ -10,12 +10,10 @@
       "tests": "%array(_tests.json)",
       "keyPressesDelay": 200,
       "keybindings": [
-        "%dotdotdotArray(_vimMode.json)",
-        "%dotdotdotArray(_clicksMode.json)",
-        "%dotdotdotArray(_devices.json)",
-        "%dotdotdotArray(_apps.json)",
-        "%dotdotdotArray(_localPw.json)",
-        "%dotdotdotArray(_globals.json)"
+        "%dotdotdotArray(rules/mode.json)",
+        "%dotdotdotArray(rules/devices.json)",
+        "%dotdotdotArray(rules/apps.json)",
+        "%dotdotdotArray(rules/global.json)"
       ]
     },
     {
@@ -26,12 +24,10 @@
       "keyPresses": "%array(_keyPresses.json)",
       "keyPressesDelay": 200,
       "keybindings": [
-        "%dotdotdotArray(_vimMode.json)",
-        "%dotdotdotArray(_clicksMode.json)",
-        "%dotdotdotArray(_devices.json)",
-        "%dotdotdotArray(_apps.json)",
-        "%dotdotdotArray(_localPw.json)",
-        "%dotdotdotArray(_globals.json)"
+        "%dotdotdotArray(rules/mode.json)",
+        "%dotdotdotArray(rules/devices.json)",
+        "%dotdotdotArray(rules/apps.json)",
+        "%dotdotdotArray(rules/global.json)"
       ]
     }
   ]

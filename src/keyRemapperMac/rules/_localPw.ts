@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 try {
   // @ts-expect-error - process.loadEnvFile is not defined in the type definitions
-  process.loadEnvFile(fileURLToPath(import.meta.resolve('../../.env')));
+  process.loadEnvFile(fileURLToPath(import.meta.resolve('../../../.env')));
 } catch (error: unknown) {
   console.warn(
     "Warning: couldn't load .env file, perhaps it doesn't exist:",

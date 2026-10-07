@@ -1,6 +1,7 @@
 /**
  * Static pieces of the main profile: device-specific simple modifications,
  * function-key passthrough, and global simple modifications.
+ * Mirrored in keyRemapperMac/_remaps.json
  */
 
 export const devices = [
