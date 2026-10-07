@@ -11,17 +11,10 @@
 
   // Global - Cmd[shift] + J/K to PageDown/PageUp and restore it with Fn + J/K
   {
-    "keys": ["J"],
+    "keys": ["J", "K"],
+    "mappedKeys": ["PageDown", "PageUp"],
     "if": { "CmdL": true, "AltL": false },
-    "send": ["CmdL:up PageDown:down", "PageDown:up currentKey:up CmdL:down"],
-    // is this neccesary
-    "afterKeyUp": "CmdL:down"
-  },
-  {
-    "keys": ["K"],
-    "if": { "CmdL": true, "AltL": false },
-    "send": ["CmdL:up PageUp:down", "PageUp:up currentKey:up CmdL:down"],
-    "afterKeyUp": "CmdL:down"
+    "send": ["CmdL:up mappedKey:down", "mappedKey:up currentKey:up CmdL:down"]
   },
   {
     "keys": ["J", "K"],
@@ -50,14 +43,18 @@
     "if": { "CmdL": true },
     "send": ["CmdL:up currentKey CmdL:down", "currentKey:up"]
   },
-  { "keys": ["F1"], "send": ["BrightnessDown:down", "BrightnessDown:up"] },
-  { "keys": ["F2"], "send": ["BrightnessUp:down", "BrightnessUp:up"] },
-  { "keys": ["F7"], "send": ["Rewind"] },
-  { "keys": ["F8"], "send": ["PlayPause"] },
-  { "keys": ["F9"], "send": ["FastForward"] },
-  { "keys": ["F10"], "send": ["Mute"] },
-  { "keys": ["F11"], "send": ["VolumeDown:down", "VolumeDown:up"] },
-  { "keys": ["F12"], "send": ["VolumeUp:down", "VolumeUp:up"] },
+  {
+    // held down, so they repeat
+    "keys": ["F1", "F2", "F11", "F12"],
+    "mappedKeys": ["BrightnessDown", "BrightnessUp", "VolumeDown", "VolumeUp"],
+    "send": ["mappedKey:down", "mappedKey:up"]
+  },
+  {
+    // tapped, so they don't repeat
+    "keys": ["F7", "F8", "F9", "F10"],
+    "mappedKeys": ["Rewind", "PlayPause", "FastForward", "Mute"],
+    "send": ["mappedKey", null]
+  },
 
   // Global - Local PW (generated from _localPw.ts)
   "%dotdotdotArray(_localPw.json)",
@@ -66,67 +63,9 @@
 
   // macOS fn+backspace/arrows, lost because the keyboard is seized
   {
-    "keys": ["Backspace"],
+    "keys": ["Backspace", "UpArrow", "DownArrow", "LeftArrow", "RightArrow"],
+    "mappedKeys": ["ForwardDelete", "PageUp", "PageDown", "Home", "End"],
     "if": { "Fn": true },
-    "send": ["ForwardDelete:down", "ForwardDelete:up currentKey:up"]
-  },
-  {
-    "keys": ["UpArrow"],
-    "if": { "Fn": true },
-    "send": ["PageUp:down", "PageUp:up currentKey:up"]
-  },
-  {
-    "keys": ["DownArrow"],
-    "if": { "Fn": true },
-    "send": ["PageDown:down", "PageDown:up currentKey:up"]
-  },
-  {
-    "keys": ["LeftArrow"],
-    "if": { "Fn": true },
-    "send": ["Home:down", "Home:up currentKey:up"]
-  },
-  {
-    "keys": ["RightArrow"],
-    "if": { "Fn": true },
-    "send": ["End:down", "End:up currentKey:up"]
-  },
-
-  // NOTE: at the very end, release all possible keys
-  // that can still be on down on other shortcuts
-  {
-    "keys": ["J"],
-    "send": ["currentKey:down", "PageDown:up DownArrow:up currentKey:up"]
-  },
-  {
-    "keys": ["K"],
-    "send": ["currentKey:down", "PageUp:up UpArrow:up currentKey:up"]
-  },
-  {
-    "keys": ["H"],
-    "send": ["currentKey:down", "LeftArrow:up currentKey:up"]
-  },
-  {
-    "keys": ["L"],
-    "send": ["currentKey:down", "RightArrow:up currentKey:up"]
-  },
-  {
-    "keys": ["Backspace"],
-    "send": ["currentKey:down", "ForwardDelete:up currentKey:up"]
-  },
-  {
-    "keys": ["UpArrow"],
-    "send": ["currentKey:down", "PageUp:up currentKey:up"]
-  },
-  {
-    "keys": ["DownArrow"],
-    "send": ["currentKey:down", "PageDown:up currentKey:up"]
-  },
-  {
-    "keys": ["LeftArrow"],
-    "send": ["currentKey:down", "Home:up currentKey:up"]
-  },
-  {
-    "keys": ["RightArrow"],
-    "send": ["currentKey:down", "End:up currentKey:up"]
+    "send": ["mappedKey:down", "mappedKey:up currentKey:up"]
   }
 ]

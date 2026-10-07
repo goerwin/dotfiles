@@ -19,6 +19,13 @@ fi
 homeDir=$(cd $homeDir; pwd -P)
 echo "\n📂 Copying dotfiles → $homeDir"
 
+# Remove keyRemapper folders first so renamed/deleted files don't linger
+for folder in keyRemapperMac keyRemapperWin; do
+  if [ -d "$homeDir/$folder" ]; then
+    rm -rf "$homeDir/$folder" && echo "  🗑️  removed $folder"
+  fi
+done
+
 setopt GLOB_DOTS
 ignoredItems=("vscode-cursor" ".DS_Store")
 
