@@ -14,20 +14,6 @@
         "%dotdotdotArray(rules/apps.json)",
         "%dotdotdotArray(rules/global.json)"
       ]
-    },
-    {
-      "name": "normal arrows",
-      "remaps": "%array(_remaps.json)",
-      "delayUntilRepeat": 300,
-      "keyRepeatInterval": 25,
-      "keyPresses": "%array(_keyPresses.json)",
-      "keyPressesDelay": 200,
-      "keybindings": [
-        "%dotdotdotArray(rules/mode.json)",
-        "%dotdotdotArray(rules/devices.json)",
-        "%dotdotdotArray(rules/apps.json)",
-        "%dotdotdotArray(rules/global.json)"
-      ]
     }
   ]
 }
