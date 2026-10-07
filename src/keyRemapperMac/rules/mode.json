@@ -3,8 +3,9 @@
   // Mode - VIM
   {
     "from": ["H", "J", "K", "L"],
-    "modifiers": ["F18", "F"],
+    "modifiers": ["F18"],
     "optional": ["any"],
+    "if": "vimShift",
     "to": [
       "ShiftL+LeftArrow",
       "ShiftL+DownArrow",
@@ -18,7 +19,13 @@
     "optional": ["any"],
     "to": ["LeftArrow", "DownArrow", "UpArrow", "RightArrow"]
   },
-  { "from": ["F"], "modifiers": ["F18"], "optional": ["any"] },
+  {
+    "from": ["F"],
+    "modifiers": ["F18"],
+    "optional": ["any"],
+    "to": "set:vimShift",
+    "afterKeyUp": "unset:vimShift"
+  },
 
   // Mode - Click
   {
