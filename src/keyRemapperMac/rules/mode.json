@@ -13,28 +13,11 @@
     "setOnKeyUp": { "_vimMode": false },
     "send": [null, null]
   },
-  // todo: should be able to do something like:
-  // "keys": ["H", "J", "K", "L"], mappedKeys: ["LeftArrow", "DownArrow", "UpArrow", "RightArrow"]
-  // to avoid repetition
   {
-    "keys": ["H"],
+    "keys": ["H", "J", "K", "L"],
+    "mappedKeys": ["LeftArrow", "DownArrow", "UpArrow", "RightArrow"],
     "if": { "_vimMode": true },
-    "send": ["LeftArrow:down", "LeftArrow:up"]
-  },
-  {
-    "keys": ["L"],
-    "if": { "_vimMode": true },
-    "send": ["RightArrow:down", "RightArrow:up"]
-  },
-  {
-    "keys": ["J"],
-    "if": { "_vimMode": true },
-    "send": ["DownArrow:down", "DownArrow:up"]
-  },
-  {
-    "keys": ["K"],
-    "if": { "_vimMode": true },
-    "send": ["UpArrow:down", "UpArrow:up"]
+    "send": ["mappedKey:down", "mappedKey:up"]
   },
   {
     "keys": ["F"],
