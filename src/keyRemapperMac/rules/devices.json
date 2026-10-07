@@ -47,7 +47,7 @@
       "keyboard": "4133:6421",
       "appName": "com.google.Chrome.app.eaigkbdbodohacojejngkapnlolpkjck"
     },
-    "send": ["ShiftL:down Tab ShiftL:up", null]
+    "send": ["ShiftL:down Tab:down", "Tab:up ShiftL:up"]
   },
   {
     // Application to Tab
