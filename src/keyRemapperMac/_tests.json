@@ -5,6 +5,7 @@
   // F18 (Caps) tap to Esc
   ["Caps:down Caps:up", "Esc"],
   ["Caps:down test_delay:100 Caps:up", "Esc"],
+  ["Caps:down Caps:up Caps:down Caps:up Caps:down Caps:up", "Esc Esc Esc"],
   ["Caps:down test_delay:251 Caps:up", ""],
   [
     "ShiftL:down Caps:down Caps:up ShiftL:up",
@@ -124,6 +125,10 @@
   ],
   ["keyboard:4133:6421 Backspace:down test_delay:250 Backspace:up", ""],
   [
+    "keyboard:4133:6421 Backspace:down Backspace:up Backspace:down Backspace:up Backspace:down Backspace:up",
+    "CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up CtrlL:down ShiftL:down Tab ShiftL:up CtrlL:up"
+  ],
+  [
     "keyboard:4133:6421 appName:net.ankiweb.launcher PlayPause:down PlayPause:up",
     "R:down R:up"
   ],
@@ -142,6 +147,10 @@
   [
     "keyboard:4133:6421 Mute:down Mute:up",
     "CtrlL:down Tab CtrlL:up"
+  ],
+  [
+    "keyboard:4133:6421 Mute:down Mute:up Mute:down Mute:up Mute:down Mute:up",
+    "CtrlL:down Tab CtrlL:up CtrlL:down Tab CtrlL:up CtrlL:down Tab CtrlL:up"
   ],
   ["keyboard:_ Mute:down Mute:up", "Mute:down Mute:up"],
   [
