@@ -29,15 +29,22 @@
 
   // Mode - Click
   {
-    "from": ["C"],
-    "modifiers": ["AltL", "F18"],
+    "from": ["AltL"],
     "optional": ["any"],
-    "to": "RightClick"
+    "to": "AltL set:clickMode",
+    "afterKeyUp": "unset:clickMode"
   },
   {
     "from": ["C"],
-    "modifiers": ["AltL"],
+    "modifiers": ["F18"],
     "optional": ["any"],
-    "to": "LeftClick"
+    "if": "clickMode",
+    "to": "AltL:up RightClick"
+  },
+  {
+    "from": ["C"],
+    "optional": ["any"],
+    "if": "clickMode",
+    "to": "AltL:up LeftClick"
   }
 ]
