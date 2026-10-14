@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+"""Create or focus a Supacode worktree for a GitHub pull request."""
+
+import argparse
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+from urllib.parse import unquote, urlsplit
+
+
+def run(*args, env=None, check=True):
+    result = subprocess.run(args, env=env, text=True, capture_output=True)
+    if check and result.returncode:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip() or
+                           f"Command failed: {args[0]}")
+    return result
+
+
+def github_repo(remote):
+    match = re.search(r"(?:@|//)github\.com[:/]([^/]+/[^/]+?)(?:\.git)?/?$", remote)
+    return match.group(1).lower() if match else None
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("pr", help="GitHub pull request URL")
+    parser.add_argument("--account", default="egaitan-godaddy", help="GitHub account (default: egaitan-godaddy)")
+    parser.add_argument("--dry-run", action="store_true", help="Show the action without fetching, creating, or focusing")
+    args = parser.parse_args()
+    url = urlsplit(args.pr)
+    match = re.fullmatch(r"/([^/]+)/([^/]+)/pull/([1-9][0-9]*)(?:/.*)?", url.path)
+    if url.scheme != "https" or url.netloc.lower() != "github.com" or not match:
+        parser.error("Pass a URL like https://github.com/godaddy/antares/pull/360")
+    owner, name, number = match.groups()
+    repo_name = f"{owner}/{name}"
+    pr_url = f"https://github.com/{repo_name}/pull/{number}"
+    cli = shutil.which("supacode")
+    if not cli:
+        bundled = Path("/Applications/supacode.app/Contents/Resources/bin/supacode")
+        if bundled.is_file():
+            cli = str(bundled)
+        else:
+            raise RuntimeError("Supacode CLI is unavailable.")
+    for command in ["git", "gh"]:
+        if not shutil.which(command):
+            raise RuntimeError(f"Install {command} and add it to PATH first.")
+
+    env = os.environ.copy()
+    env.pop("GH_TOKEN", None)
+    env.pop("GITHUB_TOKEN", None)
+    token = run("gh", "auth", "token", "--hostname", "github.com", "--user", args.account, env=env)
+    env["GH_TOKEN"] = token.stdout.strip()
+    pr = json.loads(run("gh", "api", f"repos/{repo_name}/pulls/{number}", env=env).stdout)
+
+    candidates = []
+    for repo_id in run(cli, "repo", "list", "--timeout", "30").stdout.splitlines():
+        root = unquote(repo_id)
+        remotes = run("git", "-C", root, "config", "--get-regexp", r"^remote\..*\.url$", check=False)
+        for line in remotes.stdout.splitlines():
+            key, remote_url = line.split(None, 1)
+            if github_repo(remote_url) == repo_name.lower():
+                candidates.append((repo_id, root, key[len("remote."):-len(".url")]))
+                break
+    if len(candidates) != 1:
+        raise RuntimeError(f"Expected one Supacode repository for {repo_name}; found {len(candidates)}. "
+                           "Open the repository in Supacode first, or resolve duplicate entries.")
+    repo_id, root, remote = candidates[0]
+
+    def git(*parts, check=True):
+        return run("git", "-C", root, *parts, check=check)
+
+    head = pr["head"]["ref"]
+    head_repo = (pr["head"].get("repo") or {}).get("full_name", "")
+    same_repo = head_repo.lower() == repo_name.lower()
+    records = git("worktree", "list", "--porcelain", "-z").stdout.split("\0\0")
+    found = []
+    for record in records:
+        fields = dict(field.split(" ", 1) for field in record.split("\0") if " " in field)
+        branch = fields.get("branch", "").removeprefix("refs/heads/")
+        if not branch:
+            continue
+        saved_pr = git("config", "--get", f"branch.{branch}.scw-pr-url", check=False).stdout.strip()
+        if saved_pr.lower() == pr_url.lower() or (same_repo and branch == head):
+            found.append(fields["worktree"])
+    if len(found) > 1:
+        raise RuntimeError("Multiple worktrees match this PR: " + ", ".join(found))
+    if found:
+        path = found[0]
+        if args.dry_run:
+            print(f"Would focus: {path}")
+            return
+        rows = run(cli, "worktree", "list", "--with-status", "--timeout", "30").stdout.splitlines()
+        for row in rows:
+            worktree_id, status = row.split("\t", 1)
+            if Path(unquote(worktree_id)).resolve() == Path(path).resolve():
+                if status == "archived":
+                    run(cli, "worktree", "unarchive", "--worktree", worktree_id, "--timeout", "30")
+                run(cli, "worktree", "focus", "--worktree", worktree_id, "--timeout", "30")
+                run(cli, "open", "--timeout", "30")
+                print(f"Focused: {path}")
+                return
+        raise RuntimeError(f"Supacode has not discovered {path} yet. Refresh the repository and retry.")
+
+    branch = head if same_repo else f"pr-{number}"
+    if git("show-ref", "--verify", "--quiet", f"refs/heads/{branch}", check=False).returncode == 0:
+        branch = f"pr-{number}"
+        suffix = 2
+        while git("show-ref", "--verify", "--quiet", f"refs/heads/{branch}", check=False).returncode == 0:
+            branch = f"pr-{number}-{suffix}"
+            suffix += 1
+    git("check-ref-format", "--branch", branch)
+    if args.dry_run:
+        print(f"Would fetch PR #{number} and create branch {branch} in {root}")
+        return
+    print(f"Creating worktree for PR #{number} ({branch})…", flush=True)
+    if same_repo:
+        base = f"refs/remotes/{remote}/{head}"
+        git("fetch", "--no-tags", "--", remote, f"+refs/heads/{head}:{base}")
+        tracking = ["--upstream", f"{remote}/{head}"]
+    else:
+        base = f"refs/scw/pulls/{number}/head"
+        git("fetch", "--no-tags", "--", remote, f"+refs/pull/{number}/head:{base}")
+        tracking = ["--no-upstream"]
+    commit = git("rev-parse", "--verify", base).stdout.strip()
+    # Save the association first so a retry can find a partially created worktree.
+    git("config", f"branch.{branch}.scw-pr-url", pr_url)
+    result = run(cli, "repo", "worktree-new", "--repo", repo_id, "--branch", branch,
+                 "--base", commit, *tracking, "--timeout", "0", check=False)
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    if result.returncode:
+        raise RuntimeError((result.stderr.strip() or "Supacode creation failed.") +
+                           " Retry scw; any created worktree will be reused.")
+    run(cli, "open", "--timeout", "30")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (RuntimeError, OSError, ValueError, KeyError) as error:
+        print(f"scw: {error}", file=sys.stderr)
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("scw: Interrupted. Retry to reuse any created worktree.", file=sys.stderr)
+        sys.exit(130)
