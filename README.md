@@ -9,16 +9,17 @@ make install
 source ~/.zshrc
 ```
 
-To install Financer, Noter, Daylier (macOS and iOS), Mic Muter, and Key Remapper
-from their repositories in `~/Projects`, run:
+To update the configured repositories, then install dotfiles and local apps, run:
 
 ```sh
 make install-apps
 ```
 
-Shows progress and elapsed time for each install, with full output saved to
-separate logs in a temporary directory printed at startup. Stops on the first
-failure and shows the last 40 lines of its log.
+First runs `git pull --ff-only` for this repository and each app repository.
+Installation starts only after every pull succeeds, with dotfiles installed first.
+Shows one-line progress and elapsed time for each update and install, with full
+output saved to separate logs in a temporary directory printed at startup.
+Stops on the first failure and shows the last 40 lines of its log.
 
 ## What's included
 

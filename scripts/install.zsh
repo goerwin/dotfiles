@@ -1,4 +1,5 @@
 #!/bin/zsh
+set -euo pipefail
 
 cd "${0:A:h:h}" || exit 1
 
@@ -18,13 +19,14 @@ if command -v node &>/dev/null; then
 fi
 
 # Copy src files into homeDir
-homeDir=$(cd $homeDir; pwd -P)
+homeDir=$(cd "$homeDir" && pwd -P)
 echo "\n📂 Copying dotfiles → $homeDir"
 
 # Remove keyRemapper folders first so renamed/deleted files don't linger
 for folder in keyRemapperMac keyRemapperWin; do
   if [ -d "$homeDir/$folder" ]; then
-    rm -rf "$homeDir/$folder" && echo "  🗑️  removed $folder"
+    rm -rf "$homeDir/$folder"
+    echo "  🗑️  removed $folder"
   fi
 done
 
