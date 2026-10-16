@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+cd "${0:A:h:h}" || exit 1
+
 homeDir=${HOME}
 
 echo "◆ Dotfiles Installer\n"

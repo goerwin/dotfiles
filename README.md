@@ -5,9 +5,20 @@ Personal macOS configuration.
 ## Install
 
 ```sh
-zsh install.zsh
+make install
 source ~/.zshrc
 ```
+
+To install Financer, Noter, Daylier (macOS and iOS), Mic Muter, and Key Remapper
+from their repositories in `~/Projects`, run:
+
+```sh
+make install-apps
+```
+
+Shows progress and elapsed time for each install, with full output saved to
+separate logs in a temporary directory printed at startup. Stops on the first
+failure and shows the last 40 lines of its log.
 
 ## What's included
 
