@@ -67,9 +67,9 @@ ios_check_device() {
 }
 
 # Preflight: Xcode account must have provisioning teams and the keychain must
-# contain at least one valid codesigning identity.
+# contain at least one usable Apple Development identity.
 ios_check_signing() {
-  local count identities teams
+  local identities teams usable
   teams=$(defaults read com.apple.dt.Xcode IDEProvisioningTeams 2>/dev/null) || true
   if [[ -n "$teams" ]] && ! grep -q teamID <<< "$teams"; then
     teams=$(defaults read com.apple.dt.Xcode IDEProvisioningTeamByKeychainAccounts 2>/dev/null) || true
@@ -80,14 +80,17 @@ ios_check_signing() {
     print -ru2 -- "and let Xcode download the team details, then run again."
     return 1
   fi
-  identities=$(security find-identity -v -p codesigning 2>/dev/null | tail -n 1)
-  count=$(print -r -- "$identities" | grep -oE "[0-9]+ valid identities" | grep -oE "[0-9]+") || true
-  if [[ -z "$count" || "$count" == 0 ]]; then
-    print -ru2 -- "No valid codesigning identities in the keychain ($identities)."
+  identities=$(security find-identity -v -p codesigning 2>/dev/null) || true
+  # find-identity -v still lists (and counts) revoked identities, flagged with CSSMERR_ codes.
+  usable=$(print -r -- "$identities" | grep -F '"Apple Development:' | grep -v CSSMERR_ | head -n 1) || true
+  if [[ -z "$usable" ]]; then
+    print -ru2 -- "No usable Apple Development identity in the keychain."
     print -ru2 -- "Your Apple Development certificate may be revoked or expired."
     print -ru2 -- "Open Xcode > Settings > Accounts, sign in again, and refresh certificates, then run again."
     return 1
   fi
+  usable=${usable#*\"}
+  print -r -- "Signing identity: ${usable%\"*}"
 }
 
 ios_install_app() {

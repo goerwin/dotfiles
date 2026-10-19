@@ -134,7 +134,7 @@ def main():
         print(result.stdout.strip())
     if result.returncode:
         raise RuntimeError((result.stderr.strip() or "Supacode creation failed.") +
-                           " Retry scw; any created worktree will be reused.")
+                           " Retry scs; any created worktree will be reused.")
     run(cli, "open", "--timeout", "30")
 
 
@@ -142,8 +142,8 @@ if __name__ == "__main__":
     try:
         main()
     except (RuntimeError, OSError, ValueError, KeyError) as error:
-        print(f"scw: {error}", file=sys.stderr)
+        print(f"scs: {error}", file=sys.stderr)
         sys.exit(1)
     except KeyboardInterrupt:
-        print("scw: Interrupted. Retry to reuse any created worktree.", file=sys.stderr)
+        print("scs: Interrupted. Retry to reuse any created worktree.", file=sys.stderr)
         sys.exit(130)
