@@ -90,25 +90,6 @@ ios_check_signing() {
   fi
 }
 
-# Device-side signature probe: installing the previous build in seconds tells us
-# whether the device still accepts the signing identity. Only an identity the
-# device no longer trusts is fatal (rebuilding can never fix that); any other
-# probe failure (e.g. an expired profile) falls through to the fresh build,
-# which re-signs and re-provisions anyway.
-ios_signature_probe() {
-  [[ -d "$IOS_APP_PATH" ]] || return 0
-  echo "\n🧪 Probing device code-signing trust..."
-  local probe
-  probe=$(xcrun devicectl device install app --device "$IOS_DEVICE_UDID" "$IOS_APP_PATH" 2>&1) || true
-  if grep -Eq "0xe8008018|identity used to sign" <<<"$probe"; then
-    echo "$probe" >&2
-    echo "\n❌ The device rejects the signing identity; rebuilding won't fix it." >&2
-    echo "Delete dead certificates from Keychain, check the phone's date/time" >&2
-    echo "(automatic), reboot the phone, then run again." >&2
-    return 1
-  fi
-}
-
 ios_install_app() {
   : "${APP_NAME:?APP_NAME must be set}"
   : "${PROJECT_ROOT:?PROJECT_ROOT must be set}"
@@ -119,8 +100,9 @@ ios_install_app() {
   IOS_APP_PATH="$DERIVED_DATA_DIR/Build/Products/$CONFIGURATION-iphoneos/$APP_NAME.app"
 
   ios_resolve_device || return 1
-  ios_signature_probe || return 1
 
+  # Refresh provisioning and signing before installing. A previous build may
+  # carry an obsolete identity even when current signing credentials are valid.
   echo "\n🔐 Resolving provisioning profile..."
   xcodebuild \
     -project "$IOS_PROJ_PATH" \
