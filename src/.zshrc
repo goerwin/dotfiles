@@ -1,6 +1,18 @@
 # .zshrc configures interactive shells: aliases, functions, options, and key bindings.
 # .zshenv is read by default for all shells, including noninteractive shells.
 # Keep essential environment variables in .zshenv.
+# Consider adding the following to .zshenv:
+
+# # Machine type (optional)
+# export MACHINE_TYPE="godaddy"
+
+# # GoCode
+# export GOCODE_BASE_URL="xxx"
+# export GOCODE_API_KEY="xxx"
+
+# # Anthropic
+# export ANTHROPIC_BASE_URL="$GOCODE_BASE_URL"
+# export ANTHROPIC_AUTH_TOKEN="$GOCODE_API_KEY"
 
 # Include executables installed by tools such as Claude Code and Herdr.
 export PATH="$HOME/.local/bin:$PATH"
@@ -156,15 +168,13 @@ alias npmusd="npm uninstall --save-dev"
 alias npmig="npm install -g"
 alias npmug="npm uninstall -g"
 
-# CD
-alias cd.="cd ."
-alias cdb="cd -" # go back to previous directory
-
 # Others
 alias sourcezsh="source ~/.zshrc"
 alias rmrf="rm -rf"
 alias cc="claude"
 alias matrix="cmatrix"
+alias cd.="cd ."
+alias cdb="cd -" # go back to previous directory
 
 #//////////////////////////
 # Main
@@ -241,6 +251,9 @@ runOnce menu_bar_item_spacing \
 
 # Enable Tab navigation through all macOS controls.
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+
+# Load cargo environment variables.
+. "$HOME/.cargo/env"
 
 #//////////////////////////
 # Godaddy

@@ -1,0 +1,35 @@
+{
+  "env": {
+    "CLAUDE_CODE_SCROLL_SPEED": "1"
+  },
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "model": "opus[1m]",
+  "effortLevel": "high",
+  "wheelScrollAccelerationEnabled": false,
+  "terminalProgressBarEnabled": true,
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "figma@claude-plugins-official": false,
+    "superpowers@claude-plugins-official": false,
+    "swift-lsp@claude-plugins-official": false
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "^(startup|resume|clear|compact|fork)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/hooks/herdr-agent-state.sh\" session",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

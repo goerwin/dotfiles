@@ -1,0 +1,38 @@
+approvals_reviewer = "auto_review"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "high"
+model_provider = "gocode"
+personality = "pragmatic"
+service_tier = "default"
+
+[desktop]
+ambient-suggestions-enabled = false
+conversationDetailMode = "STEPS_COMMANDS"
+dock-icon-preference = "codex-system"
+followUpQueueMode = "queue"
+
+[desktop.open-in-target-preferences]
+global = "cursor"
+
+[features]
+analytics_plan_history = true
+hooks = true
+js_repl = false
+prevent_idle_sleep = true
+
+[model_providers.gocode]
+name = "GoCode"
+base_url = "https://caas-gocode-prod.caas-prod.prod.onkatana.net/v1"
+wire_api = "responses"
+env_key = "GOCODE_API_KEY"
+
+[tui]
+notification_condition = "always"
+notification_method = "auto"
+notifications = true
+status_line = ["model-with-reasoning", "current-dir", "git-branch", "context-used", "context-window-size"]
+status_line_use_colors = true
+
+[tui.keymap.composer]
+queue = "enter"
+submit = "tab"
