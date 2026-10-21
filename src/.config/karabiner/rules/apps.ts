@@ -134,17 +134,6 @@ export const appsRules = [
           },
         },
         to: [
-          // Previous: focus omnibar, Delete, Esc x3
-          // { key_code: 'l', modifiers: ['left_command'] },
-          // { key_code: 'vk_none', hold_down_milliseconds: 25 },
-          // { key_code: 'delete_or_backspace' },
-          // { key_code: 'vk_none', hold_down_milliseconds: 25 },
-          // { key_code: 'escape' },
-          // { key_code: 'vk_none', hold_down_milliseconds: 25 },
-          // { key_code: 'escape' },
-          // { key_code: 'vk_none', hold_down_milliseconds: 25 },
-          // { key_code: 'escape' },
-
           { key_code: 'l', modifiers: ['left_command'] },
           { key_code: 'vk_none', hold_down_milliseconds: 25 },
           { key_code: 'semicolon' },
