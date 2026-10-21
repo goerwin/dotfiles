@@ -133,7 +133,7 @@ alias gupdate="gitUpdateBranch"
 alias gclean="git clean"
 alias gcleanf="git clean . -f"
 alias gopen='gh browse'
-alias go=gopen
+alias gop=gopen
 alias gopenpr='gh pr view "${$(git rev-parse --abbrev-ref "@{u}" 2>/dev/null)#*/}" --web'
 alias gopr=gopenpr
 

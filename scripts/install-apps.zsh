@@ -1,4 +1,5 @@
 #!/bin/zsh
+# alfred-title: Install apps
 set -euo pipefail
 
 main() {

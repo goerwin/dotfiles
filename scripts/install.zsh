@@ -1,7 +1,12 @@
 #!/bin/zsh
+# alfred-title: Install dotfiles
+
 set -euo pipefail
 
 cd "${0:A:h:h}" || exit 1
+
+print -r -- "Updating dotfiles..."
+git pull --ff-only
 
 homeDir=${HOME}
 
@@ -80,5 +85,3 @@ done
 
 echo "\n🎉 Done!"
 echo "👉 Run 'source ~/.zshrc' to apply the changes."
-
-
