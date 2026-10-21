@@ -6,10 +6,16 @@ key remaps, and VS Code / Cursor settings.
 ## Install
 
 ```sh
-make install
-source ~/.zshrc
-make install-apps # Update repos and install dotfiles + local apps
+make install # Install dotfiles
+make install-brew # Install Homebrew packages
+make install-brew-force # Install Homebrew packages (remove unlisted ones)
+make install-apps # Install local apps
 ```
+
+Setup bootstraps Homebrew, installs zsh-z from Git, and applies macOS keyboard
+navigation and menu bar spacing preferences. A LaunchAgent removes the Caps Lock
+delay at login. Shell startup only initializes tools and loads installed plugins.
+Homebrew must be on your PATH (follow its `brew shellenv` instructions on a new Mac).
 
 ## Homebrew
 

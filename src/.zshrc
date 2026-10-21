@@ -6,43 +6,19 @@
 # export ANTHROPIC_AUTH_TOKEN="$GOCODE_API_KEY"
 
 # Include executables installed by tools such as Claude Code and Herdr.
-export PATH="$HOME/.local/bin:$PATH"
-
-ZSH_PATH="$HOME/.zsh"
+typeset -U path fpath
+path=("$HOME/.local/bin" $path)
 
 # Settings
-mkdir -p "$ZSH_PATH"
 unsetopt beep # Disable zsh's error bell.
+HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
+HISTSIZE=50000 SAVEHIST=10000
+setopt append_history hist_ignore_dups hist_reduce_blanks
 
 # Functions
 
 function isCommand() {
   command -v "$1" &>/dev/null
-}
-
-# Run a command once per key, recording only successful runs.
-runOnce() {
-  local _RUN_ONCE_DIR="$HOME/.cache/.run-once"
-  local key="$1"
-  shift
-
-  local flag="$_RUN_ONCE_DIR/.$key"
-  [[ -f "$flag" ]] && return 0
-  mkdir -p "$_RUN_ONCE_DIR" || return 1
-  "$@" && touch "$flag"
-}
-
-function zshInstallPlugin() {
-  local pluginDir="$ZSH_PATH/$1"
-  if [[ ! -d "$pluginDir" ]]; then
-    echo "Installing $1..."
-    git clone "$2" "$pluginDir" || return
-  fi
-  source "$pluginDir/$3"
-}
-
-function zshRemovePlugins() {
-  rm -rf "$ZSH_PATH" && source "$HOME/.zshrc"
 }
 
 # Commit without running the pre-commit and commit-msg hooks.
@@ -133,23 +109,11 @@ alias cdb="cd -" # go back to previous directory
 
 # Main
 
-# Bootstrap Homebrew; fnm and Starship are installed through the Brewfile.
-if ! isCommand brew; then
-  echo "Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
 isCommand starship && eval "$(starship init zsh)"
 isCommand fnm && eval "$(fnm env --use-on-cd --shell zsh)"
 
-# zsh-syntax-highlighting
-zshInstallPlugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git" "zsh-syntax-highlighting.zsh"
-
-# zsh-autosuggestions
-[[ -r "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] &&
-  source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-
 # zsh-z
-zshInstallPlugin "zsh-z" "https://github.com/agkozak/zsh-z.git" "zsh-z.plugin.zsh"
+[[ -r "$HOME/.zsh/zsh-z/zsh-z.plugin.zsh" ]] && source "$HOME/.zsh/zsh-z/zsh-z.plugin.zsh"
 
 # Initialize zsh completion and Bash-compatible completion functions.
 [[ -d "$HOMEBREW_PREFIX/share/zsh-completions" ]] &&
@@ -178,19 +142,8 @@ bindkey '^[[1;3C' forward-word
 # Let lowercase completion input match uppercase characters.
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
-# Request no Caps Lock activation delay.
-hidutil property --set '{"CapsLockDelayOverride":0}' >/dev/null 2>&1
-
-# Set menu bar item spacing to 12 once, using a runOnce flag.
-# Restore the default: defaults -currentHost delete -globalDomain NSStatusItemSpacing
-runOnce menu_bar_item_spacing \
-  defaults -currentHost write -globalDomain NSStatusItemSpacing -int 12
-
-# Enable Tab navigation through all macOS controls.
-defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
-
 # Load cargo environment variables.
-. "$HOME/.cargo/env"
+[[ -r "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
 # Godaddy
 
@@ -209,4 +162,13 @@ if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
 
   # Before commands such as deploy-assets, select a profile (e.g. ap uxp_prod_ops).
   # AWS_REGION above sets the region; authenticate through SSO if prompted.
+fi
+
+# Load line editor plugins after completion setup and custom widgets.
+[[ -r "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] &&
+  source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+# Syntax highlighting must load last.
+if [[ -r "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+  source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 fi

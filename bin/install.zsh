@@ -5,12 +5,30 @@ set -euo pipefail
 
 cd "${0:A:h:h}" || exit 1
 
+# Homebrew installation
+if ! command -v brew &>/dev/null; then
+  brewExecutable="/opt/homebrew/bin/brew"
+  [[ "$(/usr/bin/uname -m)" == arm64 ]] || brewExecutable="/usr/local/bin/brew"
+  if [[ ! -x "$brewExecutable" ]]; then
+    echo "Installing Homebrew..."
+    brewInstaller=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)
+    /bin/bash -c "$brewInstaller"
+  fi
+  eval "$("$brewExecutable" shellenv)"
+fi
+
 print -r -- "Updating dotfiles..."
 git pull --ff-only
 
 homeDir=${HOME}
 
 echo "◆ Dotfiles Installer\n"
+
+# zsh-z has no Homebrew formula; install it here instead of at shell startup.
+if [[ ! -d "$homeDir/.zsh/zsh-z" ]]; then
+  mkdir -p "$homeDir/.zsh"
+  git clone https://github.com/agkozak/zsh-z.git "$homeDir/.zsh/zsh-z"
+fi
 
 # Generate karabiner.json from template
 if command -v node &>/dev/null; then
@@ -82,6 +100,20 @@ done
     fi
   done
 }
+
+# Persistent macOS preferences only need to be applied during setup.
+# Restore spacing: defaults -currentHost delete -globalDomain NSStatusItemSpacing
+defaults -currentHost write -globalDomain NSStatusItemSpacing -int 12
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+
+# hidutil settings reset after restarts; the LaunchAgent reapplies this at login.
+capsLockAgent="$homeDir/Library/LaunchAgents/local.dotfiles.caps-lock-delay.plist"
+if launchctl print "gui/$UID" &>/dev/null; then
+  launchctl bootout "gui/$UID" "$capsLockAgent" 2>/dev/null || true
+  launchctl bootstrap "gui/$UID" "$capsLockAgent"
+else
+  echo "Caps Lock delay setting will apply at the next graphical login."
+fi
 
 echo "\n🎉 Done!"
 echo "👉 Run 'source ~/.zshrc' to apply the changes."

@@ -3,22 +3,20 @@
 set -euo pipefail
 
 main() {
-  print -r -- "Updating repos and installing dotfiles and apps. Logs: $logDir"
+  print -r -- "Updating repos and installing apps. Logs: $logDir"
 
   run_section "Preflight checks" \
     "iPhone reachable|Checked|ios_check_device" \
     "Signing credentials|Checked|ios_check_signing"
 
   run_section "Updating repositories" \
-    "dotfiles|Updated|git -C $dotfilesDir pull --ff-only" \
     "financer|Updated|git -C $HOME/Projects/financer pull --ff-only" \
     "noter|Updated|git -C $HOME/Projects/noter pull --ff-only" \
     "daylier|Updated|git -C $HOME/Projects/daylier pull --ff-only" \
     "mic-muter|Updated|git -C $HOME/Projects/mic-muter pull --ff-only" \
     "key-remapper|Updated|git -C $HOME/Projects/key-remapper pull --ff-only"
 
-  run_section "Installing dotfiles and apps" \
-    "Dotfiles|Installed|zsh $dotfilesDir/bin/install.zsh" \
+  run_section "Installing apps" \
     "Financer (iOS)|Installed|zsh $HOME/Projects/financer/ios/install.zsh" \
     "Noter (iOS)|Installed|zsh $HOME/Projects/noter/install.zsh" \
     "Daylier (macOS)|Installed|make -C $HOME/Projects/daylier/ios install-mac" \
@@ -26,7 +24,7 @@ main() {
     "Mic Muter|Installed|make -C $HOME/Projects/mic-muter install" \
     "Key Remapper|Installed|make -C $HOME/Projects/key-remapper install"
 
-  printf '\n✅ Dotfiles and all apps installed (%s).\n' "$(duration "$((SECONDS - startedAt))")"
+  printf '\n✅ All apps installed (%s).\n' "$(duration "$((SECONDS - startedAt))")"
 }
 
 logDir=$(mktemp -d "${TMPDIR:-/tmp}/install-apps.XXXXXX")
