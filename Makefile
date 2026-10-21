@@ -9,7 +9,7 @@ fix:
 	$(BIOME) check --write .
 
 install:
-	zsh scripts/install.zsh
+	zsh bin/install.zsh
 
 install-apps:
-	@zsh scripts/install-apps.zsh
+	@zsh bin/install-apps.zsh

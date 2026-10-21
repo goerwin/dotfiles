@@ -18,7 +18,7 @@ main() {
     "key-remapper|Updated|git -C $HOME/Projects/key-remapper pull --ff-only"
 
   run_section "Installing dotfiles and apps" \
-    "Dotfiles|Installed|zsh $dotfilesDir/scripts/install.zsh" \
+    "Dotfiles|Installed|zsh $dotfilesDir/bin/install.zsh" \
     "Financer (iOS)|Installed|zsh $HOME/Projects/financer/ios/install.zsh" \
     "Noter (iOS)|Installed|zsh $HOME/Projects/noter/install.zsh" \
     "Daylier (macOS)|Installed|make -C $HOME/Projects/daylier/ios install-mac" \
@@ -51,7 +51,7 @@ if [[ -z "$IOS_DEVICE_UDID" ]]; then
 fi
 export IOS_DEVICE_UDID
 
-source "$dotfilesDir/scripts/install-ios-lib.zsh"
+source "$dotfilesDir/lib/install-ios.zsh"
 
 trap finish EXIT
 trap 'stop_preview; print -u2 "✗ Interrupted"; exit 130' INT TERM
