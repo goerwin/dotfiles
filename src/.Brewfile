@@ -23,6 +23,8 @@ brew "opencode"
 brew "pnpm"
 # Autoformat shell script source code
 brew "shfmt"
+# Cross-shell prompt for astronauts
+brew "starship"
 # Formatting tool for reformatting Swift code
 brew "swiftformat"
 # Tool to enforce Swift style and conventions
@@ -41,6 +43,8 @@ brew "cameroncooke/axe/axe", trusted: true
 cask "cursor"
 # Graphically shows disk usage within a file system
 cask "grandperspective"
+# Desktop automation tool
+cask "hammerspoon"
 # Tool to control external monitor brightness & volume
 cask "monitorcontrol"
 uv "aws-okta-processor"

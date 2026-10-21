@@ -1,46 +1,20 @@
-# .zshrc configures interactive shells: aliases, functions, options, and key bindings.
-# .zshenv is read by default for all shells, including noninteractive shells.
-# Keep essential environment variables in .zshenv.
-# Consider adding the following to .zshenv:
-
-# # Machine type (optional)
+# Keep shared environment variables and secrets in .zshenv (read by all shells).
 # export MACHINE_TYPE="godaddy"
-
-# # GoCode
 # export GOCODE_BASE_URL="xxx"
 # export GOCODE_API_KEY="xxx"
-
-# # Anthropic
 # export ANTHROPIC_BASE_URL="$GOCODE_BASE_URL"
 # export ANTHROPIC_AUTH_TOKEN="$GOCODE_API_KEY"
 
 # Include executables installed by tools such as Claude Code and Herdr.
 export PATH="$HOME/.local/bin:$PATH"
 
-ZSH_PATH=$HOME/.zsh
-TEXT_EDITOR="cursor"
+ZSH_PATH="$HOME/.zsh"
 
-#//////////////////////////
 # Settings
-#//////////////////////////
+mkdir -p "$ZSH_PATH"
+unsetopt beep # Disable zsh's error bell.
 
-# Create the plugin directory.
-mkdir -p $ZSH_PATH
-
-# Disable zsh's own error bell.
-unsetopt beep
-
-#//////////////////////////
 # Functions
-#//////////////////////////
-
-function isDir() {
-  [ -d "$1" ]
-}
-
-function isFile() {
-  [ -e "$1" ]
-}
 
 function isCommand() {
   command -v "$1" &>/dev/null
@@ -58,27 +32,13 @@ runOnce() {
   "$@" && touch "$flag"
 }
 
-function zshCloneGitRepoToZshDir() {
-  local gitRepoUrl="$1"
-  local baseName="$2"
-
-  pushd "$ZSH_PATH" # temporarily "cd" into this path until popd
-  git clone "$gitRepoUrl" "$baseName"
-  popd
-}
-
 function zshInstallPlugin() {
-  local pluginName="$1"
-  local gitUrl="$2"
-  local relativeSourceFilePath="$3"
-  local pluginDir="$ZSH_PATH/$pluginName"
-
-  if isDir "$pluginDir"; then
-    source "$pluginDir/$relativeSourceFilePath"
-  else
-    echo "Installing $pluginName..."
-    zshCloneGitRepoToZshDir "$gitUrl" "$pluginName"
+  local pluginDir="$ZSH_PATH/$1"
+  if [[ ! -d "$pluginDir" ]]; then
+    echo "Installing $1..."
+    git clone "$2" "$pluginDir" || return
   fi
+  source "$pluginDir/$3"
 }
 
 function zshRemovePlugins() {
@@ -92,19 +52,16 @@ function gitCommitNoVerify() {
 
 # Update a local branch from origin without switching branches.
 function gitUpdateBranch() {
-  # 1. Check if a branch name was provided
   if [ -z "$1" ]; then
     echo "❌ Error: Please specify a branch name (e.g., git update main)"
     return 1
   fi
 
-  # 2. Refuse updates when tracked files have uncommitted changes.
   if ! git diff-index --quiet HEAD --; then
     echo "⚠️  Warning: You have uncommitted changes. Please stash or commit them first."
     return 1
   fi
 
-  # 3. Attempt the update
   echo "🔄 Updating '$1' from remote origin..."
   if git fetch origin "$1":"$1"; then
     echo "✅ Success: Local branch '$1' is now up to date with origin/$1!"
@@ -122,9 +79,7 @@ function clearScreenAndScrollback() {
   printf '\033[3J'
 }
 
-#//////////////////////////
 # Aliases
-#//////////////////////////
 
 # Git
 alias g="git"
@@ -176,47 +131,29 @@ alias matrix="cmatrix"
 alias cd.="cd ."
 alias cdb="cd -" # go back to previous directory
 
-#//////////////////////////
 # Main
-#//////////////////////////
 
-# Homebrew
-if ! isCommand "brew"; then
+# Bootstrap Homebrew; fnm and Starship are installed through the Brewfile.
+if ! isCommand brew; then
   echo "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
-
-# Starship
-if isCommand "starship"; then
-  eval "$(starship init zsh)"
-else
-  echo "Installing Starship..."
-  curl -sS https://starship.rs/install.sh | sh
-fi
-
-# FNM
-if isCommand "fnm"; then
-  eval "$(fnm env --use-on-cd --shell zsh)"
-else
-  echo "Installing FNM..."
-  curl -fsSL https://fnm.vercel.app/install | bash
-fi
+isCommand starship && eval "$(starship init zsh)"
+isCommand fnm && eval "$(fnm env --use-on-cd --shell zsh)"
 
 # zsh-syntax-highlighting
 zshInstallPlugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git" "zsh-syntax-highlighting.zsh"
 
 # zsh-autosuggestions
-if [[ -r "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+[[ -r "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] &&
   source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-fi
 
 # zsh-z
 zshInstallPlugin "zsh-z" "https://github.com/agkozak/zsh-z.git" "zsh-z.plugin.zsh"
 
 # Initialize zsh completion and Bash-compatible completion functions.
-if [[ -d "$HOMEBREW_PREFIX/share/zsh-completions" ]]; then
+[[ -d "$HOMEBREW_PREFIX/share/zsh-completions" ]] &&
   fpath=("$HOMEBREW_PREFIX/share/zsh-completions" $fpath)
-fi
 autoload -U compinit bashcompinit && compinit && bashcompinit
 
 # Enable keyboard selection in completion menus.
@@ -255,9 +192,7 @@ defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 # Load cargo environment variables.
 . "$HOME/.cargo/env"
 
-#//////////////////////////
 # Godaddy
-#//////////////////////////
 
 if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
   # AWS setup godaddy
@@ -270,9 +205,7 @@ if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
   export AWS_REGION=us-west-2 # (ar does not set the region properly, so doing it manually)
 
   # Load awsprofile's zsh completion setup.
-  if isCommand "awsprofile"; then
-    eval "$(awsprofile completion zsh)"
-  fi
+  isCommand awsprofile && eval "$(awsprofile completion zsh)"
 
   # Before commands such as deploy-assets, select a profile (e.g. ap uxp_prod_ops).
   # AWS_REGION above sets the region; authenticate through SSO if prompted.
