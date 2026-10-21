@@ -108,6 +108,8 @@ defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
 # hidutil settings reset after restarts; the LaunchAgent reapplies this at login.
 capsLockAgent="$homeDir/Library/LaunchAgents/local.dotfiles.caps-lock-delay.plist"
+# The copy above resets this array on every install; launchd needs an absolute path.
+/usr/bin/plutil -insert ProgramArguments.0 -string "$homeDir/.local/bin/caps-lock-delay-fix" "$capsLockAgent"
 if launchctl print "gui/$UID" &>/dev/null; then
   launchctl bootout "gui/$UID" "$capsLockAgent" 2>/dev/null || true
   launchctl bootstrap "gui/$UID" "$capsLockAgent"

@@ -5,12 +5,8 @@
   <key>Label</key>
   <string>local.dotfiles.caps-lock-delay</string>
   <key>ProgramArguments</key>
-  <array>
-    <string>/usr/bin/hidutil</string>
-    <string>property</string>
-    <string>--set</string>
-    <string>{"CapsLockDelayOverride":0}</string>
-  </array>
+  <!-- The installer fills in the absolute helper path. -->
+  <array/>
   <key>RunAtLoad</key>
   <true/>
 </dict>

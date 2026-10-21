@@ -1,0 +1,3 @@
+#!/bin/sh
+# Caps Lock Delay Fix: reapply the activation delay setting after login.
+exec /usr/bin/hidutil property --set '{"CapsLockDelayOverride":0}'
