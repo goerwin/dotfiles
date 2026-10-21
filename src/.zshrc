@@ -1,29 +1,25 @@
-# .zshrc is sourced in interactive shells. It should contain commands to set up
-# aliases, functions, options, key bindings, etc.
-# .zshenv is sourced in interactive shells automatically. It should contain environment variables.
+# .zshrc configures interactive shells: aliases, functions, options, and key bindings.
+# .zshenv is read by default for all shells, including noninteractive shells.
+# Keep essential environment variables in .zshenv.
 
-# some binaries such as claude and herdr install their binaries here
+# Include executables installed by tools such as Claude Code and Herdr.
 export PATH="$HOME/.local/bin:$PATH"
 
 ZSH_PATH=$HOME/.zsh
 TEXT_EDITOR="cursor"
 
 #//////////////////////////
-# # Settings
+# Settings
 #//////////////////////////
 
-# Create .zsh folder for plugins
+# Create the plugin directory.
 mkdir -p $ZSH_PATH
 
-# Disable beep sound
+# Disable zsh's own error bell.
 unsetopt beep
 
-# Enable menu navigation with double tab
-# NOTE: This seems to not be doing anything
-# zstyle ':completion:*' menu select
-
 #//////////////////////////
-# # Functions
+# Functions
 #//////////////////////////
 
 function isDir() {
@@ -38,7 +34,7 @@ function isCommand() {
   command -v "$1" &>/dev/null
 }
 
-# Run a command only once
+# Run a command once per key, recording only successful runs.
 runOnce() {
   local _RUN_ONCE_DIR="$HOME/.cache/.run-once"
   local key="$1"
@@ -77,12 +73,12 @@ function zshRemovePlugins() {
   rm -rf "$ZSH_PATH" && source "$HOME/.zshrc"
 }
 
-# Commit with no verify
+# Commit without running the pre-commit and commit-msg hooks.
 function gitCommitNoVerify() {
   git commit -m "$*" --no-verify
 }
 
-# Update a branch from remote origin in the background
+# Update a local branch from origin without switching branches.
 function gitUpdateBranch() {
   # 1. Check if a branch name was provided
   if [ -z "$1" ]; then
@@ -90,7 +86,7 @@ function gitUpdateBranch() {
     return 1
   fi
 
-  # 2. Check if the working directory is clean
+  # 2. Refuse updates when tracked files have uncommitted changes.
   if ! git diff-index --quiet HEAD --; then
     echo "⚠️  Warning: You have uncommitted changes. Please stash or commit them first."
     return 1
@@ -104,6 +100,14 @@ function gitUpdateBranch() {
     echo "❌ Error: Update failed (see git error above)."
     return 1
   fi
+}
+
+# Clear the screen and scrollback at a zsh prompt, preserving the current command.
+function clearScreenAndScrollback() {
+  # Flush the redraw before clearing scrollback to avoid saving blank lines.
+  zle .clear-screen
+  zle -R
+  printf '\033[3J'
 }
 
 #//////////////////////////
@@ -196,39 +200,40 @@ zshInstallPlugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosug
 # zsh-z
 zshInstallPlugin "zsh-z" "https://github.com/agkozak/zsh-z.git" "zsh-z.plugin.zsh"
 
-# enable auto completions for commands/files
+# Initialize zsh completion and Bash-compatible completion functions.
 autoload -U compinit bashcompinit && compinit && bashcompinit
 
-# keyboard navigation to autocompletions
+# Enable keyboard selection in completion menus.
 zstyle ':completion:*' menu select
 
-# Use emacs keybindings (cmd + ←/→/⌫, alt + ⌫)
+# Use Emacs-style editing keys in zsh.
 bindkey -e
 
-# Cmd + O → clear screen
-bindkey '\eo' clear-screen
+# Ctrl + O → clear screen and scrollback
+zle -N clear-screen-and-scrollback clearScreenAndScrollback
+bindkey '^O' clear-screen-and-scrollback
 
-# Cmd + ⌫ → delete to beginning of line, instead of whole line
+# Ctrl + U → delete from cursor to beginning of line
 bindkey "^U" backward-kill-line
 
-# Option + Left/Right for word navigation
+# Handle common terminal sequences for Option + Left/Right word navigation.
 bindkey '^[^[[D' backward-word
 bindkey '^[^[[C' forward-word
 bindkey '^[[1;3D' backward-word
 bindkey '^[[1;3C' forward-word
 
-# case-insensitive completion
+# Let lowercase completion input match uppercase characters.
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
-# disable caps lock delay
+# Request no Caps Lock activation delay.
 hidutil property --set '{"CapsLockDelayOverride":0}' >/dev/null 2>&1
 
-# space between menu bar items
-# to restore it back: defaults -currentHost delete -globalDomain NSStatusItemSpacing
+# Set menu bar item spacing to 12 once, using a runOnce flag.
+# Restore the default: defaults -currentHost delete -globalDomain NSStatusItemSpacing
 runOnce menu_bar_item_spacing \
   defaults -currentHost write -globalDomain NSStatusItemSpacing -int 12
 
-# Enable tab focus highlight in MacOS UI
+# Enable Tab navigation through all macOS controls.
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
 #//////////////////////////
@@ -252,16 +257,15 @@ if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
     sudo pipx ensurepath --global
   fi
 
-  # Initialize python environment
+  # Initialize pyenv for Python version selection.
   ! isCommand "pyenv" && brew install pyenv
   export PYENV_ROOT="$HOME/.pyenv"
   [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init - zsh)"
 
-  # Enable AWS Profile auto completions (ap, ar)
+  # Load awsprofile's zsh completion setup.
   eval "$(awsprofile completion zsh)"
 
-  # To use eg. deploy-assets you need to set a profile first, eg. `ap uxp_prod_ops`
-  # and also a region (already done above in AWS_REGION).
-  # Then, it should ask you for SSO login.
+  # Before commands such as deploy-assets, select a profile (e.g. ap uxp_prod_ops).
+  # AWS_REGION above sets the region; authenticate through SSO if prompted.
 fi
