@@ -196,12 +196,17 @@ fi
 zshInstallPlugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git" "zsh-syntax-highlighting.zsh"
 
 # zsh-autosuggestions
-zshInstallPlugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions.git" "zsh-autosuggestions.zsh"
+if [[ -r "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
 
 # zsh-z
 zshInstallPlugin "zsh-z" "https://github.com/agkozak/zsh-z.git" "zsh-z.plugin.zsh"
 
 # Initialize zsh completion and Bash-compatible completion functions.
+if [[ -d "$HOMEBREW_PREFIX/share/zsh-completions" ]]; then
+  fpath=("$HOMEBREW_PREFIX/share/zsh-completions" $fpath)
+fi
 autoload -U compinit bashcompinit && compinit && bashcompinit
 
 # Enable keyboard selection in completion menus.
@@ -251,21 +256,10 @@ if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
   alias kasm='. kasm-wrapper'
   export AWS_REGION=us-west-2 # (ar does not set the region properly, so doing it manually)
 
-  # Pipx
-  if ! isCommand "pipx"; then
-    brew install pipx
-    pipx ensurepath
-    sudo pipx ensurepath --global
-  fi
-
-  # Initialize pyenv for Python version selection.
-  ! isCommand "pyenv" && brew install pyenv
-  export PYENV_ROOT="$HOME/.pyenv"
-  [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init - zsh)"
-
   # Load awsprofile's zsh completion setup.
-  eval "$(awsprofile completion zsh)"
+  if isCommand "awsprofile"; then
+    eval "$(awsprofile completion zsh)"
+  fi
 
   # Before commands such as deploy-assets, select a profile (e.g. ap uxp_prod_ops).
   # AWS_REGION above sets the region; authenticate through SSO if prompted.

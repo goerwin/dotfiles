@@ -14,12 +14,17 @@ make install-apps # Update repos and install dotfiles + local apps
 ## Homebrew
 
 ```sh
-make brew-backup  # Refresh Brewfile after package changes
-make brew-restore # Install recorded packages (requires Homebrew)
+make brew-backup        # Refresh package list and generated descriptions
+make install-brew       # Install listed packages; keep extras
+make install-brew-force # Install listed packages; remove unlisted ones
 ```
 
-Commit and push `Brewfile` after refreshing. It records package names;
-use Time Machine for app data and settings.
+Commit and push `src/.Brewfile` after refreshing. It installs as `~/.Brewfile`;
+use `brew bundle --global` anywhere. Force install manages Homebrew and uv tools,
+keeping required dependencies. Backup replaces custom comments and ordering.
+Use Time Machine for app data and settings.
+
+Python versions and CLI tools use `uv` (`uv python install`, `uv tool install`).
 
 ## Supacode worktrees
 
