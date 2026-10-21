@@ -1,0 +1,14 @@
+# Forward Cmd+H and Cmd+L to Herdr for tab navigation.
+keybind = command+h=csi:104;9u
+keybind = command+l=csi:108;9u
+
+# Forward Cmd+T and Cmd+W to create and close Herdr tabs.
+keybind = command+t=csi:116;9u
+keybind = command+w=csi:119;9u
+
+# Open the current worktree in Cursor through Herdr.
+keybind = command+shift+o=csi:111;10u
+
+# Switch Herdr spaces.
+keybind = alt+j=csi:106;3u
+keybind = alt+k=csi:107;3u

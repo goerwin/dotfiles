@@ -1,0 +1,24 @@
+onboarding = false
+
+[keys]
+prefix = "ctrl+b"
+new_tab = ["prefix+c", "cmd+t"]
+previous_tab = ["prefix+p", "f3", "cmd+h"]
+next_tab = ["prefix+n", "f4", "cmd+l"]
+previous_workspace = "alt+k"
+next_workspace = "alt+j"
+close_tab = ["prefix+shift+x", "cmd+w"]
+clear_pane = "cmd+o"
+split_vertical = "prefix+v"
+
+[[keys.command]]
+key = "cmd+shift+o"
+type = "shell"
+command = 'worktree_path=$(git rev-parse --show-toplevel) && open -a Cursor "$worktree_path"'
+description = "Open worktree in Cursor"
+
+[ui]
+prompt_new_tab_name = false
+
+[ui.toast]
+delivery = "system"
