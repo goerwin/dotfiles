@@ -7,8 +7,8 @@ key remaps, and VS Code / Cursor settings.
 
 ```sh
 make install # Install dotfiles
-make install-brew # Install Homebrew packages
-make install-brew-force # Install Homebrew packages (remove unlisted ones)
+./bin/install-brew.zsh # Install Homebrew packages
+./bin/install-brew-force.zsh # Install Homebrew packages (remove unlisted ones)
 make install-apps # Install local apps
 ```
 
@@ -20,10 +20,12 @@ Homebrew must be on your PATH (follow its `brew shellenv` instructions on a new 
 ## Homebrew
 
 ```sh
-make brew-backup        # Refresh package list and generated descriptions
-make install-brew       # Install listed packages; keep extras
-make install-brew-force # Install listed packages; remove unlisted ones
+./bin/brew-backup.zsh        # Refresh package list and generated descriptions
+./bin/install-brew.zsh       # Install listed packages; keep extras
+./bin/install-brew-force.zsh # Install listed packages; remove unlisted ones
 ```
+
+The matching `make` targets also work.
 
 Commit and push `src/.Brewfile` after refreshing. It installs as `~/.Brewfile`;
 use `brew bundle --global` anywhere. Force install manages Homebrew and uv tools,

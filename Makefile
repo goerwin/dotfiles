@@ -15,12 +15,10 @@ install-apps:
 	@zsh bin/install-apps.zsh
 
 brew-backup:
-	brew bundle dump --file=src/.Brewfile --formula --cask --tap --uv --force
-	install -m 644 src/.Brewfile "$(HOME)/.Brewfile"
+	@./bin/brew-backup.zsh
 
 install-brew:
-	brew bundle install --file=src/.Brewfile --no-upgrade
-	install -m 644 src/.Brewfile "$(HOME)/.Brewfile"
+	@./bin/install-brew.zsh
 
-install-brew-force: install-brew
-	brew bundle cleanup --file=src/.Brewfile --formula --cask --tap --uv --force
+install-brew-force:
+	@./bin/install-brew-force.zsh
