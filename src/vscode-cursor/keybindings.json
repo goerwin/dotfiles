@@ -129,15 +129,10 @@
     "command": "editor.action.insertCursorAbove"
   },
 
-  // Expand/Srhink Selection
+  // Expand selection
   {
     "key": "cmd+o",
     "command": "editor.action.smartSelect.expand",
-    "when": "editorTextFocus"
-  },
-  {
-    "key": "cmd+shift+o",
-    "command": "editor.action.smartSelect.shrink",
     "when": "editorTextFocus"
   },
 
@@ -220,6 +215,12 @@
   //
   // Others
   //
+
+  {
+    "key": "cmd+shift+o",
+    "command": "revealFileInOS",
+    "when": "resourceScheme == file"
+  },
 
   // Focus Git source control panel
   {
