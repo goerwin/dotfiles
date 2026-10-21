@@ -164,6 +164,43 @@ export const appsRules = [
     ],
   },
   {
+    description: 'Apps (Terminal) - Cmd + Left/Right to start/end of line',
+    manipulators: ['left_arrow', 'right_arrow'].map((key, index) => ({
+      type: 'basic',
+      conditions: [
+        {
+          bundle_identifiers: ['com.apple.Terminal'],
+          type: 'frontmost_application_if',
+        },
+      ],
+      from: {
+        key_code: key,
+        modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] },
+      },
+      to: [{ key_code: index === 0 ? 'a' : 'e', modifiers: ['left_control'] }],
+    })),
+  },
+  {
+    description:
+      'Apps (Terminal) - Cmd + O to clear screen and scrollback at the zsh prompt',
+    manipulators: [
+      {
+        type: 'basic',
+        conditions: [
+          {
+            bundle_identifiers: ['com.apple.Terminal'],
+            type: 'frontmost_application_if',
+          },
+        ],
+        from: {
+          key_code: 'o',
+          modifiers: { mandatory: ['left_command'], optional: ['caps_lock'] },
+        },
+        to: [{ key_code: 'o', modifiers: ['left_control'] }],
+      },
+    ],
+  },
+  {
     description: 'Apps (Slack) - Cmd + P to search',
     manipulators: [
       {

@@ -1,44 +1,35 @@
 # Dotfiles
 
-Personal macOS configuration.
+Personal macOS dotfiles: shell, Homebrew packages, window management,
+key remaps, and VS Code / Cursor settings.
 
 ## Install
 
 ```sh
 make install
 source ~/.zshrc
+make install-apps # Update repos and install dotfiles + local apps
 ```
 
-To update the configured repositories, then install dotfiles and local apps, run:
+## Homebrew
 
 ```sh
-make install-apps
+make brew-backup  # Refresh Brewfile after package changes
+make brew-restore # Install recorded packages (requires Homebrew)
 ```
 
-First runs `git pull --ff-only` for this repository and each app repository.
-Installation starts only after every pull succeeds, with dotfiles installed first.
-Shows one-line progress and elapsed time for each update and install, with full
-output saved to separate logs in a temporary directory printed at startup.
-Stops on the first failure and shows the last 40 lines of its log.
+Commit and push `Brewfile` after refreshing. It records package names;
+use Time Machine for app data and settings.
 
-## What's included
+## Supacode worktrees
 
-- Shell configuration
-- Supacode worktree commands (`scs` and `supacode-switch`)
-- Window management
-- Karabiner and key remaps
-- VS Code / Cursor settings
-
-## Supacode worktree command
-
-`scs` creates or focuses a worktree for a GitHub pull request. `supacode-switch`
-is an alias.
+Create or focus a PR worktree (`supacode-switch` is an alias):
 
 ```sh
 scs https://github.com/owner/repo/pull/123
 ```
 
-Requires Python 3.9+, Git, GitHub CLI, and Supacode. See `scs --help` for options.
+Requires Python 3.9+, Git, GitHub CLI, and Supacode. See `scs --help`.
 
 ## Development
 

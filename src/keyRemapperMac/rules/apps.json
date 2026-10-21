@@ -53,6 +53,22 @@
     "to": "CmdL+AltL+I"
   },
 
+  // Apps (Terminal) - Cmd + Left/Right to start/end of line
+  {
+    "from": ["LeftArrow", "RightArrow"],
+    "modifiers": ["CmdL"],
+    "app": "com.apple.Terminal",
+    "to": ["CtrlL+A", "CtrlL+E"]
+  },
+
+  // Apps (Terminal) - Cmd + O to clear screen and scrollback at the zsh prompt
+  {
+    "from": ["O"],
+    "modifiers": ["CmdL"],
+    "app": "com.apple.Terminal",
+    "to": "CtrlL+O"
+  },
+
   // Apps (Slack) - Cmd + P to search
   {
     "from": ["P"],

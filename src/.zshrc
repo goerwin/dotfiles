@@ -164,6 +164,7 @@ alias cdb="cd -" # go back to previous directory
 alias sourcezsh="source ~/.zshrc"
 alias rmrf="rm -rf"
 alias cc="claude"
+alias matrix="cmatrix"
 
 #//////////////////////////
 # Main
