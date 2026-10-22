@@ -12,7 +12,7 @@ install:
 	zsh bin/install.zsh
 
 install-apps:
-	@zsh bin/install-apps.zsh
+	@zsh bin/install-apps.zsh "$(APP)"
 
 brew-backup:
 	@./bin/brew-backup.zsh

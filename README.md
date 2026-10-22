@@ -10,6 +10,7 @@ make install # Install dotfiles
 ./bin/install-brew.zsh # Install Homebrew packages
 ./bin/install-brew-force.zsh # Install Homebrew packages (remove unlisted ones)
 make install-apps # Install local apps
+make install-apps APP=mic-muter # Update and install only Mic Muter
 ```
 
 Setup bootstraps Homebrew, installs zsh-z from Git, and applies macOS keyboard

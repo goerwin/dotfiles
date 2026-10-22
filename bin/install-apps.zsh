@@ -1,31 +1,68 @@
 #!/bin/zsh
 # alfred-title: Install apps
+# alfred-subtitle: Enter: install all apps · Tab: choose one (e.g. mic-muter)
+# alfred-args: Apps: financer, noter, daylier, mic-muter, key-remapper · empty = all
 set -euo pipefail
 
 main() {
-  print -r -- "Updating repos and installing apps. Logs: $logDir"
+  local app needsIOS=0
+  local -a updates=() installs=()
+  for app in "${apps[@]}"; do
+    updates+=("$app|Updated|git -C ${(q)HOME}/Projects/$app pull --ff-only")
+    case "$app" in
+      financer)
+        needsIOS=1
+        installs+=("Financer (iOS)|Installed|zsh ${(q)HOME}/Projects/financer/ios/install.zsh") ;;
+      noter)
+        needsIOS=1
+        installs+=("Noter (iOS)|Installed|zsh ${(q)HOME}/Projects/noter/install.zsh") ;;
+      daylier)
+        needsIOS=1
+        installs+=(
+          "Daylier (macOS)|Installed|make -C ${(q)HOME}/Projects/daylier/ios install-mac"
+          "Daylier (iOS)|Installed|make -C ${(q)HOME}/Projects/daylier/ios install"
+        ) ;;
+      mic-muter)
+        installs+=("Mic Muter|Installed|make -C ${(q)HOME}/Projects/mic-muter install") ;;
+      key-remapper)
+        installs+=("Key Remapper|Installed|make -C ${(q)HOME}/Projects/key-remapper install") ;;
+    esac
+  done
 
-  run_section "Preflight checks" \
-    "iPhone reachable|Checked|ios_check_device" \
-    "Signing credentials|Checked|ios_check_signing"
+  print -r -- "Updating repos and installing: ${(j:, :)apps}. Logs: $logDir"
 
-  run_section "Updating repositories" \
-    "financer|Updated|git -C $HOME/Projects/financer pull --ff-only" \
-    "noter|Updated|git -C $HOME/Projects/noter pull --ff-only" \
-    "daylier|Updated|git -C $HOME/Projects/daylier pull --ff-only" \
-    "mic-muter|Updated|git -C $HOME/Projects/mic-muter pull --ff-only" \
-    "key-remapper|Updated|git -C $HOME/Projects/key-remapper pull --ff-only"
+  if (( needsIOS )); then
+    configure_ios
+    run_section "Preflight checks" \
+      "iPhone reachable|Checked|ios_check_device" \
+      "Signing credentials|Checked|ios_check_signing"
+  fi
 
-  run_section "Installing apps" \
-    "Financer (iOS)|Installed|zsh $HOME/Projects/financer/ios/install.zsh" \
-    "Noter (iOS)|Installed|zsh $HOME/Projects/noter/install.zsh" \
-    "Daylier (macOS)|Installed|make -C $HOME/Projects/daylier/ios install-mac" \
-    "Daylier (iOS)|Installed|make -C $HOME/Projects/daylier/ios install" \
-    "Mic Muter|Installed|make -C $HOME/Projects/mic-muter install" \
-    "Key Remapper|Installed|make -C $HOME/Projects/key-remapper install"
+  run_section "Updating repositories" "${updates[@]}"
+  run_section "Installing apps" "${installs[@]}"
 
-  printf '\n✅ All apps installed (%s).\n' "$(duration "$((SECONDS - startedAt))")"
+  printf '\n✅ Installed %s (%s).\n' "${(j:, :)apps}" "$(duration "$((SECONDS - startedAt))")"
 }
+
+usage() {
+  print -r -- "Usage: install-apps.zsh [app]"
+  print -r -- "Apps: financer, noter, daylier, mic-muter, key-remapper"
+  print -r -- "Omit app to install all. Daylier installs both macOS and iOS apps."
+}
+
+apps=(financer noter daylier mic-muter key-remapper)
+if [[ -n "$*" ]]; then
+  requestedApp="${(L)*}"
+  case "${requestedApp//[-_[:space:]]/}" in
+    help|h) usage; exit 0 ;;
+    financer) apps=(financer) ;;
+    noter) apps=(noter) ;;
+    daylier) apps=(daylier) ;;
+    micmuter) apps=(mic-muter) ;;
+    keyremapper) apps=(key-remapper) ;;
+    *) print -ru2 -- "Unknown app: $*"; usage >&2; exit 1 ;;
+  esac
+fi
 
 logDir=$(mktemp -d "${TMPDIR:-/tmp}/install-apps.XXXXXX")
 startedAt=$SECONDS
@@ -38,18 +75,19 @@ currentStep=
 
 # iPhone UDID for the repo's iOS install scripts, which require it in the
 # environment. Taken from the environment or this repo's gitignored .env.
-IOS_DEVICE_UDID="${IOS_DEVICE_UDID:-}"
-if [[ -z "$IOS_DEVICE_UDID" && -r "$dotfilesDir/.env" ]]; then
-  IOS_DEVICE_UDID="$(source "$dotfilesDir/.env" && print -r -- "${IOS_DEVICE_UDID:-}")"
-fi
-if [[ -z "$IOS_DEVICE_UDID" ]]; then
-  print -ru2 -- "IOS_DEVICE_UDID is not set."
-  print -ru2 -- "Add it to $dotfilesDir/.env as IOS_DEVICE_UDID=\"<device-udid>\" (or export it)."
-  exit 1
-fi
-export IOS_DEVICE_UDID
-
-source "$dotfilesDir/lib/install-ios.zsh"
+configure_ios() {
+  IOS_DEVICE_UDID="${IOS_DEVICE_UDID:-}"
+  if [[ -z "$IOS_DEVICE_UDID" && -r "$dotfilesDir/.env" ]]; then
+    IOS_DEVICE_UDID="$(source "$dotfilesDir/.env" && print -r -- "${IOS_DEVICE_UDID:-}")"
+  fi
+  if [[ -z "$IOS_DEVICE_UDID" ]]; then
+    print -ru2 -- "IOS_DEVICE_UDID is not set."
+    print -ru2 -- "Add it to $dotfilesDir/.env as IOS_DEVICE_UDID=\"<device-udid>\" (or export it)."
+    exit 1
+  fi
+  export IOS_DEVICE_UDID
+  source "$dotfilesDir/lib/install-ios.zsh"
+}
 
 trap finish EXIT
 trap 'stop_preview; print -u2 "✗ Interrupted"; exit 130' INT TERM
@@ -72,7 +110,7 @@ run_section() {
     local logFile="$logDir/$(printf '%02d' "$logIdx")-${name//[^a-zA-Z0-9]/-}.log"
     started=$SECONDS
     printf -v header '[%d/%d] %s ... ' "$i" "$total" "$name"
-    local -a argv=(${(z)command})
+    local -a argv=("${(@Q)${(z)command}}")
     if run_step "$header" "$logFile" "${argv[@]}"; then
       printf '✓ %s (%s)\n' "$label" "$(duration "$((SECONDS - started))")"
     else
