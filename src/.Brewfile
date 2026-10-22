@@ -45,10 +45,12 @@ brew "cameroncooke/axe/axe", trusted: true
 cask "cursor"
 # Graphically shows disk usage within a file system
 cask "grandperspective"
-# Desktop automation tool
+# Desktop automation application
 cask "hammerspoon"
 # Tool to control external monitor brightness & volume
 cask "monitorcontrol"
+# Terminal-based web browser
+cask "terminal-browser"
 uv "aws-okta-processor"
 uv "fonttools", with: ["brotli"]
 uv "vale"
