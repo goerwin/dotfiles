@@ -1,3 +1,5 @@
+theme = Starlight
+
 # Forward Cmd+H and Cmd+L to Herdr for tab navigation.
 keybind = command+h=csi:104;9u
 keybind = command+l=csi:108;9u
