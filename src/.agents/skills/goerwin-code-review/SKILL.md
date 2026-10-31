@@ -16,6 +16,8 @@ The shared helper is scripts/review_pr.py relative to this skill directory.
 Invoke it with python3 and an absolute path. It returns JSON. Use argument arrays
 or proper shell quoting; never evaluate custom input as shell code.
 Install with `make install-skills` so the shared helper symlinks are available.
+For development worktree navigation, see `goerwin-wts --help`. The review
+launcher handles its own isolated checkouts.
 
 ## Resolve the target
 

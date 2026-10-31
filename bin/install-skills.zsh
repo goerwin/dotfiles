@@ -15,6 +15,7 @@ mkdir -p "$sharedDestination" "$skillsInstallHome/.local/bin" \
   "$skillsInstallHome/.agents/skills" "$skillsInstallHome/.claude/skills"
 rsync -a --exclude='__pycache__' --exclude='*.pyc' ./src/.agents/shared/ "$sharedDestination/"
 ln -sfn ../../.agents/shared/goerwin-wts "$wtsCommand"
+print -r -- "Installed goerwin-wts → $wtsCommand"
 for source in ./src/.agents/skills/*(/N); do
   [[ -f "$source/SKILL.md" ]] || continue
   skill="${source:t}"

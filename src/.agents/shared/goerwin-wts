@@ -10,14 +10,33 @@ from goerwin_tools.worktrees import switch
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Create or focus a Worktrunk worktree.")
+    parser = argparse.ArgumentParser(
+        description="Create or reuse a development worktree; print its path without changing cwd.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""Examples:
+  goerwin-wts 123
+  goerwin-wts https://github.com/owner/repo/pull/123
+  goerwin-wts feat/component origin/main
+  goerwin-wts register /path/to/repo
+
+Behavior:
+  PR numbers and branch names use the current repository (-C overrides it).
+  For PR URLs from elsewhere, register the existing local clone first.
+  Existing branches keep their commits and uncommitted changes; base is ignored.
+  New branches default to the remote default branch. Remote bases are fetched.
+  Herdr navigation is best-effort; the command works without Herdr.
+  Worktrunk's configured paths and hooks apply.
+
+Agents switching worktrees: use --json --no-focus and work in result.path.
+Diagnostics go to stderr. Use the review skill's launcher for isolated reviews.""",
+    )
     parser.add_argument("target", help="PR number, PR URL, branch name, or 'register'")
     parser.add_argument("base", nargs="?", help="Base for a new branch; checkout path with register")
-    parser.add_argument("-C", "--cwd", default=os.getcwd())
-    parser.add_argument("--config", default=str(DEFAULT_CONFIG))
-    parser.add_argument("--github-user")
-    parser.add_argument("--json", action="store_true")
-    parser.add_argument("--no-focus", action="store_true")
+    parser.add_argument("-C", "--cwd", default=os.getcwd(), help="Repository/context directory (default: current directory)")
+    parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="Repository registry file")
+    parser.add_argument("--github-user", help="Use an existing gh account without switching the active account")
+    parser.add_argument("--json", action="store_true", help="Print JSON; worktree results include path and branch")
+    parser.add_argument("--no-focus", action="store_true", help="Skip Herdr navigation")
     args = parser.parse_args()
     try:
         if args.target == "register":

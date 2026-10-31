@@ -15,6 +15,7 @@ this skill does not launch a new reviewer or require another model selection.
 Read repository instructions, including AGENTS.local.md. The helper is
 scripts/receiving.py relative to this skill. Both review skills use the shared
 helpers installed by `make install-skills` through symlinks.
+For manual worktree navigation, see `goerwin-wts --help`.
 
 ## Choose the feedback
 
