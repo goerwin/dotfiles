@@ -13,14 +13,28 @@ run it with `python3` and an absolute path. It prints JSON.
 
 ## 1. Choose the feedback
 
-Accept saved report paths, pasted feedback, or nothing. With nothing, run
-`receiving.py list --cwd /current/checkout` and present the rows (project,
-skill, title/PR, model/effort, date, reviewed SHA, remaining/waiting). Reports
-come from goerwin-code-review (with its `rubric`) and
-goerwin-architecture-review, where a `scope` marks a snapshot of one folder. Let the user pick
-one or several; never auto-select the newest or all. If none match, offer
-`--all-branches`, and `--all` only for cross-project browsing. `--pr URL`
-filters by PR; it is not permission to fetch or reply on GitHub.
+Accept a PR URL, saved report paths, pasted feedback, or nothing.
+
+**Nothing:** run `receiving.py options --cwd /current/checkout` and show its
+`choices` as a numbered list, saying what each will do: the branch PR's open
+GitHub threads (plus reviews matching the current code), reviews matching the
+current code, or older reviews to pick from (show project, skill/rubric,
+model/effort, date, reviewed SHA, remaining/waiting). Wait for the choice;
+never pick for the user. With no choices, offer `list --all-branches`, or
+`list --all` for cross-project browsing.
+
+**PR URL** (or the `github` choice): import the open threads, then prepare
+them first and add this branch's current reviews after them:
+
+~~~sh
+python3 /abs/skill/scripts/receiving.py github-threads --cwd /current/checkout --pr URL
+~~~
+
+It saves unresolved threads whose last comment isn't yours as an archive
+report (one `### F<n>` per thread, with its `thread` ID) and returns the
+`viewer` login that would post replies. Also read the PR's top-level
+conversation (`gh pr view URL --comments`) and treat only comments that ask
+for a change as extra findings.
 
 ~~~sh
 python3 /abs/skill/scripts/receiving.py prepare --cwd /current/checkout \
@@ -89,5 +103,30 @@ python3 /abs/skill/scripts/receiving.py record --cwd /prepared/cwd \
 
 The helper checks that every active finding is covered exactly once and appends
 the outcomes to each report's `*.receiving.md` sidecar; originals stay unchanged.
-Link the sidecars in your reply. Don't commit, push, or reply on GitHub without
-a separate instruction.
+Link the sidecars in your reply.
+
+## 4. Preview, then commit, push, or reply
+
+For GitHub threads, draft one reply per thread and show them all in the
+preview before anything leaves the machine. Replies sound like a person: brief,
+direct, casual, no hedging, no em dashes. A waiting reply is the question for
+the reviewer. Number them with where they land and who posts them:
+
+~~~text
+Posting as @egaitan-godaddy:
+1. menu-playground.tsx:62 (applied) Good catch, the playground now switches rows with the mode.
+2. menu.tsx:118 (pushed back) I'd keep this one. Splitting it would change the API this PR adds.
+3. menu.tsx:140 (waiting) Should multiple selection keep the order users clicked? Didn't want to guess.
+~~~
+
+Then ask once: commit, push, reply (all or some), any combination, or skip.
+Commit with a short conventional message; push only to the PR's branch, never
+`main`; push before replying so replies can reference the fix. Post with:
+
+~~~sh
+python3 /abs/skill/scripts/receiving.py reply --cwd /current/checkout --pr URL \
+  --replies /tmp/replies.json   # [{"thread": "PRRT_…", "body": "…"}, {"thread": null, "body": "…"}]
+~~~
+
+`thread: null` posts a PR comment. Confirm the posted URLs and author. If it
+stops partway, it lists what was already posted; retry only the rest.

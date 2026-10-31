@@ -14,7 +14,7 @@ import receiving
 from goerwin_tools import herdr_adapter, review_store as store, runtime, worktrees
 
 
-class ReceivingTests(unittest.TestCase):
+class ReceivingFixture:
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="receiving-test-")
         self.root = Path(self.temporary.name).resolve()
@@ -103,6 +103,8 @@ class ReceivingTests(unittest.TestCase):
         return {"sources": sources, "outcome": outcome, "explanation": "Preserved the cursor.",
                 "evidence": "The caller passes a cursor; the regression verifies it.", **extra}
 
+
+class ReceivingTests(ReceivingFixture, unittest.TestCase):
     def test_grouped_outcome_writes_each_sidecar_and_leaves_originals_untouched(self):
         first, second = self.make_report(), self.make_report("F2")
         before = {path: Path(path).read_bytes() for path in (first, second)}
@@ -219,6 +221,82 @@ class ReceivingTests(unittest.TestCase):
         self.assertEqual(receiving.list_reviews(str(self.repo))["reviews"], [])
         self.assertEqual(len(receiving.list_reviews(str(self.repo), all_branches=True)["reviews"]), 1)
         self.assertEqual(len(receiving.list_reviews(str(self.root), all_projects=True)["reviews"]), 1)
+
+
+class GithubThreadTests(ReceivingFixture, unittest.TestCase):
+    URL = "https://github.com/example/project/pull/7"
+
+    def thread(self, id_, resolved=False, authors=("reviewer",)):
+        return {"id": id_, "isResolved": resolved, "isOutdated": False, "path": "code.txt", "line": 1,
+                "originalLine": 1, "comments": {"nodes": [
+                    {"author": {"login": who}, "body": f"Please fix {id_}\nDetails.", "url": f"{self.URL}#{id_}-{n}",
+                     "createdAt": "2026-11-11T10:00:00Z"} for n, who in enumerate(authors)]}}
+
+    def fake(self, threads, posted=None, fail_after=None):
+        pr = {"id": "PR_1", "number": 7, "url": self.URL, "title": "Pagination", "state": "OPEN",
+              "headRefOid": self.head, "baseRefOid": self.base, "headRefName": "feature", "baseRefName": "main"}
+        def github(args, cwd, user=None, host=None):
+            if args[:2] == ["pr", "view"]:
+                return pr
+            if args[:2] == ["pr", "list"]:
+                return [{"url": self.URL}]
+            query = next((arg for arg in args if arg.startswith("query=")), "")
+            if "addPullRequestReviewThreadReply" in query:
+                if fail_after is not None and len(posted) >= fail_after:
+                    raise runtime.CommandError("rate limited")
+                thread = next(arg for arg in args if arg.startswith("thread="))[7:]
+                posted.append(thread)
+                return {"data": {"addPullRequestReviewThreadReply": {"comment": {
+                    "url": f"{self.URL}#reply-{thread}", "author": {"login": "me"}}}}}
+            if "reviewThreads" in query:
+                return {"data": {"viewer": {"login": "me"}, "repository": {"pullRequest": {"reviewThreads": {
+                    "pageInfo": {"hasNextPage": False, "endCursor": None}, "nodes": threads}}}}}
+            raise AssertionError(args)
+        return github
+
+    def run_with(self, github, function, *args):
+        from goerwin_tools import github_threads, targets
+        with patch.object(github_threads, "github", side_effect=github), \
+                patch.object(targets, "github", side_effect=github), patch.object(receiving, "github", side_effect=github):
+            return function(*args)
+
+    def import_args(self):
+        return type("Args", (), dict(cwd=str(self.developer), pr=self.URL, archive=None, github_user=None))
+
+    def test_only_unresolved_threads_not_last_answered_by_me_become_findings(self):
+        threads = [self.thread("A"), self.thread("B", resolved=True), self.thread("C", authors=("reviewer", "me")),
+                   self.thread("D", authors=("reviewer", "me", "reviewer"))]
+        result = self.run_with(self.fake(threads), receiving.import_github, self.import_args())
+        self.assertEqual((result["threads"], result["viewer"]), (2, "me"))
+        report = store.read_report(result["report"])
+        self.assertEqual((report["metadata"]["finding_ids"], report["metadata"]["skill"]), (["F1", "F2"], "github"))
+        self.assertIn("thread `A`", report["body"])
+        self.assertIn("thread `D`", report["body"])
+        session = self.prepare([result["report"]])
+        self.record([result["report"]], [self.outcome([item["source"]]) for item in session["findings"]])
+        self.assertTrue(receiving.sidecar(result["report"]).exists())
+
+    def test_replies_post_to_threads_and_report_partial_failures(self):
+        posted, file = [], self.root / "replies.json"
+        file.write_text(json.dumps([{"thread": "A", "body": "Done."}, {"thread": "B", "body": "Kept as is."}]))
+        result = self.run_with(self.fake([], posted), receiving.github_threads.reply,
+                               str(self.developer), self.URL, json.loads(file.read_text()))
+        self.assertEqual([item["author"] for item in result], ["me", "me"])
+        posted.clear()
+        with self.assertRaisesRegex(runtime.CommandError, "already posted:.*reply-A"):
+            self.run_with(self.fake([], posted, fail_after=1), receiving.github_threads.reply,
+                          str(self.developer), self.URL, json.loads(file.read_text()))
+
+    def test_options_offer_the_pr_and_split_current_from_older_reviews(self):
+        older = self.make_report()
+        self.commit("newer\n")
+        self.head = self.git("rev-parse", "HEAD", cwd=self.developer)
+        current = self.make_report()
+        result = self.run_with(self.fake([]), receiving.options, str(self.developer))
+        ids = [choice["id"] for choice in result["choices"]]
+        self.assertEqual(ids, ["github", "current", "older"])
+        self.assertEqual(result["choices"][1]["reviews"], [current])
+        self.assertEqual(result["choices"][2]["reviews"], [older])
 
 
 if __name__ == "__main__":

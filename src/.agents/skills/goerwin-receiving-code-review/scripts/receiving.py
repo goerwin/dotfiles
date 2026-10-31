@@ -8,10 +8,10 @@ import re
 import sys
 from pathlib import Path
 
-from goerwin_tools import review_store as store, worktrees
-from goerwin_tools.targets import working_tree_hash
+from goerwin_tools import github_threads, review_store as store, worktrees
+from goerwin_tools.targets import in_place, pr_target, working_tree_hash
 from goerwin_tools.runtime import (
-    CommandError, allocation_lock, atomic_text, commit, common_dir, current_branch,
+    CommandError, allocation_lock, atomic_text, commit, common_dir, current_branch, github,
     json_read, now, pr_url, ref_exists, remote_repositories, source_root,
 )
 
@@ -112,6 +112,46 @@ def list_reviews(cwd, archive=None, all_projects=False, all_branches=False, pr=N
         })
     rows.sort(key=lambda item: item["created_at"], reverse=True)
     return {"archive": str(root), "reviews": rows}
+
+
+def branch_pr(cwd, user=None):
+    """The open PR for the current branch, or None."""
+    branch, known = current_branch(cwd), remote_repositories(cwd)
+    preferred = known.get("upstream") or known.get("origin")
+    if not branch or not preferred:
+        return None
+    prs = github(["pr", "list", "--repo", preferred, "--state", "open", "--head", branch, "--json", "url"],
+                 cwd, user, preferred.split("/")[0])
+    return prs[0]["url"] if len(prs) == 1 else None
+
+
+def options(cwd, archive=None, user=None):
+    """What a no-argument run can act on, so the user chooses explicitly."""
+    reviews = list_reviews(cwd, archive)["reviews"]
+    open_reviews = [item for item in reviews if item["remaining"]]
+    try:
+        pr = branch_pr(cwd, user)
+    except CommandError:
+        pr = None
+    choices = []
+    if pr:
+        choices.append({"id": "github", "label": f"Open GitHub threads on {pr}", "pr_url": pr,
+                        "plus_current_reviews": [item["path"] for item in open_reviews if not item["stale"]]})
+    current = [item for item in open_reviews if not item["stale"]]
+    if current:
+        choices.append({"id": "current", "label": f"{len(current)} review(s) matching the current code",
+                        "reviews": [item["path"] for item in current]})
+    older = [item for item in open_reviews if item["stale"]]
+    if older:
+        choices.append({"id": "older", "label": f"Choose from {len(older)} older review(s) of this branch",
+                        "reviews": [item["path"] for item in older]})
+    return {"branch": current_branch(cwd), "pr_url": pr, "choices": choices, "reviews": reviews}
+
+
+def import_github(args):
+    cwd = str(Path(args.cwd).resolve())
+    target, _ = in_place(pr_target(cwd, args.pr, args.github_user), cwd)
+    return github_threads.import_threads(target, store.archive_root(args.archive), args.github_user)
 
 
 def development_target(cwd, inputs, selected_branch):
@@ -298,6 +338,20 @@ def parser():
     p.add_argument("--confirm-branch", action="store_true")
     p.add_argument("--branch", help="Development branch for a report of a tag, SHA, or unnamed ref")
     p.add_argument("--github-user")
+    p = sub.add_parser("options", help="What a no-argument run can act on")
+    p.add_argument("--cwd", default=os.getcwd())
+    p.add_argument("--archive")
+    p.add_argument("--github-user")
+    p = sub.add_parser("github-threads", help="Save a PR's open review threads as an archive report")
+    p.add_argument("--cwd", default=os.getcwd())
+    p.add_argument("--pr", required=True)
+    p.add_argument("--archive")
+    p.add_argument("--github-user")
+    p = sub.add_parser("reply", help="Post user-approved replies to GitHub")
+    p.add_argument("--cwd", default=os.getcwd())
+    p.add_argument("--pr", required=True)
+    p.add_argument("--replies", required=True, help='JSON file: [{"thread": ID or null, "body": text}]')
+    p.add_argument("--github-user")
     p = sub.add_parser("outcomes", help="Latest decision per finding of the given reports")
     p.add_argument("--review", action="append", required=True)
     p = sub.add_parser("record", help="Append outcomes to each report's sidecar; originals stay unchanged")
@@ -312,6 +366,12 @@ def main():
     try:
         if args.command == "list":
             result = list_reviews(args.cwd, args.archive, args.all, args.all_branches, args.pr)
+        elif args.command == "options":
+            result = options(args.cwd, args.archive, args.github_user)
+        elif args.command == "github-threads":
+            result = import_github(args)
+        elif args.command == "reply":
+            result = github_threads.reply(args.cwd, args.pr, json_read(args.replies), args.github_user)
         elif args.command == "outcomes":
             result = decisions(args.review)
         elif args.command == "prepare":
