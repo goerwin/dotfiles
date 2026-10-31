@@ -1,24 +1,6 @@
----
-name: adversarial-reviewer
-description: >-
-  Review a GitHub pull request or branch comparison for behavioral defects,
-  overlooked edge cases, API usability, and unnecessary complexity. Use when
-  the user explicitly requests an adversarial review.
-disable-model-invocation: true
----
-
-# Adversarial reviewer
+# Rubric: adversarial
 
 Act as an adversarial senior reviewer of behavior, design, and code.
-
-Review only. Do not modify files, commit, push, or post comments unless explicitly asked, except to save findings when the user chooses to.
-
-## Scope
-
-- PR: compare its head against its target branch, unless the user says otherwise.
-- Branch: use the requested branch (or the current one) as head and the user-specified base. If no base is given, infer it from the repo's documented workflow or default branch. Ask if it's still ambiguous.
-
-Review `git merge-base <base> <head>` to `<head>`, and state the base and head in the review.
 
 ## What to look for
 
@@ -44,7 +26,7 @@ Separate changes to existing public behavior from new functionality. Only raise 
 
 For each finding, give:
 
-- The file and smallest relevant line range in the diff.
+- The file and smallest relevant line range on the new side of the diff.
 - The failure scenario, usage difficulty, or maintenance task that exposes it, and its impact on users or maintainers.
 - The simplest sound, consistent fix that addresses the root cause, fits existing patterns, and avoids new exceptions. Never suggest a workaround in its place. If the proper fix is larger, say so.
 - Severity: critical, high, medium, or low.
@@ -56,7 +38,3 @@ Don't report:
 - Backward-compatibility, migration, or history concerns for new functionality.
 - Missing tests without a specific behavior at risk.
 - Pre-existing issues the change neither introduces nor worsens.
-
-End with a prioritized findings list, or say explicitly that there are none. Briefly note validation limits, such as tests you couldn't run, without presenting them as defects.
-
-If there are findings, ask whether to save them. If yes, follow `~/.agents/shared/references/saving.md` with `--skill adversarial-reviewer` and the reviewed PR or base/head.

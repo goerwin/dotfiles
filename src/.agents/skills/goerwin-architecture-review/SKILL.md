@@ -1,5 +1,5 @@
 ---
-name: codebase-architecture-review
+name: goerwin-architecture-review
 description: >-
   Review a codebase and look for improvement opportunities.
   Use only when the user explicitly calls this skill.
@@ -89,7 +89,7 @@ Group findings by severity (high, medium, low). For each finding, include:
 - Suggested fix
 
 If there are findings, ask whether to save them. If yes, follow `~/.agents/shared/references/saving.md`
-with `--skill codebase-architecture-review` and `--scope` set to the reviewed folder (`.` for the whole
+with `--skill goerwin-architecture-review` and `--scope` set to the reviewed folder (`.` for the whole
 repository), using `high`/`medium`/`low` as each finding's severity.
 
 ## Applying fixes

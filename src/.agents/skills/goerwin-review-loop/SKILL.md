@@ -15,7 +15,8 @@ You only collect choices, start or resume it, and report the result.
 
 1. Take loop settings out of the user's message: round count ("5 rounds" →
    `--max-rounds 5`), base ("against develop" → `--base`), and reviewer or
-   implementer models when named ("review with Sol xhigh"). Split the rest into
+   implementer models when named ("review with Sol xhigh"), and the reviewer
+   rubric ("adversarial" → `--rubric adversarial`; otherwise `default`). Split the rest into
    inline intent text, existing file paths (task/plan files), and image paths,
    without summarizing or rewriting them. Settings never go into the intent.
 2. Run `python3 ~/.agents/skills/goerwin-code-review/scripts/review_pr.py presets`.
@@ -24,12 +25,12 @@ You only collect choices, start or resume it, and report the result.
    and ask them to confirm.
 3. Confirm once in a single message: the parsed settings (rounds, default 3;
    base, default the remote default branch; both presets) and the intent
-   sources; the implementer runs with full permissions; the loop commits
+   sources; the rubric; the implementer runs with full permissions; the loop commits
    locally each round and never pushes.
 
 ~~~sh
 python3 /abs/skill/scripts/review_loop.py start --cwd /checkout \
-  --reviewer sol-xhigh --implementer opus-high [--max-rounds 3] [--base origin/main] \
+  --reviewer sol-xhigh --implementer opus-high [--rubric adversarial] [--max-rounds 3] [--base origin/main] \
   [--intent "inline text"] [--intent-file TASK.md ...] [--image shot.png ...]
 ~~~
 

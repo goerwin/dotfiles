@@ -127,7 +127,7 @@ class WorkflowFixture:
     def resolve_args(self, **kwargs):
         values = dict(
             cwd=str(self.developer), config=str(self.root / "config.json"),
-            github_user=None, input=None, head=None, base=None, instructions="",
+            github_user=None, input=None, head=None, base=None, instructions="", rubric="default",
             revision="pr",
         )
         values.update(kwargs)
@@ -301,6 +301,21 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
         stuck = review.json_read(first["run_file"])
         self.assertFalse(review.is_busy({**stuck, "status": "launch_failed", "pid": None}))
         self.assertTrue(review.is_busy({**stuck, "status": "launching", "pid": None, "reserved_at": review.time.time()}))
+
+    def test_adversarial_rubric_reaches_prompt_frontmatter_and_filename(self):
+        resolved = review.inspect_target(self.resolve_args(head="feature", base="main", rubric="adversarial"))
+        review.json_write(self.target_file, resolved)
+        result = self.launch()
+        prompt = self.opened[0][3]
+        self.assertIn("# Rubric: adversarial", prompt)
+        self.assertNotIn("# Rubric: default", prompt)
+        self.assertTrue(Path(result["report"]).name.endswith("-feature-against-main-adversarial.md"))
+        self.complete(result)
+        self.assertEqual(store.read_report(result["report"])["metadata"]["rubric"], "adversarial")
+        review.json_write(self.target_file, {"status": "ready", "target": {**self.target, "rubric": "lenient"}})
+        with self.assertRaisesRegex(review.ReviewError, "Unknown rubric"):
+            self.launch()
+        self.assertEqual(len(self.opened), 1)
 
     def test_head_comparison_records_its_development_branch(self):
         target = review.comparison_target(self.developer, "HEAD", "main")

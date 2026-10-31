@@ -223,12 +223,12 @@ class WorktreeTests(unittest.TestCase):
         env = dict(os.environ, GOERWIN_CODE_REVIEWS_DIR=str(self.root / "archive"))
         result = subprocess.run([
             sys.executable, str(SHARED / "goerwin-review"), "save", "--body", str(body),
-            "--skill", "codebase-architecture-review", "--harness", "claude",
+            "--skill", "goerwin-architecture-review", "--harness", "claude",
             "--model", "claude-opus-5-5", "--effort", "high", "--scope", "src", "-C", str(self.repo),
         ], env=env, check=True, capture_output=True, text=True)
         saved = store.read_report(json.loads(result.stdout)["report"])
         meta = saved["metadata"]
-        self.assertEqual((meta["skill"], meta["scope"], meta["base_sha"]), ("codebase-architecture-review", "src", None))
+        self.assertEqual((meta["skill"], meta["scope"], meta["base_sha"]), ("goerwin-architecture-review", "src", None))
         self.assertEqual((meta["head_sha"], meta["finding_ids"]), (self.base, ["F1"]))
         body.write_text("loose notes without headings")
         failed = subprocess.run([sys.executable, str(SHARED / "goerwin-review"), "save", "--body", str(body),

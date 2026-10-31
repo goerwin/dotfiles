@@ -78,7 +78,7 @@ def review(state, round_):
     folder = run_dir(state) / f"round-{round_['number']}"
     target = folder / "target.json"
     resolved = helper(REVIEW, "resolve", "--cwd", state["cwd"], "--head", state["branch"],
-                      "--base", state["base"], "--output", target)
+                      "--base", state["base"], "--rubric", state["rubric"], "--output", target)
     if resolved["status"] != "ready":
         raise CommandError(f"Could not resolve the branch for review: {resolved.get('reason')}")
     context = folder / "review-context.md"
@@ -217,7 +217,7 @@ def start(args):
     state = {
         "version": 1, "loop_id": new_id(), "status": "running", "created_at": now(),
         "cwd": cwd, "branch": branch, "base": args.base or default_base(cwd), "archive": archive,
-        "reviewer": reviewer, "implementer": implementer, "max_rounds": args.max_rounds,
+        "reviewer": reviewer, "implementer": implementer, "rubric": args.rubric, "max_rounds": args.max_rounds,
         "ignored": ignored, "images": [str(Path(path).resolve()) for path in args.image], "rounds": [],
     }
     parts = [args.intent] if args.intent else []
@@ -268,6 +268,7 @@ def parser():
     p.add_argument("--implementer", required=True, help="Preset id")
     p.add_argument("--base", help="Comparison base (default: the remote default branch)")
     p.add_argument("--max-rounds", type=int, default=3)
+    p.add_argument("--rubric", default="default", help="Reviewer rubric: default or adversarial")
     p.add_argument("--intent", help="Inline intent text")
     p.add_argument("--intent-file", action="append", default=[], help="Intent/task file; read once, never committed")
     p.add_argument("--image", action="append", default=[])

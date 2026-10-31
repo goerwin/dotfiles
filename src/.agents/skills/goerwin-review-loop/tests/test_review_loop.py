@@ -155,7 +155,8 @@ class ReviewLoopTests(unittest.TestCase):
         self.assertEqual(len(self.calls("reviewer")), 2)
 
     def test_round_limit_and_nothing_applied_stop_the_loop(self):
-        state = self.start([["A"], ["B"]], [["applied"], ["applied"]], "--max-rounds", "2")
+        state = self.start([["A"], ["B"]], [["applied"], ["applied"]], "--max-rounds", "2", "--rubric", "adversarial")
+        self.assertTrue(all("# Rubric: adversarial" in call["prompt"] for call in self.calls("reviewer")))
         self.assertEqual((state["stop_reason"], len(state["rounds"])), ("round_limit", 2))
         self.git("reset", "-q", "--hard", "HEAD~2")
         self.log.unlink()

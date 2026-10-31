@@ -16,8 +16,8 @@ run it with `python3` and an absolute path. It prints JSON.
 Accept saved report paths, pasted feedback, or nothing. With nothing, run
 `receiving.py list --cwd /current/checkout` and present the rows (project,
 skill, title/PR, model/effort, date, reviewed SHA, remaining/waiting). Reports
-come from goerwin-code-review, adversarial-reviewer, and
-codebase-architecture-review; a `scope` marks a snapshot of one folder. Let the user pick
+come from goerwin-code-review (with its `rubric`) and
+goerwin-architecture-review, where a `scope` marks a snapshot of one folder. Let the user pick
 one or several; never auto-select the newest or all. If none match, offer
 `--all-branches`, and `--all` only for cross-project browsing. `--pr URL`
 filters by PR; it is not permission to fetch or reply on GitHub.

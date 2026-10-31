@@ -27,13 +27,14 @@ SCRIPT = Path(__file__).resolve()
 SKILL = SCRIPT.parents[1]
 # A reservation without a live supervisor after this long is a failed launch.
 LAUNCH_GRACE_SECONDS = 120
+RUBRICS = SKILL / "references/rubrics"
 def inspect_target(args):
     cwd = str(Path(args.cwd).resolve())
     settings = config(args.config)
     if args.head or args.base:
         if not (args.head and args.base):
             raise ReviewError("A branch comparison requires both --head and --base")
-        return {"status": "ready", "target": comparison_target(cwd, args.head, args.base, args.instructions)}
+        return ready(comparison_target(cwd, args.head, args.base, args.instructions), args)
     value = (args.input or "").strip()
     if value:
         if not pr_url(value):
@@ -42,8 +43,7 @@ def inspect_target(args):
                 "reason": "Resolve the custom request to a PR URL or explicit --head and --base refs.",
                 "input": value,
             }
-        target = pr_target(cwd, value, settings, args.github_user, args.revision, args.instructions)
-        return {"status": "ready", "target": target}
+        return ready(pr_target(cwd, value, settings, args.github_user, args.revision, args.instructions), args)
     branch = current_branch(cwd)
     if not branch:
         return {"status": "clarification_required", "reason": "Detached HEAD: ask for a PR or branch comparison."}
@@ -97,7 +97,15 @@ def inspect_target(args):
             "pr_url": target["pr_url"],
             "choices": ["Review the GitHub PR version", "Review the local committed version"],
         }
-    return {"status": "ready", "target": target}
+    return ready(target, args)
+
+
+def ready(target, args):
+    return {"status": "ready", "target": {**target, "rubric": args.rubric}}
+
+
+def rubrics():
+    return sorted(path.stem for path in RUBRICS.glob("*.md"))
 
 
 def proposed_base(cwd):
@@ -217,7 +225,10 @@ def reusable_worktree(target, records):
 
 def make_prompt(manifest, manifest_path):
     target, preset = manifest["target"], manifest["preset"]
-    guidance = (SKILL / "references/reviewer.md").read_text()
+    rubric = target.get("rubric", "default")
+    if rubric not in rubrics():
+        raise ReviewError(f"Unknown rubric {rubric}; choose one of {', '.join(rubrics())}")
+    guidance = (SKILL / "references/reviewer.md").read_text() + "\n\n" + (RUBRICS / f"{rubric}.md").read_text()
     finish, context = (
         shlex.join([sys.executable, str(SCRIPT), name, "--run-file", str(manifest_path)])
         for name in ("finish", "github-context")
@@ -231,7 +242,7 @@ def make_prompt(manifest, manifest_path):
         f"Exact reviewed HEAD: {target['head_sha']}\n"
         f"Exact comparison base: {target['base_sha']}\n"
         f"Version: {target.get('revision', 'local committed comparison')}\n"
-        f"Harness/model/effort: {preset['harness']} / {preset['model']} / {preset['effort']}\n"
+        f"Harness/model/effort/rubric: {preset['harness']} / {preset['model']} / {preset['effort']} / {rubric}\n"
         f"Write the Markdown report to: {manifest['report']}\n"
         f"Run metadata: {manifest_path}\n\n"
         + (f"For PR intent and existing comments, run: {context}\n\n" if target["kind"] == "pr" else "")
@@ -258,6 +269,8 @@ def launch(args):
         raise ReviewError("Target needs user clarification or confirmation; resolve it first")
     target = request["target"]
     validate_target(target)
+    if target.get("rubric", "default") not in rubrics():
+        raise ReviewError(f"Unknown rubric {target['rubric']}; choose one of {', '.join(rubrics())}")
     preset = harness.preset(args.preset, args.presets)
     argv = harness.argv(preset, args.headless)
     if args.dry_run:
@@ -451,6 +464,7 @@ def parser():
     p.add_argument("--base")
     p.add_argument("--revision", choices=("pr", "local"), default="pr")
     p.add_argument("--instructions", default="")
+    p.add_argument("--rubric", default="default", help="Review rubric in references/rubrics")
     p.add_argument("--output")
     p = commands.add_parser("launch", help="Launch only after a fresh explicit preset selection")
     p.add_argument("--target-file", required=True)
@@ -479,7 +493,7 @@ def main():
         if args.command == "_run":
             return supervise(args)
         if args.command == "presets":
-            result = harness.presets(args.presets)
+            result = {"presets": harness.presets(args.presets), "rubrics": rubrics()}
         elif args.command == "resolve":
             result = inspect_target(args)
             if args.output:

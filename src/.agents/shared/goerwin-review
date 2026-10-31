@@ -44,7 +44,7 @@ def main():
     )
     parser.add_argument("command", choices=["save"])
     parser.add_argument("--body", required=True, help="Markdown file with '### F1: ...' findings or 'No actionable findings.'")
-    parser.add_argument("--skill", required=True, help="Producing skill, e.g. adversarial-reviewer")
+    parser.add_argument("--skill", required=True, help="Producing skill, e.g. goerwin-architecture-review")
     parser.add_argument("--harness", required=True, choices=["claude", "codex"])
     parser.add_argument("--model", required=True)
     parser.add_argument("--effort", required=True)

@@ -48,6 +48,9 @@ tool if available, otherwise numbered choices). Each option is a model/effort
 pair; split into two questions if the UI limits options. Never preselect, reuse
 an earlier choice, or launch on timeout. No answer means no worktree and no agent.
 
+The same output lists `rubrics`. Use `default` unless the user asks for another
+one, e.g. "adversarial review of …"; pass it to `resolve` as `--rubric NAME`.
+
 ## 3. Launch
 
 ~~~sh

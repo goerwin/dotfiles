@@ -94,6 +94,8 @@ def report_path(root, target, local_time=None):
         if target["kind"] == "pr"
         else slug(target["title"], 48)
     )
+    if target.get("rubric", "default") != "default":
+        topic += "-" + slug(target["rubric"], 16)
     with allocation_lock(root, ".reports"):
         folder = project_folder(root, target)
         day = local_time.strftime("%Y-%m-%d")
@@ -146,6 +148,7 @@ def report_metadata(manifest):
         "revision": target.get("revision", "local"),
         "scope": target.get("scope"),
         "skill": preset.get("skill", "goerwin-code-review"),
+        "rubric": target.get("rubric", "default"),
         "harness": preset["harness"],
         "model": preset["model"],
         "effort": preset["effort"],
