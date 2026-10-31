@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 SHARED = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SHARED))
-from goerwin_tools import herdr_adapter, review_store as store, runtime, worktrees
+from goerwin_tools import herdr_adapter, review_store as store, runtime, targets, worktrees
 
 ROOT = SHARED.parents[2]
 COMMAND = SHARED / "goerwin-wts"
@@ -240,12 +240,24 @@ class WorktreeTests(unittest.TestCase):
         meta = saved["metadata"]
         self.assertEqual((meta["skill"], meta["scope"], meta["base_sha"]), ("goerwin-architecture-review", "src", None))
         self.assertEqual((meta["head_sha"], meta["finding_ids"]), (self.base, ["F1"]))
+        target_file = self.root / "target.json"
+        (self.repo / "file").write_text("dirty\n")
+        target, _ = targets.in_place(targets.comparison_target(self.repo, "main", "main"), self.repo)
+        runtime.json_write(target_file, {"status": "ready", "target": target})
+        result = subprocess.run([
+            sys.executable, str(SHARED / "goerwin-review"), "save", "--body", str(body), "--target-file", str(target_file),
+            "--skill", "goerwin-code-review", "--harness", "claude", "--model", "claude-opus-5-5", "--effort", "unknown",
+        ], env=env, check=True, capture_output=True, text=True)
+        meta = store.read_report(json.loads(result.stdout)["report"])["metadata"]
+        self.assertTrue(meta["includes_uncommitted"])
+        self.assertEqual((meta["effort"], meta["revision"]), ("unknown", "local"))
+        (self.repo / "file").write_text("base\n")
         body.write_text("loose notes without headings")
         failed = subprocess.run([sys.executable, str(SHARED / "goerwin-review"), "save", "--body", str(body),
                                  "--skill", "x", "--harness", "claude", "--model", "m", "--effort", "e",
                                  "-C", str(self.repo)], env=env, capture_output=True, text=True)
         self.assertEqual(failed.returncode, 1)
-        self.assertEqual(len(list((self.root / "archive").glob("*/*.md"))), 1)
+        self.assertEqual(len(list((self.root / "archive").glob("*/*.md"))), 2)
 
 class FocusTests(unittest.TestCase):
     def test_focus_reuses_existing_local_space_and_active_tab(self):

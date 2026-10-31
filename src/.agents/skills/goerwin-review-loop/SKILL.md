@@ -24,9 +24,10 @@ You only collect choices, start or resume it, and report the result.
    ambiguous. If both use the same model, say a different reviewer catches more
    and ask them to confirm.
 3. Confirm once in a single message: the parsed settings (rounds, default 3;
-   base, default the remote default branch; both presets) and the intent
-   sources; the rubric; the implementer runs with full permissions; the loop commits
-   locally each round and never pushes.
+   base, default the remote default branch; both presets; rubric) and the
+   intent sources. Reviewers get fresh worktrees (setup hooks run first); the
+   implementer works here with full permissions; the result is one local commit
+   and nothing is pushed.
 
 ~~~sh
 python3 /abs/skill/scripts/review_loop.py start --cwd /checkout \
@@ -47,8 +48,18 @@ committed.
 | `waiting` | Show `questions` and ask for answers. |
 | `error` | Show the error; resume after it's fixed. |
 
-Summarize each round from `rounds`: report and sidecar links, applied /
-pushed-back / waiting counts, and commits. Nothing was pushed.
+When `status` is `squash_pending`, the loop finished with round commits. Read
+`git diff <start_head>` and write one short conventional subject for what
+changed (e.g. `fix: keep cursors stable across pages`), then fold the rounds
+into one commit:
+
+~~~sh
+python3 /abs/skill/scripts/review_loop.py squash --cwd /checkout --message "fix: …"
+~~~
+
+Only the loop's commits are folded; the body lists each round's report. Then
+summarize each round from `rounds`: report and sidecar links, applied /
+pushed-back / waiting counts, and the final commit. Nothing was pushed.
 
 ## Resume
 

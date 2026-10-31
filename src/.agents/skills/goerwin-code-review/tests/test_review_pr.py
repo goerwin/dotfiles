@@ -72,6 +72,8 @@ class WorkflowFixture:
             command=["git","-C",repo,"worktree","add"]
             command += ["-b",branch,str(folder),base] if create else [str(folder),branch]
             subprocess.run(command,check=True,stdout=sys.stderr)
+            hook=os.environ.get("REVIEW_TEST_HOOK")
+            hook and (folder/hook).write_text("written by a setup hook")
             print(json.dumps({"path":str(folder)}))
             """,
         )
@@ -127,7 +129,7 @@ class WorkflowFixture:
     def resolve_args(self, **kwargs):
         values = dict(
             cwd=str(self.developer), config=str(self.root / "config.json"),
-            github_user=None, input=None, head=None, base=None, instructions="", rubric="default",
+            github_user=None, input=None, head=None, base=None, instructions="", rubric="default", in_place=False,
             revision="pr",
         )
         values.update(kwargs)
@@ -316,6 +318,31 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
         with self.assertRaisesRegex(review.ReviewError, "Unknown rubric"):
             self.launch()
         self.assertEqual(len(self.opened), 1)
+
+    def test_in_place_reviews_this_checkout_with_warnings_instead_of_questions(self):
+        with self.fake_github(side_effect=self.github([self.pr()])):
+            synced = review.inspect_target(self.resolve_args(in_place=True))
+        self.assertEqual(synced["status"], "ready")
+        self.assertEqual(synced["warnings"], ["The worktree has uncommitted changes; they are included in the review."])
+        self.assertTrue(synced["target"]["includes_uncommitted"])
+        self.assertEqual(synced["target"]["invoking_checkout"], str(self.developer))
+        (self.developer / "uncommitted.txt").unlink()
+        with self.fake_github(side_effect=self.github([self.pr(headRefOid=self.base)])):
+            unsynced = review.inspect_target(self.resolve_args(in_place=True))
+        self.assertEqual(unsynced["status"], "ready")
+        self.assertIn("differs from the PR head", unsynced["warnings"][0])
+        self.assertEqual((unsynced["target"]["head_sha"], unsynced["target"]["base_ref"]), (self.head, "main"))
+        self.assertFalse(unsynced["target"]["includes_uncommitted"])
+        with self.fake_github(side_effect=self.github([])):
+            no_pr = review.inspect_target(self.resolve_args(in_place=True))
+        self.assertEqual((no_pr["status"], no_pr["target"]["base_ref"], no_pr["warnings"]), ("ready", "origin/main", []))
+
+    def test_setup_hooks_may_add_files_but_not_change_tracked_source(self):
+        with patch.dict(os.environ, {"REVIEW_TEST_HOOK": "node_modules.marker"}):
+            self.assertEqual(self.launch()["status"], "launched")
+        with patch.dict(os.environ, {"REVIEW_TEST_HOOK": "code.txt"}):
+            with self.assertRaisesRegex(review.ReviewError, "changed tracked files"):
+                self.launch()
 
     def test_head_comparison_records_its_development_branch(self):
         target = review.comparison_target(self.developer, "HEAD", "main")

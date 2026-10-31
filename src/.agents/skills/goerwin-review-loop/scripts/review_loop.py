@@ -150,6 +150,33 @@ def state_reports(state, before=None):
 
 def stop(state, reason, **details):
     state.update({"status": "stopped" if reason != "waiting" else "waiting", "stop_reason": reason, **details})
+    if state["status"] == "stopped" and reason != "error" and loop_commits(state):
+        state["status"] = "squash_pending"
+        state["squash_stat"] = git(state["cwd"], "diff", "--stat", state["start_head"], "HEAD").stdout
+    return save(state)
+
+
+def loop_commits(state):
+    return [sha for item in state["rounds"] for sha in item.get("commits", [])]
+
+
+def squash(args):
+    """Fold the loop's round commits into one; the user's earlier commits are untouched."""
+    state = find_loop(args, lambda item: item["status"] == "squash_pending")
+    cwd, commits = state["cwd"], loop_commits(state)
+    if commit(cwd, "HEAD") != commits[-1]:
+        raise CommandError("HEAD moved after the loop's last commit; squash it manually")
+    if dirty(cwd, state["ignored"]):
+        raise CommandError("Commit or stash new changes before squashing the loop's commits")
+    reports = "\n".join(f"- round {item['number']}: {Path(item['report']).name}"
+                         for item in state["rounds"] if item.get("report"))
+    git(cwd, "reset", "--soft", state["start_head"])
+    message = f"{args.message.strip()}\n\nReview loop {state['loop_id']} ({state['stop_reason']}):\n{reports}"
+    result = git(cwd, "commit", "-m", message, check=False)
+    if result.returncode:
+        git(cwd, "reset", "--soft", commits[-1])
+        raise CommandError("The squashed commit failed; round commits restored: " + (result.stderr or result.stdout).strip())
+    state.update({"status": "stopped", "squashed_commit": commit(cwd, "HEAD")})
     return save(state)
 
 
@@ -219,6 +246,7 @@ def start(args):
         "cwd": cwd, "branch": branch, "base": args.base or default_base(cwd), "archive": archive,
         "reviewer": reviewer, "implementer": implementer, "rubric": args.rubric, "max_rounds": args.max_rounds,
         "ignored": ignored, "images": [str(Path(path).resolve()) for path in args.image], "rounds": [],
+        "start_head": commit(cwd, "HEAD"),
     }
     parts = [args.intent] if args.intent else []
     parts += [f"## {path}\n\n{Path(path).read_text()}" for path in args.intent_file]
@@ -239,16 +267,18 @@ def loops(archive, cwd=None):
     return items
 
 
+def find_loop(args, wanted):
+    if getattr(args, "state", None):
+        return json_read(args.state)
+    matches = [item for item in loops(args.archive, args.cwd) if wanted(item)]
+    if len(matches) != 1:
+        raise CommandError(f"Expected one matching loop for this checkout, found {len(matches)}; pass --state")
+    return matches[0]
+
+
 def resume(args):
-    path = Path(args.state) if args.state else None
-    if not path:
-        paused = [item for item in loops(args.archive, args.cwd)
-                  if item["status"] != "stopped" or item.get("stop_reason") == "error"]
-        if len(paused) != 1:
-            raise CommandError(f"Expected one paused loop for this checkout, found {len(paused)}; pass --state")
-        state = paused[0]
-    else:
-        state = json_read(path)
+    state = find_loop(args, lambda item: item["status"] == "waiting"
+                      or (item["status"] == "stopped" and item.get("stop_reason") == "error"))
     answers = Path(args.answers_file).read_text() if args.answers_file else args.answers
     if state["status"] == "waiting" and not answers:
         raise CommandError("This loop is waiting on questions; pass the answers")
@@ -279,6 +309,11 @@ def parser():
     p.add_argument("--answers", help="Answers to the waiting questions")
     p.add_argument("--answers-file")
     p.add_argument("--archive")
+    p = sub.add_parser("squash", help="Fold a finished loop's round commits into one commit")
+    p.add_argument("--cwd", default=os.getcwd())
+    p.add_argument("--state")
+    p.add_argument("--message", required=True, help="Conventional commit subject, e.g. 'fix: keep cursor across pages'")
+    p.add_argument("--archive")
     p = sub.add_parser("status", help="List loops for this checkout")
     p.add_argument("--cwd", default=os.getcwd())
     p.add_argument("--archive")
@@ -292,6 +327,8 @@ def main():
             result = start(args)
         elif args.command == "resume":
             result = resume(args)
+        elif args.command == "squash":
+            result = squash(args)
         else:
             result = loops(args.archive, args.cwd)
         print(json.dumps(result, indent=2, ensure_ascii=False))

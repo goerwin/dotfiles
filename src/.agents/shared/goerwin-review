@@ -7,13 +7,18 @@ import sys
 from pathlib import Path
 
 from goerwin_tools.review_store import StoreError, archive_root, finalize_report, report_path
-from goerwin_tools.runtime import CommandError, DEFAULT_CONFIG, config, git, new_id, now
+from goerwin_tools.runtime import CommandError, DEFAULT_CONFIG, config, git, json_read, new_id, now
 from goerwin_tools.targets import comparison_target, pr_target, snapshot_target
 
 
 def save(args):
     body = Path(args.body).read_text()
-    if args.pr:
+    if args.target_file:
+        resolved = json_read(args.target_file)
+        if resolved.get("status") != "ready":
+            raise CommandError("The target file is not resolved")
+        target = resolved["target"]
+    elif args.pr:
         target = pr_target(args.cwd, args.pr, config(args.config), args.github_user)
     elif args.head or args.base:
         if not (args.head and args.base):
@@ -48,6 +53,7 @@ def main():
     parser.add_argument("--harness", required=True, choices=["claude", "codex"])
     parser.add_argument("--model", required=True)
     parser.add_argument("--effort", required=True)
+    parser.add_argument("--target-file", help="Target resolved by review_pr.py resolve (e.g. --in-place)")
     parser.add_argument("--pr", help="Reviewed PR URL")
     parser.add_argument("--head")
     parser.add_argument("--base")

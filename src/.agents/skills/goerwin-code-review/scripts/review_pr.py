@@ -20,7 +20,7 @@ from goerwin_tools.runtime import (
     config, current_branch, default_base, git, github, json_read, json_write,
     new_id, now, pr_url, remote_repositories, repository_url, source_root, worktrees,
 )
-from goerwin_tools.targets import PR_FIELDS, comparison_target, pr_target
+from goerwin_tools.targets import PR_FIELDS, comparison_target, in_place, pr_target
 from goerwin_tools.worktrees import switch_worktree
 
 SCRIPT = Path(__file__).resolve()
@@ -29,6 +29,23 @@ SKILL = SCRIPT.parents[1]
 LAUNCH_GRACE_SECONDS = 120
 RUBRICS = SKILL / "references/rubrics"
 def inspect_target(args):
+    result = resolve_target(args)
+    if not args.in_place or result["status"] not in ("ready", "comparison_confirmation_required", "revision_selection_required"):
+        return result
+    cwd = str(Path(args.cwd).resolve())
+    if result["status"] == "comparison_confirmation_required":
+        if not result["base"]:
+            return result
+        target = comparison_target(cwd, result["head"], result["base"], args.instructions)
+    elif result["status"] == "revision_selection_required":
+        target = pr_target(cwd, result["pr_url"], config(args.config), args.github_user, instructions=args.instructions)
+    else:
+        target = result["target"]
+    target, warnings = in_place(target, cwd)
+    return {**ready(target, args), "warnings": warnings}
+
+
+def resolve_target(args):
     cwd = str(Path(args.cwd).resolve())
     settings = config(args.config)
     if args.head or args.base:
@@ -332,9 +349,10 @@ def launch(args):
             worktree = str(Path(entry["worktree"]).resolve())
             if worktree == target["source_root"] or entry.get("HEAD") != target["head_sha"]:
                 raise ReviewError("Worktrunk returned an unexpected review checkout; it was left untouched")
-            if git(worktree, "status", "--porcelain", "--untracked-files=normal").stdout:
+            # Setup hooks may add files (dependencies, links); changing tracked source would skew the review.
+            if git(worktree, "status", "--porcelain", "--untracked-files=no").stdout:
                 raise ReviewError(
-                    f"Worktrunk hooks changed the new review checkout at {worktree}. "
+                    f"Worktrunk hooks changed tracked files in the new review checkout at {worktree}. "
                     "It was left intact; no agent was launched. Adjust the creation hook before retrying."
                 )
         report = report_path(report_dir, target)
@@ -465,6 +483,8 @@ def parser():
     p.add_argument("--revision", choices=("pr", "local"), default="pr")
     p.add_argument("--instructions", default="")
     p.add_argument("--rubric", default="default", help="Review rubric in references/rubrics")
+    p.add_argument("--in-place", action="store_true",
+                   help="Review this checkout as is: no PR/default-base confirmation; warnings instead")
     p.add_argument("--output")
     p = commands.add_parser("launch", help="Launch only after a fresh explicit preset selection")
     p.add_argument("--target-file", required=True)

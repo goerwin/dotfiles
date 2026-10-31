@@ -147,6 +147,8 @@ def report_metadata(manifest):
         "merge_base_sha": target.get("merge_base_sha"),
         "revision": target.get("revision", "local"),
         "scope": target.get("scope"),
+        "includes_uncommitted": target.get("includes_uncommitted", False),
+        "uncommitted_sha256": target.get("uncommitted_sha256"),
         "skill": preset.get("skill", "goerwin-code-review"),
         "rubric": target.get("rubric", "default"),
         "harness": preset["harness"],

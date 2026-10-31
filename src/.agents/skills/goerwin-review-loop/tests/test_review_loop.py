@@ -125,10 +125,17 @@ class ReviewLoopTests(unittest.TestCase):
         state = self.start([["Cursor lost", "Rename helper"], ["Off by one"], []],
                            [["applied", "pushed_back"], ["applied"]],
                            "--intent", "Ship pagination", "--intent-file", str(task))
-        self.assertEqual((state["status"], state["stop_reason"]), ("stopped", "no_findings"))
+        self.assertEqual((state["status"], state["stop_reason"]), ("squash_pending", "no_findings"))
         self.assertEqual(len(state["rounds"]), 3)
+        self.assertIn("code.txt", state["squash_stat"])
+        before = self.git("diff", "origin/main", "HEAD")
+        state = self.run_loop("squash", "--message", "fix: keep cursors stable across pages")
+        self.assertEqual(state["status"], "stopped")
         self.assertEqual(self.git("log", "--format=%s", "origin/main..HEAD").splitlines(),
-                         ["fix: address review round 2", "fix: address review round 1", "feat: pagination"])
+                         ["fix: keep cursors stable across pages", "feat: pagination"])
+        self.assertEqual(self.git("diff", "origin/main", "HEAD"), before)
+        self.assertIn("round 1:", self.git("log", "-1", "--format=%b"))
+        self.assertEqual(self.run_loop("squash", "--message", "fix: again")["returncode"], 1)
         self.assertEqual(self.git("status", "--porcelain"), "?? TASK-pagination.md")
         reviewers, implementers = self.calls("reviewer"), self.calls("implementer")
         self.assertEqual(reviewers[0]["argv"][0], "exec")
@@ -158,10 +165,23 @@ class ReviewLoopTests(unittest.TestCase):
         state = self.start([["A"], ["B"]], [["applied"], ["applied"]], "--max-rounds", "2", "--rubric", "adversarial")
         self.assertTrue(all("# Rubric: adversarial" in call["prompt"] for call in self.calls("reviewer")))
         self.assertEqual((state["stop_reason"], len(state["rounds"])), ("round_limit", 2))
+        self.assertEqual(state["status"], "squash_pending")
         self.git("reset", "-q", "--hard", "HEAD~2")
         self.log.unlink()
         state = self.start([["A"]], [["pushed_back"]])
-        self.assertEqual(state["stop_reason"], "nothing_applied")
+        self.assertEqual((state["status"], state["stop_reason"]), ("stopped", "nothing_applied"))
+
+    def test_creation_hook_finishes_before_each_reviewer_starts(self):
+        wt = self.root / "bin/wt"
+        wt.write_text(wt.read_text().replace(
+            'print(json.dumps({"path": str(folder)}))',
+            '(folder / "SETUP_DONE").write_text("ok")\nprint(json.dumps({"path": str(folder)}))'))
+        agent = self.root / "bin/codex"
+        agent.write_text(agent.read_text().replace(
+            'if role == "reviewer":',
+            'if role == "reviewer":\n    assert Path("SETUP_DONE").exists(), "reviewer started before setup"'))
+        state = self.start([["A"], []], [["applied"]])
+        self.assertEqual(state.get("stop_reason"), "no_findings", state.get("error"))
 
     def test_dirty_worktree_refuses_to_start(self):
         (self.repo / "code.txt").write_text("my uncommitted work\n")

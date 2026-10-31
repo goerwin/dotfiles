@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from goerwin_tools import review_store as store, worktrees
+from goerwin_tools.targets import working_tree_hash
 from goerwin_tools.runtime import (
     CommandError, allocation_lock, atomic_text, commit, common_dir, current_branch,
     json_read, now, pr_url, ref_exists, remote_repositories, source_root,
@@ -32,6 +33,13 @@ def sections(body):
         {"id": f"F{index}" if numbered else match[1], "text": body[match.start():end].strip()}
         for index, (match, end) in enumerate(zip(matches, ends), 1)
     ]
+
+
+def is_stale(meta, cwd, head):
+    """A review is current while HEAD, and any uncommitted changes it included, are unchanged."""
+    if meta["head_sha"] != head:
+        return True
+    return working_tree_hash(cwd) != meta.get("uncommitted_sha256")
 
 
 def sidecar(report_path):
@@ -97,7 +105,7 @@ def list_reviews(cwd, archive=None, all_projects=False, all_branches=False, pr=N
             "project": meta["project"], "title": meta["title"], "pr_url": meta.get("pr_url"),
             "skill": meta.get("skill"), "scope": meta.get("scope"),
             "head_sha": meta["head_sha"], "model": meta["model"], "effort": meta["effort"],
-            "stale": head is not None and meta["head_sha"] != head,
+            "stale": head is not None and is_stale(meta, cwd, head),
             "findings": len(ids),
             "remaining": sum(outcomes.get(i) not in ("applied", "pushed_back") for i in ids),
             "waiting": sum(outcomes.get(i) == "waiting" for i in ids),
@@ -192,7 +200,7 @@ def prepare(args):
         "status": "ready", "recordable": True, "cwd": cwd, "branch": branch, "head_sha": head,
         "reviews": [
             {"review_id": item["metadata"]["review_id"], "path": item["path"],
-             "stale": item["metadata"]["head_sha"] != head, "scope": item["metadata"].get("scope")}
+             "stale": is_stale(item["metadata"], cwd, head), "scope": item["metadata"].get("scope")}
             for item in inputs
         ],
         "findings": findings, "worktree": navigation,

@@ -162,6 +162,14 @@ class ReceivingTests(unittest.TestCase):
         self.assertTrue(session["reviews"][0]["stale"])
         self.assertTrue(session["findings"][0]["active"])
 
+    def test_review_with_uncommitted_changes_is_stale_once_they_change(self):
+        from goerwin_tools.targets import working_tree_hash
+        (self.developer / "code.txt").write_text("work in progress\n")
+        report = self.make_report(includes_uncommitted=True, uncommitted_sha256=working_tree_hash(self.developer))
+        self.assertFalse(self.prepare([report])["reviews"][0]["stale"])
+        (self.developer / "code.txt").write_text("more work\n")
+        self.assertTrue(self.prepare([report])["reviews"][0]["stale"])
+
     def test_branch_mismatch_requires_confirmation_without_switching(self):
         report = self.make_report()
         result = self.prepare([report], cwd=str(self.repo))

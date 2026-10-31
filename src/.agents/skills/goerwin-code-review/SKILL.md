@@ -1,79 +1,77 @@
 ---
 name: goerwin-code-review
-description: Launch an isolated PR or committed branch review with a freshly selected model and effort. Use only when explicitly invoked.
-argument-hint: "[PR URL or review request]"
+description: Review the current branch in place (or a PR/branch comparison in an isolated worktree) and save the report. Use only when explicitly invoked.
+argument-hint: "[PR URL, review request, or 'in isolation with <model>']"
 disable-model-invocation: true
 ---
 
 # Goerwin Code Review
 
-Stay in the current conversation until the user has chosen a model and effort;
-do not fork this launcher into a reviewer. The helper is `scripts/review_pr.py`
-in this skill directory. Run it with `python3` and an absolute path; it prints
-JSON. Pass custom input as argument arrays or with proper quoting.
+The helper is `scripts/review_pr.py` in this skill directory. Run it with
+`python3` and an absolute path; it prints JSON. Read the repository's
+instructions, including AGENTS.local.md, and pass `--github-user USER` if they
+name a GitHub account.
 
-## 1. Resolve the target
+Review **in place** (this session, this worktree) unless the user asks for an
+isolated review or names a different model to review with.
 
-Read the repository's instructions, including AGENTS.local.md. If they name a
-GitHub account, pass `--github-user USER` (it uses that existing `gh` login
-without switching the global account).
+## In place (default)
 
 ~~~sh
-python3 /abs/skill/scripts/review_pr.py resolve ["PR URL"] \
-  --cwd /invoking/checkout --output /tmp/unique-target.json
-# or a committed comparison, keeping any review instructions:
-python3 /abs/skill/scripts/review_pr.py resolve --cwd /invoking/checkout \
-  --head feature/foo --base origin/main --instructions "Focus on pagination" \
-  --output /tmp/unique-target.json
+python3 /abs/skill/scripts/review_pr.py resolve --in-place ["PR URL"] \
+  --cwd "$PWD" [--base REF] [--rubric adversarial] --output /tmp/unique-target.json
 ~~~
 
-Omit the PR URL to use the current branch. Use a fresh output file for each
-invocation. Uncommitted changes are never reviewed and are left untouched.
+The current branch is reviewed against its open PR's target branch, or against
+the remote default branch when there is no PR (`--base` overrides it).
+Uncommitted changes are included. Show any `warnings` (out of sync with the PR,
+uncommitted changes) and ask the user to confirm before reviewing. Other
+statuses need a question first: `pr_selection_required` (which PR) or
+`clarification_required`.
+
+Then review yourself, following `references/reviewer.md` and the rubric in
+`references/rubrics/` (`default` unless the user asks for another). The diff is
+`git diff <merge_base_sha>` in this worktree, so it includes uncommitted work.
+Don't edit files while reviewing. Write the body to a temporary file and save:
+
+~~~sh
+goerwin-review save --target-file /tmp/unique-target.json --body /tmp/review.md \
+  --skill goerwin-code-review --harness claude|codex --model YOUR_MODEL_ID --effort YOUR_EFFORT|unknown
+~~~
+
+Use your own model ID; use `unknown` for effort if you can't tell. Show the
+findings and link the saved report.
+
+## In isolation
+
+When the user asks for isolation or another model ("review in isolation with
+Sol xhigh"), resolve without `--in-place`:
 
 | Status | Ask the user |
 |---|---|
 | `ready` | Nothing; continue. |
-| `revision_selection_required` | GitHub PR version or local committed version; resolve again with the URL and `--revision pr\|local`. |
+| `revision_selection_required` | GitHub PR version or local committed version; resolve again with `--revision pr\|local`. |
 | `pr_selection_required` | Which of the listed PRs. |
-| `comparison_confirmation_required` | Confirm the proposed head/base (or supply a base if missing). |
-| `clarification_required` | What PR or head/base they mean. Never substitute a branch review for a failed PR lookup. |
+| `comparison_confirmation_required` | Confirm the proposed head/base. |
+| `clarification_required` | What PR or head/base they mean. |
 
-A PR from an unknown repository needs an existing checkout registered with
-`goerwin-wts register /path`. Never clone.
-
-## 2. Require a fresh model and effort choice
-
-Run `review_pr.py presets` and present the presets yourself (the native question
-tool if available, otherwise numbered choices). Each option is a model/effort
-pair; split into two questions if the UI limits options. Never preselect, reuse
-an earlier choice, or launch on timeout. No answer means no worktree and no agent.
-
-The same output lists `rubrics`. Use `default` unless the user asks for another
-one, e.g. "adversarial review of …"; pass it to `resolve` as `--rubric NAME`.
-
-## 3. Launch
+Run `review_pr.py presets` and match the named model, or ask for one (never
+reuse an earlier choice). The same output lists `rubrics`. Then:
 
 ~~~sh
-python3 /abs/skill/scripts/review_pr.py launch \
-  --target-file /tmp/unique-target.json --preset sol-xhigh
+python3 /abs/skill/scripts/review_pr.py launch --target-file /tmp/unique-target.json --preset sol-xhigh
 ~~~
 
-The helper rechecks the revisions, prepares an isolated review worktree through
-Worktrunk, and opens the reviewer in a new Herdr tab. Parallel reviews of the
-same target are fine.
-
-- `revision_selection_required`: ask about the moved revision and resolve again.
-- A launch error or timeout: check `status --cwd PATH` and Herdr before retrying;
-  a tab may already be running. Focus warnings are not failures.
-
-Report the model/effort, checkout and pending report path. The review finishes
-in its own tab; the launcher conversation doesn't receive it.
+It creates a review worktree through Worktrunk (setup hooks run first) and opens
+the reviewer in a new Herdr tab. Only committed changes are reviewed. On
+`revision_selection_required`, ask and resolve again. After a launch error or
+timeout, check `status --cwd PATH` and Herdr before retrying.
 
 ## Reports
 
-Reports are saved automatically to `~/goerwin-code-reviews/<project>/YYYY-MM-DD-NN-topic.md`
-(`--archive` or `GOERWIN_CODE_REVIEWS_DIR` overrides the root), with helper-generated
-frontmatter. Finalized reports are immutable; receiving outcomes go in a
-`*.receiving.md` sidecar. Use `goerwin-receiving-code-review` to browse and act
-on them, `status` to inspect runs, and `launch --dry-run` to see the exact argv.
-Edit `~/.agents/shared/presets.json` (source: `src/.agents/shared/presets.json`) to change the model list.
+Reports go to `~/goerwin-code-reviews/<project>/YYYY-MM-DD-NN-topic.md`
+(`--archive` or `GOERWIN_CODE_REVIEWS_DIR` overrides the root) and are
+immutable; receiving outcomes go in a `*.receiving.md` sidecar. Use
+`goerwin-receiving-code-review` to act on them. A PR from an unknown repository
+needs a checkout registered with `goerwin-wts register /path`; never clone.
+Presets live in `~/.agents/shared/presets.json`.
