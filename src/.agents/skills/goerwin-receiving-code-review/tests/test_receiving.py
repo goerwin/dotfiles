@@ -78,8 +78,7 @@ class ReceivingTests(unittest.TestCase):
             "head_sha": self.head, "base_sha": self.base, **target,
         }
         preset = {"id": "sol-high", "harness": "codex", "model": "gpt-6.1-sol", "effort": "high"}
-        path = self.archive / f"report-{self.reports}.md"
-        self.archive.mkdir(exist_ok=True)
+        path = store.report_path(self.archive, target)
         path.write_text(f"# Review\n\n### {finding_id}: Pagination cursor is lost\nEvidence: The caller passes a cursor.\n")
         store.finalize_report({
             "report": str(path), "run_id": f"run-{self.reports}", "created_at": runtime.now(),
@@ -130,6 +129,25 @@ class ReceivingTests(unittest.TestCase):
         self.record([report], [])
         self.assertEqual(receiving.sidecar(report).read_text().count("\n## "), 2)
 
+    def test_sidecar_left_by_a_deleted_report_is_not_inherited(self):
+        report = self.make_report()
+        source = self.prepare([report])["findings"][0]["source"]
+        self.record([report], [self.outcome([source])])
+        orphan = receiving.sidecar(report)
+        Path(report).unlink()
+        replacement = self.make_report()
+        self.assertNotEqual(receiving.sidecar(replacement), orphan)
+        receiving.sidecar(replacement).write_text(orphan.read_text())
+        self.assertTrue(self.prepare([replacement])["findings"][0]["active"])
+        with self.assertRaisesRegex(runtime.CommandError, "belongs to another report"):
+            self.record([replacement], [self.outcome([f"run-{self.reports}:F1"])])
+
+    def test_snapshot_report_is_received_on_its_branch(self):
+        report = self.make_report(kind="snapshot", head_ref="feature", base_ref=None, base_sha=None, scope="src")
+        session = self.prepare([report])
+        self.assertEqual((session["status"], session["reviews"][0]["scope"]), ("ready", "src"))
+        self.record([report], [self.outcome([session["findings"][0]["source"]])])
+
     def test_coverage_is_enforced(self):
         report = self.make_report()
         with self.assertRaisesRegex(runtime.CommandError, "every active"):
@@ -160,7 +178,7 @@ class ReceivingTests(unittest.TestCase):
         self.assertNotEqual(session["cwd"], str(self.repo))
 
     def test_local_pr_report_uses_its_recorded_development_branch(self):
-        report = self.make_report(kind="pr", head_ref="remote-feature", pr_url="https://github.com/example/project/pull/1")
+        report = self.make_report(kind="pr", pr_number=1, head_ref="remote-feature", pr_url="https://github.com/example/project/pull/1")
         self.git("worktree", "remove", "--force", str(self.developer))
         with patch.object(worktrees, "switch", side_effect=AssertionError("Use the recorded local branch")):
             session = self.prepare([report], cwd=str(self.repo), confirm_branch=True)

@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import os
+import sys
+from pathlib import Path
+
+from goerwin_tools.review_store import StoreError, archive_root, finalize_report, report_path
+from goerwin_tools.runtime import CommandError, DEFAULT_CONFIG, config, git, new_id, now
+from goerwin_tools.targets import comparison_target, pr_target, snapshot_target
+
+
+def save(args):
+    body = Path(args.body).read_text()
+    if args.pr:
+        target = pr_target(args.cwd, args.pr, config(args.config), args.github_user)
+    elif args.head or args.base:
+        if not (args.head and args.base):
+            raise CommandError("A comparison needs both --head and --base")
+        target = comparison_target(args.cwd, args.head, args.base)
+    else:
+        target = snapshot_target(args.cwd, args.scope)
+    if target["base_sha"]:
+        target["merge_base_sha"] = git(target["source_root"], "merge-base", target["base_sha"], target["head_sha"]).stdout.strip()
+    preset = {"skill": args.skill, "harness": args.harness, "model": args.model, "effort": args.effort}
+    path = report_path(archive_root(args.archive), target)
+    try:
+        path.write_text(body)
+        finalize_report({
+            "report": str(path), "run_id": new_id(), "created_at": now(), "finished_at": now(),
+            "target": target, "preset": preset,
+        })
+    except (OSError, StoreError):
+        path.unlink(missing_ok=True)
+        raise
+    return {"status": "saved", "report": str(path)}
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Save an inline review into the shared goerwin-code-reviews archive.",
+        epilog="Without --pr or --head/--base, the review is a snapshot of HEAD limited to --scope.",
+    )
+    parser.add_argument("command", choices=["save"])
+    parser.add_argument("--body", required=True, help="Markdown file with '### F1: ...' findings or 'No actionable findings.'")
+    parser.add_argument("--skill", required=True, help="Producing skill, e.g. adversarial-reviewer")
+    parser.add_argument("--harness", required=True, choices=["claude", "codex"])
+    parser.add_argument("--model", required=True)
+    parser.add_argument("--effort", required=True)
+    parser.add_argument("--pr", help="Reviewed PR URL")
+    parser.add_argument("--head")
+    parser.add_argument("--base")
+    parser.add_argument("--scope", default=".", help="Reviewed path for a snapshot review")
+    parser.add_argument("-C", "--cwd", default=os.getcwd())
+    parser.add_argument("--github-user")
+    parser.add_argument("--archive")
+    parser.add_argument("--config", default=str(DEFAULT_CONFIG))
+    args = parser.parse_args()
+    try:
+        print(json.dumps(save(args), indent=2))
+        return 0
+    except (CommandError, StoreError, OSError) as error:
+        print(f"goerwin-review: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

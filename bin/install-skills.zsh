@@ -6,16 +6,24 @@ cd "${0:A:h:h}" || exit 1
 skillsInstallHome="${GOERWIN_SKILLS_HOME:-$HOME}"
 
 sharedDestination="$skillsInstallHome/.agents/shared"
-wtsCommand="$skillsInstallHome/.local/bin/goerwin-wts"
-if [[ -L "$sharedDestination" || ( -e "$wtsCommand" && ! -L "$wtsCommand" ) ]]; then
+sharedCommands=(goerwin-wts goerwin-review)
+if [[ -L "$sharedDestination" ]]; then
   print -u2 -- "Refusing to replace an existing shared helper path."
   exit 1
 fi
+for command in $sharedCommands; do
+  if [[ -e "$skillsInstallHome/.local/bin/$command" && ! -L "$skillsInstallHome/.local/bin/$command" ]]; then
+    print -u2 -- "Refusing to replace $skillsInstallHome/.local/bin/$command"
+    exit 1
+  fi
+done
 mkdir -p "$sharedDestination" "$skillsInstallHome/.local/bin" \
   "$skillsInstallHome/.agents/skills" "$skillsInstallHome/.claude/skills"
 rsync -a --delete --exclude='__pycache__' --exclude='*.pyc' --exclude='tests' ./src/.agents/shared/ "$sharedDestination/"
-ln -sfn ../../.agents/shared/goerwin-wts "$wtsCommand"
-print -r -- "Installed goerwin-wts → $wtsCommand"
+for command in $sharedCommands; do
+  ln -sfn "../../.agents/shared/$command" "$skillsInstallHome/.local/bin/$command"
+  print -r -- "Installed $command"
+done
 for source in ./src/.agents/skills/*(/N); do
   [[ -f "$source/SKILL.md" ]] || continue
   skill="${source:t}"

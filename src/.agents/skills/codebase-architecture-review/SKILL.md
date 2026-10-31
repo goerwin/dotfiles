@@ -88,6 +88,10 @@ Group findings by severity (high, medium, low). For each finding, include:
 - Why it matters
 - Suggested fix
 
+If there are findings, ask whether to save them. If yes, follow `~/.agents/shared/references/saving.md`
+with `--skill codebase-architecture-review` and `--scope` set to the reviewed folder (`.` for the whole
+repository), using `high`/`medium`/`low` as each finding's severity.
+
 ## Applying fixes
 
 When the user asks to apply fixes:

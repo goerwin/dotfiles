@@ -17,88 +17,16 @@ from goerwin_tools import herdr_adapter
 from goerwin_tools.review_store import StoreError, archive_root, finalize_report, report_path, slug
 from goerwin_tools.runtime import (
     CommandError as ReviewError, DEFAULT_CONFIG, allocation_lock, commit, common_dir,
-    config, current_branch, default_base, find_source, git, github, json_read, json_write,
-    new_id, now, pr_url, remote_repositories, repository_url, source_root, toplevel, worktrees,
+    config, current_branch, default_base, git, github, json_read, json_write,
+    new_id, now, pr_url, remote_repositories, repository_url, source_root, worktrees,
 )
-from goerwin_tools.worktrees import development_branch, switch_worktree
+from goerwin_tools.targets import PR_FIELDS, comparison_target, pr_target
+from goerwin_tools.worktrees import switch_worktree
 
 SCRIPT = Path(__file__).resolve()
 SKILL = SCRIPT.parents[1]
 # A reservation without a live supervisor after this long is a failed launch.
 LAUNCH_GRACE_SECONDS = 120
-PR_FIELDS = (
-    "id,number,url,title,state,headRefOid,baseRefOid,headRefName,baseRefName,"
-    "headRepository,headRepositoryOwner"
-)
-
-
-def pr_target(cwd, url, settings, user=None, revision="pr", instructions=""):
-    parsed = pr_url(url)
-    if not parsed:
-        raise ReviewError("Expected a GitHub pull-request URL")
-    root = find_source(cwd, parsed["repo"], settings)
-    pr = github(
-        ["pr", "view", parsed["url"], "--json", PR_FIELDS],
-        cwd=root,
-        user=user,
-        host=parsed["host"],
-    )
-    parsed = pr_url(pr["url"])
-    if not parsed:
-        raise ReviewError("GitHub returned an invalid pull-request URL")
-    head = pr["headRefOid"]
-    local_head = None
-    if revision == "local":
-        if common_dir(cwd) != common_dir(root):
-            raise ReviewError("Local revision must come from the selected source repository")
-        head = local_head = commit(cwd, "HEAD")
-    return {
-        "version": 1,
-        "kind": "pr",
-        "source_root": root,
-        "invoking_checkout": toplevel(cwd),
-        "common_dir": common_dir(root),
-        "repository": parsed["repo"],
-        "target_key": parsed["url"].lower(),
-        "pr_url": parsed["url"],
-        "pr_number": pr["number"],
-        "pr_id": pr["id"],
-        "title": pr["title"],
-        "pr_state": pr["state"],
-        "head_ref": pr["headRefName"],
-        "development_branch": development_branch(cwd, "HEAD") if revision == "local" else pr["headRefName"],
-        "base_ref": pr["baseRefName"],
-        "head_sha": head,
-        "base_sha": pr["baseRefOid"],
-        "pr_head_sha": pr["headRefOid"],
-        "revision": revision,
-        "local_head_sha": local_head,
-        "github_user": user,
-        "instructions": instructions,
-    }
-
-
-def comparison_target(cwd, head, base, instructions=""):
-    root = source_root(cwd)
-    head_sha, base_sha = commit(cwd, head), commit(cwd, base)
-    return {
-        "version": 1,
-        "kind": "comparison",
-        "source_root": root,
-        "invoking_checkout": toplevel(cwd),
-        "common_dir": common_dir(root),
-        "repository": next(iter(remote_repositories(root).values()), root),
-        "target_key": f"{common_dir(root)}:{base}...{head}",
-        "title": f"{head} against {base}",
-        "head_ref": head,
-        "development_branch": development_branch(cwd, head),
-        "base_ref": base,
-        "head_sha": head_sha,
-        "base_sha": base_sha,
-        "instructions": instructions,
-    }
-
-
 def inspect_target(args):
     cwd = str(Path(args.cwd).resolve())
     settings = config(args.config)
@@ -419,7 +347,7 @@ def launch(args):
                     f"Worktrunk hooks changed the new review checkout at {worktree}. "
                     "It was left intact; no agent was launched. Adjust the creation hook before retrying."
                 )
-        report = report_path(report_dir, target, preset)
+        report = report_path(report_dir, target)
         manifest = {
             "version": 1, "run_id": run_id, "created_at": now(), "status": "launching",
             "reserved_at": time.time(),

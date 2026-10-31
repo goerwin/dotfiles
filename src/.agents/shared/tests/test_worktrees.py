@@ -217,6 +217,26 @@ class WorktreeTests(unittest.TestCase):
         self.assertFalse("GH_TOKEN" in run.call_args.kwargs["env"])
 
 
+    def test_save_command_archives_a_snapshot_review(self):
+        body = self.root / "body.md"
+        body.write_text("# Architecture\n\n### F1: Duplicate helper\n`a.py:1` · suggestion\n")
+        env = dict(os.environ, GOERWIN_CODE_REVIEWS_DIR=str(self.root / "archive"))
+        result = subprocess.run([
+            sys.executable, str(SHARED / "goerwin-review"), "save", "--body", str(body),
+            "--skill", "codebase-architecture-review", "--harness", "claude",
+            "--model", "claude-opus-5-5", "--effort", "high", "--scope", "src", "-C", str(self.repo),
+        ], env=env, check=True, capture_output=True, text=True)
+        saved = store.read_report(json.loads(result.stdout)["report"])
+        meta = saved["metadata"]
+        self.assertEqual((meta["skill"], meta["scope"], meta["base_sha"]), ("codebase-architecture-review", "src", None))
+        self.assertEqual((meta["head_sha"], meta["finding_ids"]), (self.base, ["F1"]))
+        body.write_text("loose notes without headings")
+        failed = subprocess.run([sys.executable, str(SHARED / "goerwin-review"), "save", "--body", str(body),
+                                 "--skill", "x", "--harness", "claude", "--model", "m", "--effort", "e",
+                                 "-C", str(self.repo)], env=env, capture_output=True, text=True)
+        self.assertEqual(failed.returncode, 1)
+        self.assertEqual(len(list((self.root / "archive").glob("*/*.md"))), 1)
+
 class FocusTests(unittest.TestCase):
     def test_focus_reuses_existing_local_space_and_active_tab(self):
         state = {"spaces": [{"id": "space", "folder": "/tmp/worktree", "machine": None,
@@ -281,17 +301,22 @@ class FocusTests(unittest.TestCase):
 
 
 class ArchiveTests(unittest.TestCase):
-    def test_filename_uses_local_time_readable_fields_and_collision_counter(self):
+    def test_daily_index_per_project_and_owner_on_name_clash(self):
         with tempfile.TemporaryDirectory() as directory:
-            moment = dt.datetime(2026, 10, 30, 22, 30, 15, tzinfo=dt.timezone(dt.timedelta(hours=-5)))
-            target = {"source_root": "/projects/antares", "kind": "pr", "pr_number": 123, "title": "Pagination"}
-            preset = {"model": "gpt-6.1-sol", "effort": "xhigh", "filename_model": "sol-6.1"}
-            first = store.report_path(directory, target, preset, moment)
-            first.write_text("keep this review")
-            second = store.report_path(directory, target, preset, moment)
-            self.assertEqual(first.name, "2026-10-30_antares_pr-123-pagination_sol-6.1-xhigh_223015.md")
-            self.assertEqual(second.stem, first.stem + "_2")
-            self.assertEqual(first.read_text(), "keep this review")
+            root = Path(directory)
+            day = dt.datetime(2026, 11, 11, 9, tzinfo=dt.timezone.utc)
+            target = {"source_root": "/x/antares", "repository": "github.com/godaddy/antares",
+                      "kind": "pr", "pr_number": 123, "title": "Pagination"}
+            first = store.report_path(root, target, day)
+            second = store.report_path(root, {**target, "kind": "snapshot", "title": "src"}, day)
+            self.assertEqual(first.relative_to(root).as_posix(), "antares/2026-11-11-01-pr-123-pagination.md")
+            self.assertEqual(second.name, "2026-11-11-02-src.md")
+            first.unlink()
+            self.assertEqual(store.report_path(root, target, day).name, "2026-11-11-03-pr-123-pagination.md")
+            other = store.report_path(root, {**target, "repository": "github.com/fork/antares"}, day)
+            self.assertEqual(other.relative_to(root).as_posix(), "fork-antares/2026-11-11-01-pr-123-pagination.md")
+            nxt = store.report_path(root, target, day + dt.timedelta(days=1))
+            self.assertEqual(nxt.name, "2026-11-12-01-pr-123-pagination.md")
 
     def test_frontmatter_roundtrip_and_validation(self):
         meta = {"schema_version": 1, "repository": "github.com/a/b", "finding_ids": ["F1"], "title": 'Quoted "title": value'}
@@ -313,9 +338,11 @@ class InstallationTests(unittest.TestCase):
             home = Path(tmp).resolve()
             env = dict(os.environ, GOERWIN_SKILLS_HOME=tmp, HOME=tmp, PYTHONDONTWRITEBYTECODE="1")
             subprocess.run(["zsh", "bin/install-skills.zsh"], cwd=ROOT, env=env, check=True, capture_output=True)
-            command = home / ".local/bin/goerwin-wts"
-            self.assertTrue(command.is_symlink())
-            subprocess.run([str(command), "--help"], check=True, env=env, capture_output=True)
+            for name in ("goerwin-wts", "goerwin-review"):
+                command = home / ".local/bin" / name
+                self.assertTrue(command.is_symlink())
+                subprocess.run([str(command), "--help"], check=True, env=env, capture_output=True)
+            self.assertFalse(list(home.glob(".agents/**/tests")))
             for skill, args in (("goerwin-code-review", ["review_pr.py", "presets"]),
                                ("goerwin-receiving-code-review", ["receiving.py", "--help"])):
                 scripts = home / ".agents/skills" / skill / "scripts"

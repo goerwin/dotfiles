@@ -59,4 +59,4 @@ Don't report:
 
 End with a prioritized findings list, or say explicitly that there are none. Briefly note validation limits, such as tests you couldn't run, without presenting them as defects.
 
-If there are findings, ask whether to save them under `.code-reviews/yyyy-mm-dd-slug.md`. Start the file with the source (PR URL, or base and head SHAs), then one `### F1: Title` section per finding with its path, line range, severity, scenario, and fix, so `goerwin-receiving-code-review --text-file` can act on it.
+If there are findings, ask whether to save them. If yes, follow `~/.agents/shared/references/saving.md` with `--skill adversarial-reviewer` and the reviewed PR or base/head.

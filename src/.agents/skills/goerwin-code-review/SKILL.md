@@ -68,8 +68,8 @@ in its own tab; the launcher conversation doesn't receive it.
 
 ## Reports
 
-Reports are saved automatically to the flat `~/goerwin-code-reviews` archive
-(`--archive` or `GOERWIN_CODE_REVIEWS_DIR` overrides it), with helper-generated
+Reports are saved automatically to `~/goerwin-code-reviews/<project>/YYYY-MM-DD-NN-topic.md`
+(`--archive` or `GOERWIN_CODE_REVIEWS_DIR` overrides the root), with helper-generated
 frontmatter. Finalized reports are immutable; receiving outcomes go in a
 `*.receiving.md` sidecar. Use `goerwin-receiving-code-review` to browse and act
 on them, `status` to inspect runs, and `launch --dry-run` to see the exact argv.

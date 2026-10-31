@@ -1,6 +1,5 @@
 import argparse
 import concurrent.futures
-import json
 import os
 import subprocess
 import sys
@@ -13,7 +12,8 @@ from unittest.mock import patch
 SKILL = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SKILL / "scripts"))
 import review_pr as review
-from goerwin_tools import herdr_adapter, review_store as store
+import contextlib
+from goerwin_tools import herdr_adapter, review_store as store, targets
 
 
 class WorkflowFixture:
@@ -152,6 +152,11 @@ class WorkflowFixture:
             raise AssertionError(args)
         return fake
 
+    @contextlib.contextmanager
+    def fake_github(self, **behavior):
+        with patch.object(review, "github", **behavior), patch.object(targets, "github", **behavior):
+            yield
+
     def complete(self, result):
         Path(result["report"]).write_text("# Review\nNo findings.\n")
         review.finish(argparse.Namespace(run_file=result["run_file"]))
@@ -172,7 +177,7 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
 
     def test_no_input_synced_pr_ignores_source_dirt(self):
         before = self.git("status", "--porcelain", cwd=self.developer)
-        with patch.object(review, "github", side_effect=self.github([self.pr()])):
+        with self.fake_github(side_effect=self.github([self.pr()])):
             result = review.inspect_target(self.resolve_args())
         self.assertEqual(result["status"], "ready")
         self.assertEqual(result["target"]["source_root"], str(self.repo))
@@ -180,7 +185,7 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
         self.assertEqual(self.git("status", "--porcelain", cwd=self.developer), before)
 
     def test_unsynced_pr_requires_revision_selection(self):
-        with patch.object(review, "github", side_effect=self.github([self.pr(headRefOid=self.base)])):
+        with self.fake_github(side_effect=self.github([self.pr(headRefOid=self.base)])):
             result = review.inspect_target(self.resolve_args())
         self.assertEqual(result["status"], "revision_selection_required")
         self.assertEqual(result["local_head_sha"], self.head)
@@ -188,17 +193,17 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
         self.assertFalse(self.archive.exists())
 
     def test_no_pr_and_multiple_prs_never_launch_implicitly(self):
-        with patch.object(review, "github", side_effect=self.github([])):
+        with self.fake_github(side_effect=self.github([])):
             result = review.inspect_target(self.resolve_args())
         self.assertEqual(result["status"], "comparison_confirmation_required")
         self.assertEqual((result["head"], result["base"]), ("feature", "origin/main"))
-        with patch.object(review, "github", side_effect=self.github([self.pr(), self.pr(number=124)])):
+        with self.fake_github(side_effect=self.github([self.pr(), self.pr(number=124)])):
             result = review.inspect_target(self.resolve_args())
         self.assertEqual(result["status"], "pr_selection_required")
         self.assertFalse(self.opened)
 
     def test_failed_github_lookup_is_not_treated_as_no_pr(self):
-        with patch.object(review, "github", side_effect=review.ReviewError("authentication failed")):
+        with self.fake_github(side_effect=review.ReviewError("authentication failed")):
             with self.assertRaisesRegex(review.ReviewError, "authentication"):
                 review.inspect_target(self.resolve_args())
 
@@ -209,7 +214,7 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
             review.inspect_target(self.resolve_args(input="https://github.com/other/repo/pull/123"))
 
     def test_explicit_local_revision_uses_invoking_worktree_head(self):
-        with patch.object(review, "github", return_value=self.pr(headRefOid=self.base)):
+        with self.fake_github(return_value=self.pr(headRefOid=self.base)):
             result = review.inspect_target(self.resolve_args(
                 input="https://github.com/example/project/pull/123", revision="local",
             ))
@@ -230,7 +235,8 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
         before = self.git("status", "--porcelain", cwd=self.developer)
         result = self.launch()
         record = review.json_read(result["run_file"])
-        self.assertEqual(Path(result["report"]).parent, self.archive)
+        self.assertEqual(Path(result["report"]).parent, self.archive / "project")
+        self.assertRegex(Path(result["report"]).name, r"^\d{4}-\d\d-\d\d-01-feature-against-main\.md$")
         self.assertNotEqual(result["worktree"], str(self.developer))
         self.assertEqual(self.git("rev-parse", "HEAD", cwd=result["worktree"]), self.head)
         self.assertEqual(self.git("branch", "--show-current", cwd=self.developer), "feature")
@@ -300,10 +306,10 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
         self.assertEqual(target["development_branch"], "feature")
 
     def test_changed_pr_or_comparison_requires_new_resolution_before_side_effects(self):
-        with patch.object(review, "github", return_value=self.pr()):
+        with self.fake_github(return_value=self.pr()):
             target = review.pr_target(self.developer, self.pr()["url"], {})
         review.json_write(self.target_file, {"status": "ready", "target": target})
-        with patch.object(review, "github", return_value=self.pr(headRefOid=self.base)):
+        with self.fake_github(return_value=self.pr(headRefOid=self.base)):
             result = self.launch()
         self.assertEqual(result["status"], "revision_selection_required")
         self.assertFalse(self.archive.exists())

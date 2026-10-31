@@ -7,7 +7,7 @@ import os
 import re
 from pathlib import Path
 
-from .runtime import atomic_text
+from .runtime import allocation_lock, atomic_text
 
 
 class StoreError(RuntimeError):
@@ -65,31 +65,60 @@ def finding_ids(body):
     return ids
 
 
-def report_path(directory, target, preset, local_time=None):
+def project_folder(root, target):
+    """The remote's repo name; the owner is added only when another repository already uses it."""
+    repository = target["repository"]
+    parts = repository.split("/")
+    names = [slug(parts[-1], 32)] if len(parts) == 3 else [slug(Path(target["source_root"]).name, 32)]
+    if len(parts) == 3:
+        names.append(slug(f"{parts[1]}-{parts[2]}", 48))
+    for name in names:
+        folder = root / name
+        owner = folder / ".repository"
+        if not owner.exists():
+            atomic_text(owner, repository + "\n")
+            return folder
+        if owner.read_text().strip() == repository:
+            return folder
+    raise StoreError(f"Archive folders for {repository} are claimed by other repositories")
+
+
+def report_path(root, target, local_time=None):
+    """Reserve <project>/YYYY-MM-DD-NN-topic.md; NN counts this project's files for the day.
+
+    Leftover sidecars still hold their number, so a deleted report's NN is never reused.
+    """
     local_time = local_time or dt.datetime.now().astimezone()
-    project = slug(Path(target["source_root"]).name, 32)
     topic = (
         f"pr-{target['pr_number']}-{slug(target['title'], 42)}"
         if target["kind"] == "pr"
         else slug(target["title"], 48)
     )
-    model = re.sub(
-        r"[^a-z0-9.]+", "-", preset.get("filename_model", preset["model"]).lower()
-    ).strip("-.")[:32]
-    stem = "_".join((
-        local_time.strftime("%Y-%m-%d"), project, topic,
-        f"{model}-{slug(preset['effort'], 12)}", local_time.strftime("%H%M%S"),
-    ))
-    directory = Path(directory)
-    directory.mkdir(parents=True, exist_ok=True)
-    counter = 1
-    while True:
-        path = directory / f"{stem}{'' if counter == 1 else f'_{counter}'}.md"
+    with allocation_lock(root, ".reports"):
+        folder = project_folder(root, target)
+        day = local_time.strftime("%Y-%m-%d")
+        used = [
+            int(match[1]) for path in folder.glob(f"{day}-*.md")
+            if (match := re.match(rf"{day}-([0-9]+)-", path.name))
+        ]
+        index = max(used, default=0) + 1
+        while True:
+            path = folder / f"{day}-{index:02d}-{topic}.md"
+            try:
+                os.close(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600))
+                return path
+            except FileExistsError:
+                index += 1
+
+
+def iter_reports(root):
+    for path in sorted(Path(root).glob("*/*.md")):
+        if path.name.endswith(".receiving.md"):
+            continue
         try:
-            os.close(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600))
-            return path
-        except FileExistsError:
-            counter += 1
+            yield read_report(path)
+        except (OSError, StoreError):
+            continue
 
 
 def report_metadata(manifest):
@@ -100,7 +129,7 @@ def report_metadata(manifest):
         "review_id": manifest["run_id"],
         "created_at": manifest["created_at"],
         "completed_at": manifest.get("finished_at"),
-        "project": Path(target["source_root"]).name,
+        "project": Path(manifest["report"]).parent.name,
         "repository": target["repository"],
         "source_path": target["source_root"],
         "source_common_dir": target["common_dir"],
@@ -115,10 +144,12 @@ def report_metadata(manifest):
         "base_sha": target["base_sha"],
         "merge_base_sha": target.get("merge_base_sha"),
         "revision": target.get("revision", "local"),
+        "scope": target.get("scope"),
+        "skill": preset.get("skill", "goerwin-code-review"),
         "harness": preset["harness"],
         "model": preset["model"],
         "effort": preset["effort"],
-        "preset_id": preset["id"],
+        "preset_id": preset.get("id"),
         "github_user": target.get("github_user"),
         "pr_changed_since_resolution": manifest.get("pr_changed_since_resolution"),
     }
@@ -146,7 +177,7 @@ def read_report(path):
     metadata, body = decode(path.read_text())
     if metadata.get("schema_version") != 1 or metadata.get("kind") != "code_review":
         raise StoreError("Expected a saved goerwin-code-review report")
-    required = ("review_id", "repository", "source_path", "head_ref", "head_sha", "base_sha")
+    required = ("review_id", "repository", "source_path", "head_ref", "head_sha")
     if any(not isinstance(metadata.get(key), str) or not metadata[key] for key in required):
         raise StoreError("Report provenance is incomplete")
     if metadata.get("finding_ids") != finding_ids(body):

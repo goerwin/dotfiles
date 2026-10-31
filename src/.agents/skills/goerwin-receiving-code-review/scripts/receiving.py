@@ -39,19 +39,15 @@ def sidecar(report_path):
     return path.with_name(path.stem + SIDECAR)
 
 
-def outcomes_of(report_path):
-    path = sidecar(report_path)
-    return store.decode(path.read_text())[0].get("outcomes", {}) if path.exists() else {}
-
-
-def reports(root):
-    for path in sorted(root.glob("*.md")):
-        if path.name.endswith(SIDECAR):
-            continue
-        try:
-            yield store.read_report(path)
-        except (OSError, store.StoreError):
-            continue
+def outcomes_of(report):
+    """Outcomes recorded for this exact report; a sidecar left by another report is ignored."""
+    path = sidecar(report["path"])
+    if not path.exists():
+        return {}
+    metadata = store.decode(path.read_text())[0]
+    if metadata.get("review_id") != report["metadata"]["review_id"]:
+        return {}
+    return metadata.get("outcomes", {})
 
 
 def list_reviews(cwd, archive=None, all_projects=False, all_branches=False, pr=None):
@@ -67,7 +63,7 @@ def list_reviews(cwd, archive=None, all_projects=False, all_branches=False, pr=N
             raise CommandError("Expected a PR URL for --pr")
         pr = parsed["url"].lower()
     rows = []
-    for item in reports(root):
+    for item in store.iter_reports(root):
         meta = item["metadata"]
         if identities and not (meta["source_path"] in identities or meta["repository"] in identities):
             continue
@@ -75,11 +71,12 @@ def list_reviews(cwd, archive=None, all_projects=False, all_branches=False, pr=N
             continue
         if not pr and identities and not all_branches and (meta.get("development_branch") or meta["head_ref"]) != branch:
             continue
-        outcomes = outcomes_of(item["path"])
+        outcomes = outcomes_of(item)
         ids = meta["finding_ids"]
         rows.append({
             "review_id": meta["review_id"], "path": item["path"], "created_at": meta["created_at"],
             "project": meta["project"], "title": meta["title"], "pr_url": meta.get("pr_url"),
+            "skill": meta.get("skill"), "scope": meta.get("scope"),
             "head_sha": meta["head_sha"], "model": meta["model"], "effort": meta["effort"],
             "stale": head is not None and meta["head_sha"] != head,
             "findings": len(ids),
@@ -165,7 +162,7 @@ def prepare(args):
     head = commit(cwd, "HEAD")
     findings = []
     for item in inputs:
-        meta, outcomes = item["metadata"], outcomes_of(item["path"])
+        meta, outcomes = item["metadata"], outcomes_of(item)
         for finding in sections(item["body"]):
             previous = outcomes.get(finding["id"])
             findings.append({
@@ -176,7 +173,7 @@ def prepare(args):
         "status": "ready", "recordable": True, "cwd": cwd, "branch": branch, "head_sha": head,
         "reviews": [
             {"review_id": item["metadata"]["review_id"], "path": item["path"],
-             "stale": item["metadata"]["head_sha"] != head}
+             "stale": item["metadata"]["head_sha"] != head, "scope": item["metadata"].get("scope")}
             for item in inputs
         ],
         "findings": findings, "worktree": navigation,
@@ -223,7 +220,7 @@ def record(args):
     active = {
         f"{review_id}:{finding_id}"
         for review_id, item in inputs.items()
-        for finding_id, previous in ((i, outcomes_of(item["path"]).get(i)) for i in item["metadata"]["finding_ids"])
+        for finding_id, previous in ((i, outcomes_of(item).get(i)) for i in item["metadata"]["finding_ids"])
         if previous in (None, "waiting")
     }
     validate(outcomes, active)
@@ -239,7 +236,10 @@ def record(args):
             continue
         path = sidecar(item["path"])
         with allocation_lock(path.parent, "." + path.stem):
-            metadata, body = store.decode(path.read_text()) if path.exists() else (
+            existing = store.decode(path.read_text()) if path.exists() else None
+            if existing and existing[0].get("review_id") != review_id:
+                raise CommandError(f"{path} belongs to another report; move it aside before recording")
+            metadata, body = existing or (
                 {"schema_version": 1, "kind": "receiving", "review_id": review_id, "outcomes": {}},
                 f"# Receiving {Path(item['path']).name}",
             )
