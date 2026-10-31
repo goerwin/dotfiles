@@ -22,7 +22,8 @@ def main():
 Existing branches are reused as-is (base is ignored). New branches start from
 the fetched remote default unless a base is given. PR URLs from other
 repositories need a registered local clone. Worktrunk paths and hooks apply;
-Herdr focus is best-effort. Agents: use --json --no-focus and work in .path.""",
+Setup hooks stream to stderr. A Herdr tab is opened without switching to it
+(best-effort; --no-focus skips Herdr). Agents: use --json --no-focus and work in .path.""",
     )
     parser.add_argument("target", help="PR number, PR URL, branch name, or 'register'")
     parser.add_argument("base", nargs="?", help="Base for a new branch; checkout path with register")
@@ -30,14 +31,15 @@ Herdr focus is best-effort. Agents: use --json --no-focus and work in .path.""",
     parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="Repository registry file")
     parser.add_argument("--github-user", help="Use an existing gh account without switching the active account")
     parser.add_argument("--json", action="store_true", help="Print JSON; worktree results include path and branch")
-    parser.add_argument("--no-focus", action="store_true", help="Skip Herdr navigation")
+    parser.add_argument("--no-focus", action="store_true", help="Skip Herdr entirely")
     args = parser.parse_args()
     try:
         if args.target == "register":
             result = register_checkout(args.base or args.cwd, args.config)
             path = result["source_root"]
         else:
-            result = switch(args.target, args.cwd, args.base, args.config, args.github_user, not args.no_focus)
+            result = switch(args.target, args.cwd, args.base, args.config, args.github_user,
+                            focus=False, open_tab=not args.no_focus)
             path = result["path"]
         print(json.dumps(result, indent=2) if args.json else path)
         for warning in result.get("herdr", {}).get("warnings", []):

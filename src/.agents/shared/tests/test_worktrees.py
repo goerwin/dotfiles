@@ -202,6 +202,16 @@ class WorktreeTests(unittest.TestCase):
                 self.switch("123")
         self.assertFalse(self.log.exists())
 
+    def test_cli_streams_worktrunk_progress_to_stderr(self):
+        wt = self.bin / "wt"
+        wt.write_text(wt.read_text().replace(
+            'subprocess.run(command, check=True, capture_output=True)',
+            'print("SETUP PROGRESS", file=sys.stderr, flush=True)\nsubprocess.run(command, check=True, capture_output=True)'))
+        result = subprocess.run([sys.executable, str(COMMAND), "feature", "main", "--no-focus"],
+                                cwd=self.repo, check=True, capture_output=True, text=True)
+        self.assertIn("SETUP PROGRESS", result.stderr)
+        self.assertNotIn("SETUP PROGRESS", result.stdout)
+
     def test_cli_prints_only_the_path(self):
         result = subprocess.run([sys.executable, str(COMMAND), "feature", "main", "--no-focus"],
                                 cwd=self.repo, check=True, capture_output=True, text=True)
@@ -249,6 +259,27 @@ class FocusTests(unittest.TestCase):
         self.assertEqual([call.args[0] for call in command.call_args_list], [
             ["do", "tab.select", "--id", "tab"], ["do", "pane.focus", "--terminal", "terminal"],
         ])
+
+    def test_no_focus_opens_a_tab_and_reselects_the_previous_one(self):
+        state = {"spaces": [{"id": "current", "folder": "/tmp/other", "machine": None, "active": True,
+                             "tabs": [{"id": "mine", "active": True}]}]}
+        with patch.object(herdr_adapter, "snapshot", return_value=state):
+            with patch.object(herdr_adapter, "command", return_value={"tab": "new"}) as command:
+                with patch.object(herdr_adapter.subprocess, "run") as raised:
+                    result = worktrees.focus_worktree("/tmp/worktree", "feature", focus=False)
+        calls = [call.args[0][:2] for call in command.call_args_list]
+        self.assertEqual(calls, [["do", "space.new"], ["do", "tab.select"]])
+        self.assertEqual(command.call_args_list[1].args[0][-1], "mine")
+        raised.assert_not_called()
+        self.assertEqual(result["tab"], "new")
+
+    def test_no_focus_leaves_an_existing_tab_alone(self):
+        state = {"spaces": [{"id": "space", "folder": "/tmp/worktree", "machine": None,
+                             "tabs": [{"id": "tab", "active": True}]}]}
+        with patch.object(herdr_adapter, "snapshot", return_value=state):
+            with patch.object(herdr_adapter, "command") as command:
+                worktrees.focus_worktree("/tmp/worktree", "feature", focus=False)
+        command.assert_not_called()
 
     def test_unavailable_herdr_does_not_block_or_launch_it(self):
         with patch.object(herdr_adapter, "snapshot", side_effect=herdr_adapter.AdapterError("unavailable")):

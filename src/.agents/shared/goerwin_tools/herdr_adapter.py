@@ -52,22 +52,40 @@ def raise_app(warnings):
         warnings.append(raised.stderr.strip() or "Could not raise Herdr")
 
 
-def focus_worktree(worktree, name):
+def focus_worktree(worktree, name, focus=True):
+    """Make sure the worktree has a Herdr tab; with focus, also select it and raise Herdr."""
     folder = os.path.realpath(worktree)
-    space = local_space(snapshot(), folder)
+    state = snapshot()
+    space = local_space(state, folder)
     tabs = space.get("tabs", []) if space else []
     tab = next((item for item in tabs if item.get("active")), tabs[0] if tabs else None)
     warnings = []
+    if tab and not focus:
+        return {"available": True, "tab": tab["id"], "warnings": warnings}
     if tab:
         result = command(["do", "tab.select", "--id", tab["id"]])
         if tab.get("terminals"):
             attempt(warnings, ["do", "pane.focus", "--terminal", tab["terminals"][0]["terminal"]])
-    elif space:
-        result = command(["do", "tab.new", "--space", space["id"], "--name", name, "--folder", folder])
     else:
-        result = command(["do", "space.new", "--name", name, "--folder", folder, "--tab", name])
+        result = command(
+            ["do", "tab.new", "--space", space["id"], "--name", name, "--folder", folder] if space
+            else ["do", "space.new", "--name", name, "--folder", folder, "--tab", name]
+        )
+        if not focus:
+            restore(state, warnings)
+            return {"available": True, **result, "warnings": warnings}
     raise_app(warnings)
     return {"available": True, **result, "warnings": warnings}
+
+
+def restore(state, warnings):
+    """Reselect the tab that was active before; creating a tab selects it."""
+    active = next((
+        tab for space in state.get("spaces", []) if space.get("active")
+        for tab in space.get("tabs", []) if tab.get("active")
+    ), None)
+    if active:
+        attempt(warnings, ["do", "tab.select", "--id", active["id"]])
 
 
 def open_review(worktree, name, argv, task, state):

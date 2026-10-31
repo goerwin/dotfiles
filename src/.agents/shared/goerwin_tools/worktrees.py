@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import sys
 from pathlib import Path
 
 from . import herdr_adapter
@@ -28,9 +27,8 @@ def switch_worktree(repo, branch, create=False, base=None, env=None):
     args = ["wt", "-C", str(repo), "switch", *(["--create"] if create else []), branch]
     if base:
         args.extend(["--base", base])
-    result = run([*args, "--no-cd", "--format=json"], env=env, timeout=1800)
-    if result.stderr:
-        print(result.stderr.rstrip(), file=sys.stderr)
+    # Worktrunk writes progress and hook output to stderr; stream it so setup is visible live.
+    result = run([*args, "--no-cd", "--format=json"], env=env, timeout=1800, stderr=None)
     try:
         path = str(Path(json.loads(result.stdout)["path"]).resolve())
     except (ValueError, TypeError, KeyError) as error:
@@ -166,14 +164,14 @@ def ensure_pr(cwd, target, settings, user=None):
     return {**result, "repository": canonical["repo"], "pr_url": canonical["url"]}
 
 
-def focus_worktree(path, branch):
+def focus_worktree(path, branch, focus=True):
     try:
-        return herdr_adapter.focus_worktree(path, branch)
+        return herdr_adapter.focus_worktree(path, branch, focus)
     except herdr_adapter.AdapterError as error:
         return {"available": False, "warnings": [str(error)]}
 
 
-def switch(target, cwd=None, base=None, config_path=None, github_user=None, focus=True):
+def switch(target, cwd=None, base=None, config_path=None, github_user=None, focus=True, open_tab=False):
     cwd = str(Path(cwd or os.getcwd()).resolve())
     if pr_url(target) or target.isdecimal():
         if base:
@@ -184,6 +182,6 @@ def switch(target, cwd=None, base=None, config_path=None, github_user=None, focu
     else:
         env = github_environment(github_user) if github_user else None
         result = ensure_branch(source_root(cwd), target, base, env)
-    if focus:
-        result["herdr"] = focus_worktree(result["path"], result["branch"])
+    if focus or open_tab:
+        result["herdr"] = focus_worktree(result["path"], result["branch"], focus)
     return result

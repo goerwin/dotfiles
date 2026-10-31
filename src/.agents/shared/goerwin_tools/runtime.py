@@ -17,21 +17,23 @@ class CommandError(RuntimeError):
     pass
 
 
-def run(args, cwd=None, env=None, check=True, timeout=120):
+def run(args, cwd=None, env=None, check=True, timeout=120, stderr=subprocess.PIPE):
+    """Run and capture output; stderr=None streams it to the caller's terminal instead."""
     try:
         result = subprocess.run(
             [str(arg) for arg in args],
             cwd=cwd,
             env=env,
             text=True,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=stderr,
             timeout=timeout,
         )
     except (OSError, subprocess.TimeoutExpired) as error:
         raise CommandError(str(error)) from error
     if check and result.returncode:
         raise CommandError(
-            result.stderr.strip() or f"{args[0]} exited {result.returncode}"
+            (result.stderr or "").strip() or f"{args[0]} exited {result.returncode} (see output above)"
         )
     return result
 
