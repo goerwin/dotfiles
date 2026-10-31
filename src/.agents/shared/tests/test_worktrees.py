@@ -344,7 +344,8 @@ class InstallationTests(unittest.TestCase):
                 subprocess.run([str(command), "--help"], check=True, env=env, capture_output=True)
             self.assertFalse(list(home.glob(".agents/**/tests")))
             for skill, args in (("goerwin-code-review", ["review_pr.py", "presets"]),
-                               ("goerwin-receiving-code-review", ["receiving.py", "--help"])):
+                               ("goerwin-receiving-code-review", ["receiving.py", "--help"]),
+                               ("goerwin-review-loop", ["review_loop.py", "--help"])):
                 scripts = home / ".agents/skills" / skill / "scripts"
                 self.assertTrue((scripts / "goerwin_tools").is_symlink())
                 self.assertEqual((scripts / "goerwin_tools").resolve(), home / ".agents/shared/goerwin_tools")

@@ -73,4 +73,4 @@ Reports are saved automatically to `~/goerwin-code-reviews/<project>/YYYY-MM-DD-
 frontmatter. Finalized reports are immutable; receiving outcomes go in a
 `*.receiving.md` sidecar. Use `goerwin-receiving-code-review` to browse and act
 on them, `status` to inspect runs, and `launch --dry-run` to see the exact argv.
-Edit `presets.json` to change the model list.
+Edit `~/.agents/shared/presets.json` (source: `src/.agents/shared/presets.json`) to change the model list.

@@ -13,7 +13,7 @@ import sys
 import time
 from pathlib import Path
 
-from goerwin_tools import herdr_adapter
+from goerwin_tools import harness, herdr_adapter
 from goerwin_tools.review_store import StoreError, archive_root, finalize_report, report_path, slug
 from goerwin_tools.runtime import (
     CommandError as ReviewError, DEFAULT_CONFIG, allocation_lock, commit, common_dir,
@@ -113,29 +113,6 @@ def pr_moved(target):
         target["source_root"], target.get("github_user"), pr_url(target["pr_url"])["host"],
     )
     return latest["headRefOid"] != target["pr_head_sha"] or latest["baseRefOid"] != target["base_sha"]
-
-
-def presets(path):
-    data = json_read(path)
-    if not isinstance(data, list) or not data:
-        raise ReviewError("Presets must be a nonempty JSON array")
-    identifiers = set()
-    for preset in data:
-        if not isinstance(preset, dict) or not all(preset.get(k) for k in ("id", "label", "harness", "model", "effort")):
-            raise ReviewError("Each preset needs id, label, harness, model, and effort")
-        if preset["id"] in identifiers or preset["harness"] not in ("codex", "claude"):
-            raise ReviewError("Preset IDs must be unique; supported harnesses are codex and claude")
-        identifiers.add(preset["id"])
-    return data
-
-
-def harness_argv(preset):
-    if preset["harness"] == "codex":
-        return [
-            "codex", "--no-daemon", "--model", preset["model"],
-            "-c", "model_reasoning_effort=" + json.dumps(preset["effort"]),
-        ]
-    return ["claude", "--model", preset["model"], "--effort", preset["effort"]]
 
 
 def validate_target(target):
@@ -281,10 +258,8 @@ def launch(args):
         raise ReviewError("Target needs user clarification or confirmation; resolve it first")
     target = request["target"]
     validate_target(target)
-    preset = next((item for item in presets(args.presets) if item["id"] == args.preset), None)
-    if not preset:
-        raise ReviewError("Unknown preset. Require a fresh selection from 'presets'.")
-    argv = harness_argv(preset)
+    preset = harness.preset(args.preset, args.presets)
+    argv = harness.argv(preset, args.headless)
     if args.dry_run:
         return {
             "status": "dry_run", "target": target, "preset": preset, "argv": argv,
@@ -292,10 +267,12 @@ def launch(args):
         }
     if not shutil.which(argv[0]):
         raise ReviewError(f"The selected harness is not installed: {argv[0]}")
-    try:
-        snapshot = herdr_adapter.snapshot()
-    except herdr_adapter.AdapterError as error:
-        raise ReviewError(f"Open Herdr before launching the review: {error}") from error
+    snapshot = None
+    if not args.headless:
+        try:
+            snapshot = herdr_adapter.snapshot()
+        except herdr_adapter.AdapterError as error:
+            raise ReviewError(f"Open Herdr before launching the review: {error}") from error
     # Revalidate provider refs so an old saved target cannot silently review stale commits.
     if target["kind"] == "pr":
         if pr_moved(target):
@@ -353,11 +330,20 @@ def launch(args):
             "reserved_at": time.time(),
             "target": target, "preset": preset, "argv": argv, "worktree": worktree,
             "branch": branch, "reused": bool(reused), "report": str(report),
-            "archive_root": str(report_dir),
+            "archive_root": str(report_dir), "headless": args.headless,
         }
         json_write(manifest_path, manifest)
     prompt = make_prompt(manifest, manifest_path)
+    if args.context_file:
+        prompt += "\n\n" + Path(args.context_file).read_text()
     supervisor = [sys.executable, str(SCRIPT), "_run", "--run-file", str(manifest_path)]
+    if args.headless:
+        code = subprocess.run([*supervisor, prompt]).returncode
+        final = json_read(manifest_path)
+        return {
+            "status": final["status"], "run_id": run_id, "run_file": str(manifest_path),
+            "worktree": worktree, "report": str(report), "exit_code": code, "error": final.get("error"),
+        }
     try:
         opened = herdr_adapter.open_review(
             worktree, f"Review {label} · {preset['label']}", supervisor, prompt, snapshot
@@ -380,17 +366,13 @@ def launch(args):
 def supervise(args):
     path = Path(args.run_file)
     manifest = update_record(path, {"status": "running", "pid": os.getpid(), "started_at": now()})
-    env = os.environ.copy()
-    if manifest["preset"]["harness"] == "claude":
-        # This environment override outranks --effort; the explicit choice wins.
-        env.pop("CLAUDE_CODE_EFFORT_LEVEL", None)
-        # A fresh interactive reviewer must not inherit Claude's nested-session guard.
-        env.pop("CLAUDECODE", None)
+    env = harness.environment(manifest["preset"])
     signal.signal(signal.SIGINT, lambda *_: None)
-    child = None
     try:
+        output = (path.with_suffix(".log").open("w") if manifest.get("headless") else None)
         child = subprocess.Popen(
-            [*manifest["argv"], args.task], cwd=manifest["worktree"], env=env
+            [*manifest["argv"], args.task], cwd=manifest["worktree"], env=env,
+            stdout=output, stderr=subprocess.STDOUT if output else None,
         )
         update_record(path, {"child_pid": child.pid})
         code = child.wait()
@@ -459,7 +441,7 @@ def parser():
     result = argparse.ArgumentParser(description=__doc__)
     commands = result.add_subparsers(dest="command", required=True)
     p = commands.add_parser("presets", help="Print the curated local model/effort choices")
-    p.add_argument("--presets", default=str(SKILL / "presets.json"))
+    p.add_argument("--presets", default=str(harness.PRESETS))
     p = commands.add_parser("resolve", help="Inspect a target; unresolved cases require user answers")
     p.add_argument("input", nargs="?")
     p.add_argument("--cwd", default=os.getcwd())
@@ -473,7 +455,9 @@ def parser():
     p = commands.add_parser("launch", help="Launch only after a fresh explicit preset selection")
     p.add_argument("--target-file", required=True)
     p.add_argument("--preset", required=True)
-    p.add_argument("--presets", default=str(SKILL / "presets.json"))
+    p.add_argument("--presets", default=str(harness.PRESETS))
+    p.add_argument("--headless", action="store_true", help="Run without a tab and wait for the final report")
+    p.add_argument("--context-file", help="Extra prompt context appended to the review task")
     p.add_argument("--archive")
     p.add_argument("--dry-run", action="store_true")
     for name in ("finish", "github-context"):
@@ -495,7 +479,7 @@ def main():
         if args.command == "_run":
             return supervise(args)
         if args.command == "presets":
-            result = presets(args.presets)
+            result = harness.presets(args.presets)
         elif args.command == "resolve":
             result = inspect_target(args)
             if args.output:

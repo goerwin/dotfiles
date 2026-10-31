@@ -39,15 +39,34 @@ def sidecar(report_path):
     return path.with_name(path.stem + SIDECAR)
 
 
-def outcomes_of(report):
-    """Outcomes recorded for this exact report; a sidecar left by another report is ignored."""
+def sidecar_metadata(report):
+    """Metadata recorded for this exact report; a sidecar left by another report is ignored."""
     path = sidecar(report["path"])
     if not path.exists():
         return {}
     metadata = store.decode(path.read_text())[0]
-    if metadata.get("review_id") != report["metadata"]["review_id"]:
-        return {}
-    return metadata.get("outcomes", {})
+    return metadata if metadata.get("review_id") == report["metadata"]["review_id"] else {}
+
+
+def outcomes_of(report):
+    return sidecar_metadata(report).get("outcomes", {})
+
+
+def decisions(paths):
+    """Latest outcome per finding, with its title and reasoning, for later rounds and loops."""
+    result = []
+    for item in map(store.read_report, paths):
+        metadata = sidecar_metadata(item)
+        titles = {finding["id"]: finding["text"].splitlines()[0].lstrip("#").strip() for finding in sections(item["body"])}
+        for finding_id in item["metadata"]["finding_ids"]:
+            note = metadata.get("notes", {}).get(finding_id, {})
+            result.append({
+                "source": f"{item['metadata']['review_id']}:{finding_id}", "report": item["path"],
+                "title": titles.get(finding_id, finding_id),
+                "outcome": metadata.get("outcomes", {}).get(finding_id),
+                "explanation": note.get("explanation"), "question": note.get("question"),
+            })
+    return result
 
 
 def list_reviews(cwd, archive=None, all_projects=False, all_branches=False, pr=None):
@@ -240,12 +259,15 @@ def record(args):
             if existing and existing[0].get("review_id") != review_id:
                 raise CommandError(f"{path} belongs to another report; move it aside before recording")
             metadata, body = existing or (
-                {"schema_version": 1, "kind": "receiving", "review_id": review_id, "outcomes": {}},
+                {"schema_version": 1, "kind": "receiving", "review_id": review_id, "outcomes": {}, "notes": {}},
                 f"# Receiving {Path(item['path']).name}",
             )
             lines = [body.strip(), "", heading, ""]
             for finding_id, group in mine:
                 metadata["outcomes"][finding_id] = group["outcome"]
+                metadata.setdefault("notes", {})[finding_id] = {
+                    "explanation": group["explanation"], "question": group.get("question"),
+                }
                 lines += entry(group, finding_id, review_id)
             atomic_text(path, store.encode(metadata, "\n".join(lines)))
         written.append(str(path))
@@ -268,6 +290,8 @@ def parser():
     p.add_argument("--confirm-branch", action="store_true")
     p.add_argument("--branch", help="Development branch for a report of a tag, SHA, or unnamed ref")
     p.add_argument("--github-user")
+    p = sub.add_parser("outcomes", help="Latest decision per finding of the given reports")
+    p.add_argument("--review", action="append", required=True)
     p = sub.add_parser("record", help="Append outcomes to each report's sidecar; originals stay unchanged")
     p.add_argument("--cwd", default=os.getcwd())
     p.add_argument("--review", action="append", required=True)
@@ -280,6 +304,8 @@ def main():
     try:
         if args.command == "list":
             result = list_reviews(args.cwd, args.archive, args.all, args.all_branches, args.pr)
+        elif args.command == "outcomes":
+            result = decisions(args.review)
         elif args.command == "prepare":
             result = prepare(args)
         else:

@@ -40,6 +40,17 @@ def git(repo, *args, check=True, env=None):
     return run(["git", "-C", str(repo), *args], env=env, check=check)
 
 
+def git_config_env(env, **settings):
+    """Add Git config through the environment, preserving entries already set there."""
+    env = dict(os.environ if env is None else env)
+    index = int(env.get("GIT_CONFIG_COUNT", 0))
+    for key, value in settings.items():
+        env[f"GIT_CONFIG_KEY_{index}"], env[f"GIT_CONFIG_VALUE_{index}"] = key, value
+        index += 1
+    env["GIT_CONFIG_COUNT"] = str(index)
+    return env
+
+
 def current_branch(repo):
     return git(repo, "symbolic-ref", "--quiet", "--short", "HEAD", check=False).stdout.strip() or None
 

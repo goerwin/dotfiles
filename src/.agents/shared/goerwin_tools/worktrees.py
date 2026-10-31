@@ -7,7 +7,7 @@ from pathlib import Path
 from . import herdr_adapter
 from .runtime import (
     CommandError, common_dir, config, current_branch, default_base, find_source, git,
-    github, github_environment, pr_url, ref_exists, remote_repositories, remotes, run,
+    git_config_env, github, github_environment, pr_url, ref_exists, remote_repositories, remotes, run,
     source_root, worktrees,
 )
 
@@ -66,17 +66,6 @@ def development_branch(repo, ref):
     return None
 
 
-def with_default_remote(env, remote):
-    """Let Git's remote-branch DWIM pick this remote when several have the branch."""
-    env = dict(env or os.environ)
-    index = int(env.get("GIT_CONFIG_COUNT", 0))
-    env.update({
-        "GIT_CONFIG_COUNT": str(index + 1),
-        f"GIT_CONFIG_KEY_{index}": "checkout.defaultRemote", f"GIT_CONFIG_VALUE_{index}": remote,
-    })
-    return env
-
-
 def ensure_branch(repo, branch, base=None, env=None):
     if branch.startswith("-"):
         raise CommandError("Expected a branch name")
@@ -109,7 +98,8 @@ def ensure_branch(repo, branch, base=None, env=None):
     if len(candidates) > 1 and "origin" not in candidates:
         raise CommandError(f"Multiple remotes contain {local}; use an explicit remote branch")
     chosen = "origin" if "origin" in candidates else candidates[0]
-    path = switch_worktree(repo, local, env=with_default_remote(env, chosen))
+    # Git's remote-branch DWIM fails when several remotes have the branch unless told which one.
+    path = switch_worktree(repo, local, env=git_config_env(env, **{"checkout.defaultRemote": chosen}))
     return {"path": path, "branch": local, "reused": False}
 
 

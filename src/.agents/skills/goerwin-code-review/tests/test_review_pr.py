@@ -13,7 +13,7 @@ SKILL = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SKILL / "scripts"))
 import review_pr as review
 import contextlib
-from goerwin_tools import herdr_adapter, review_store as store, targets
+from goerwin_tools import harness, herdr_adapter, review_store as store, targets
 
 
 class WorkflowFixture:
@@ -120,7 +120,8 @@ class WorkflowFixture:
     def launch(self, preset="sol-high", dry_run=False):
         return review.launch(argparse.Namespace(
             target_file=str(self.target_file), preset=preset,
-            presets=str(SKILL / "presets.json"), archive=None, dry_run=dry_run,
+            presets=str(harness.PRESETS), archive=None, dry_run=dry_run,
+            headless=False, context_file=None,
         ))
 
     def resolve_args(self, **kwargs):
@@ -163,15 +164,15 @@ class WorkflowFixture:
 
 class WorkflowTests(WorkflowFixture, unittest.TestCase):
     def test_local_presets_build_exact_non_shell_arguments(self):
-        choices = review.presets(SKILL / "presets.json")
+        choices = harness.presets()
         self.assertEqual(len(choices), 5)
         sol = next(item for item in choices if item["id"] == "sol-xhigh")
-        self.assertEqual(review.harness_argv(sol), [
+        self.assertEqual(harness.argv(sol), [
             "codex", "--no-daemon", "--model", "gpt-6.1-sol",
             "-c", 'model_reasoning_effort="xhigh"',
         ])
         opus = next(item for item in choices if item["id"] == "opus-high")
-        self.assertEqual(review.harness_argv(opus), [
+        self.assertEqual(harness.argv(opus), [
             "claude", "--model", "claude-opus-5-5", "--effort", "high",
         ])
 
