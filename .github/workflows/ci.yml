@@ -14,3 +14,4 @@ jobs:
         with:
           node-version: 24
       - run: make lint
+      - run: make test-skills

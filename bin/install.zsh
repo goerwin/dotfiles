@@ -5,7 +5,6 @@ set -euo pipefail
 
 cd "${0:A:h:h}" || exit 1
 
-# Homebrew installation
 if ! command -v brew &>/dev/null; then
   brewExecutable="/opt/homebrew/bin/brew"
   [[ "$(/usr/bin/uname -m)" == arm64 ]] || brewExecutable="/usr/local/bin/brew"
@@ -17,20 +16,16 @@ if ! command -v brew &>/dev/null; then
   eval "$("$brewExecutable" shellenv)"
 fi
 
-print -r -- "Updating dotfiles..."
-git pull --ff-only
-
 homeDir=${HOME}
 
 echo "◆ Dotfiles Installer\n"
 
-# zsh-z has no Homebrew formula; install it here instead of at shell startup.
+# zsh-z has no Homebrew formula.
 if [[ ! -d "$homeDir/.zsh/zsh-z" ]]; then
   mkdir -p "$homeDir/.zsh"
   git clone https://github.com/agkozak/zsh-z.git "$homeDir/.zsh/zsh-z"
 fi
 
-# Generate karabiner.json from template
 if command -v node &>/dev/null; then
   generatedKarabinerDestination=".config/karabiner/karabiner.json"
   node "src/.config/karabiner/_template.ts" >"src/$generatedKarabinerDestination" || exit 1
@@ -41,7 +36,6 @@ if command -v node &>/dev/null; then
   echo "⚙️  $generatedLocalPwDestination generated"
 fi
 
-# Copy src files into homeDir
 homeDir=$(cd "$homeDir" && pwd -P)
 echo "\n📂 Copying dotfiles → $homeDir"
 
@@ -55,8 +49,8 @@ done
 
 setopt GLOB_DOTS
 ignoredItems=("vscode-cursor" ".DS_Store")
+capsLockAgentRelativePath="Library/LaunchAgents/local.dotfiles.caps-lock-delay.plist"
 
-# Top-level src folders whose installed files are listed individually.
 recursiveListingFolders=(".local")
 
 installEntry() {
@@ -64,7 +58,8 @@ installEntry() {
   local destination="$2"
   local file
 
-  rsync -a --exclude='.DS_Store' "$entry" "$destination/" || return 1
+  rsync -a --exclude='.DS_Store' --exclude='/.agents/skills' \
+    --exclude="/$capsLockAgentRelativePath" "$entry" "$destination/" || return 1
   [[ "${entry:t}" == ".DS_Store" ]] && return 0
 
   local topLevelFolder="${entry#./src/}"
@@ -88,7 +83,6 @@ for entry in ./src/*; do
   esac
 done
 
-# Copy VSCode/Cursor settings
 [ -d "./src/vscode-cursor" ] && {
   echo "\n🖥️  Syncing editor settings"
   for editor in Code Cursor; do
@@ -101,18 +95,40 @@ done
   done
 }
 
-# Persistent macOS preferences only need to be applied during setup.
+GOERWIN_SKILLS_HOME="$homeDir" zsh bin/install-skills.zsh
+
 # Restore spacing: defaults -currentHost delete -globalDomain NSStatusItemSpacing
 defaults -currentHost write -globalDomain NSStatusItemSpacing -int 12
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
-# hidutil settings reset after restarts; the LaunchAgent reapplies this at login.
-capsLockAgent="$homeDir/Library/LaunchAgents/local.dotfiles.caps-lock-delay.plist"
-# The copy above resets this array on every install; launchd needs an absolute path.
-/usr/bin/plutil -insert ProgramArguments.0 -string "$homeDir/.local/bin/caps-lock-delay-fix" "$capsLockAgent"
-if launchctl print "gui/$UID" &>/dev/null; then
-  launchctl bootout "gui/$UID" "$capsLockAgent" 2>/dev/null || true
-  launchctl bootstrap "gui/$UID" "$capsLockAgent"
+# hidutil settings reset after restarts.
+capsLockHelper="$homeDir/.local/bin/caps-lock-delay-fix"
+capsLockAgent="$homeDir/$capsLockAgentRelativePath"
+capsLockAgentTemp=$(mktemp)
+trap 'rm -f "$capsLockAgentTemp"' EXIT
+/usr/bin/plutil -insert ProgramArguments.0 -string "$capsLockHelper" \
+  -o "$capsLockAgentTemp" "src/$capsLockAgentRelativePath"
+capsLockAgentChanged=0
+if ! cmp -s "$capsLockAgentTemp" "$capsLockAgent"; then
+  mkdir -p "${capsLockAgent:h}"
+  install -m 644 "$capsLockAgentTemp" "$capsLockAgent"
+  capsLockAgentChanged=1
+fi
+rm -f "$capsLockAgentTemp"
+trap - EXIT
+
+launchDomain="gui/$UID"
+capsLockService="$launchDomain/local.dotfiles.caps-lock-delay"
+if launchctl print "$launchDomain" &>/dev/null; then
+  if launchctl print "$capsLockService" &>/dev/null; then
+    if (( capsLockAgentChanged )); then
+      launchctl bootout "$capsLockService"
+      launchctl bootstrap "$launchDomain" "$capsLockAgent"
+    fi
+  else
+    launchctl bootstrap "$launchDomain" "$capsLockAgent"
+  fi
+  "$capsLockHelper"
 else
   echo "Caps Lock delay setting will apply at the next graphical login."
 fi

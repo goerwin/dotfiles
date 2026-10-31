@@ -4,3 +4,6 @@ karabiner.json
 _localPw.json
 
 .env
+
+__pycache__/
+*.pyc

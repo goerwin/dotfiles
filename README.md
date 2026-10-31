@@ -6,16 +6,14 @@ key remaps, and VS Code / Cursor settings.
 ## Install
 
 ```sh
-make install # Install dotfiles
+make install # Install the local checkout, including uncommitted changes
+make update # Pull the latest changes (fast-forward only), then install
 ./bin/install-brew.zsh # Install Homebrew packages
 ./bin/install-brew-force.zsh # Install Homebrew packages (remove unlisted ones)
 make install-apps # Install local apps
 make install-apps APP=mic-muter # Update and install only Mic Muter
 ```
 
-Setup bootstraps Homebrew, installs zsh-z from Git, and applies macOS keyboard
-navigation and menu bar spacing preferences. A LaunchAgent removes the Caps Lock
-delay at login. Shell startup only initializes tools and loads installed plugins.
 Homebrew must be on your PATH (follow its `brew shellenv` instructions on a new Mac).
 
 ## Homebrew
@@ -35,15 +33,16 @@ Use Time Machine for app data and settings.
 
 Python versions and CLI tools use `uv` (`uv python install`, `uv tool install`).
 
-## Supacode worktrees
+## Agent skills
 
-Create or focus a PR worktree (`supacode-switch` is an alias):
+Skills live in `src/.agents/skills` and are included in `make install`.
+To install just the skills:
 
 ```sh
-scs https://github.com/owner/repo/pull/123
+make install-skills
 ```
 
-Requires Python 3.9+, Git, GitHub CLI, and Supacode. See `scs --help`.
+See each skill's `SKILL.md` for usage.
 
 ## Development
 

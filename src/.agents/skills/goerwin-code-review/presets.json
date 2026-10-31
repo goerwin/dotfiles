@@ -1,0 +1,42 @@
+[
+  {
+    "id": "astra-high",
+    "label": "Astra · High",
+    "harness": "codex",
+    "model": "gpt-6-astra",
+    "effort": "high",
+    "filename_model": "astra"
+  },
+  {
+    "id": "sol-high",
+    "label": "6.1 Sol · High",
+    "harness": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "filename_model": "sol-6.1"
+  },
+  {
+    "id": "sol-xhigh",
+    "label": "6.1 Sol · XHigh",
+    "harness": "codex",
+    "model": "gpt-6.1-sol",
+    "effort": "xhigh",
+    "filename_model": "sol-6.1"
+  },
+  {
+    "id": "opus-high",
+    "label": "Opus 5.5 · High",
+    "harness": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "high",
+    "filename_model": "opus-5.5"
+  },
+  {
+    "id": "opus-xhigh",
+    "label": "Opus 5.5 · XHigh",
+    "harness": "claude",
+    "model": "claude-opus-5-5",
+    "effort": "xhigh",
+    "filename_model": "opus-5.5"
+  }
+]
