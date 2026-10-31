@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import sys
 from pathlib import Path
 
 from . import herdr_adapter
@@ -27,6 +28,11 @@ def switch_worktree(repo, branch, create=False, base=None, env=None):
     args = ["wt", "-C", str(repo), "switch", *(["--create"] if create else []), branch]
     if base:
         args.extend(["--base", base])
+    if create:
+        message = f"◎ Base for new branch {branch}: {base or 'the default branch'}"
+        if sys.stderr.isatty() and os.environ.get("TERM") != "dumb" and not os.environ.get("NO_COLOR"):
+            message = f"\033[36m{message}\033[0m"
+        print(message, file=sys.stderr, flush=True)
     # Worktrunk writes progress and hook output to stderr; stream it so setup is visible live.
     result = run([*args, "--no-cd", "--format=json"], env=env, timeout=1800, stderr=None)
     try:
