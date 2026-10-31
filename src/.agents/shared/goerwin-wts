@@ -19,16 +19,10 @@ def main():
   goerwin-wts feat/component origin/main
   goerwin-wts register /path/to/repo
 
-Behavior:
-  PR numbers and branch names use the current repository (-C overrides it).
-  For PR URLs from elsewhere, register the existing local clone first.
-  Existing branches keep their commits and uncommitted changes; base is ignored.
-  New branches default to the remote default branch. Remote bases are fetched.
-  Herdr navigation is best-effort; the command works without Herdr.
-  Worktrunk's configured paths and hooks apply.
-
-Agents switching worktrees: use --json --no-focus and work in result.path.
-Diagnostics go to stderr. Use the review skill's launcher for isolated reviews.""",
+Existing branches are reused as-is (base is ignored). New branches start from
+the fetched remote default unless a base is given. PR URLs from other
+repositories need a registered local clone. Worktrunk paths and hooks apply;
+Herdr focus is best-effort. Agents: use --json --no-focus and work in .path.""",
     )
     parser.add_argument("target", help="PR number, PR URL, branch name, or 'register'")
     parser.add_argument("base", nargs="?", help="Base for a new branch; checkout path with register")
@@ -46,8 +40,7 @@ Diagnostics go to stderr. Use the review skill's launcher for isolated reviews."
             result = switch(args.target, args.cwd, args.base, args.config, args.github_user, not args.no_focus)
             path = result["path"]
         print(json.dumps(result, indent=2) if args.json else path)
-        warning = result.get("herdr", {}).get("warning")
-        if warning:
+        for warning in result.get("herdr", {}).get("warnings", []):
             print(f"Herdr: {warning}", file=sys.stderr)
         return 0
     except (CommandError, OSError) as error:

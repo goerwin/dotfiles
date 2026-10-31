@@ -28,7 +28,9 @@ install-brew-force:
 	@./bin/install-brew-force.zsh
 
 test-skills:
-	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s src/.agents/skills/goerwin-code-review/tests -v
+	for tests in src/.agents/shared/tests src/.agents/skills/*/tests; do \
+		PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s "$$tests" -v || exit 1; \
+	done
 
 install-skills:
 	zsh bin/install-skills.zsh

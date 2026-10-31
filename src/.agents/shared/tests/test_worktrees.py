@@ -1,3 +1,4 @@
+import datetime as dt
 import json
 import os
 import shutil
@@ -9,12 +10,12 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-SKILL = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(SKILL / "scripts"))
-from goerwin_tools import herdr_adapter, runtime, worktrees
+SHARED = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(SHARED))
+from goerwin_tools import herdr_adapter, review_store as store, runtime, worktrees
 
-ROOT = SKILL.parents[3]
-COMMAND = ROOT / "src/.agents/shared/goerwin-wts"
+ROOT = SHARED.parents[2]
+COMMAND = SHARED / "goerwin-wts"
 
 
 class WorktreeTests(unittest.TestCase):
@@ -209,6 +210,73 @@ class FocusTests(unittest.TestCase):
                 result = worktrees.focus_worktree("/tmp/worktree", "feature")
         self.assertFalse(result["available"])
         command.assert_not_called()
+
+    def test_review_tab_matches_exact_folder_and_focus_warning_does_not_relaunch(self):
+        calls = []
+        def fake(args):
+            calls.append(args)
+            if args[:2] == ["do", "pane.focus"]:
+                raise herdr_adapter.AdapterError("focus unavailable")
+            return {"space": "sp-existing", "tab": "tab-new", "terminal": "t-new"}
+        with patch.object(herdr_adapter, "command", side_effect=fake):
+            with patch.object(herdr_adapter.subprocess, "run") as raised:
+                raised.return_value.returncode = 0
+                result = herdr_adapter.open_review(
+                    "/tmp/review-space", "Review", ["codex", "--no-daemon"], "Review this",
+                    {"spaces": [
+                        {"id": "sp-wrong", "folder": "/tmp", "machine": None},
+                        {"id": "sp-existing", "folder": "/tmp/review-space", "machine": None},
+                    ]},
+                )
+        create = calls[0]
+        self.assertEqual(create[:4], ["do", "tab.new", "--space", "sp-existing"])
+        self.assertEqual(json.loads(create[create.index("--argv") + 1]), ["codex", "--no-daemon"])
+        self.assertEqual(create[create.index("--task") + 1], "Review this")
+        self.assertEqual(len([item for item in calls if item[:2] == ["do", "tab.new"]]), 1)
+        self.assertEqual(result["warnings"], ["focus unavailable"])
+
+    def test_missing_local_space_creates_a_new_worktree_space(self):
+        with patch.object(herdr_adapter, "command", return_value={"space": "sp", "tab": "tab"}) as command:
+            with patch.object(herdr_adapter.subprocess, "run") as raised:
+                raised.return_value.returncode = 0
+                herdr_adapter.open_review(
+                    "/tmp/review-space", "Review", ["claude"], "Review this",
+                    {"spaces": [{"id": "remote", "folder": "/tmp/review-space", "machine": "server"}]},
+                )
+        self.assertEqual(command.call_args_list[0].args[0][:3], ["do", "space.new", "--tab"])
+
+    def test_raise_timeout_is_a_warning(self):
+        with patch.object(herdr_adapter, "snapshot", return_value={"spaces": []}):
+            with patch.object(herdr_adapter, "command", return_value={"tab": "t"}):
+                with patch.object(herdr_adapter.subprocess, "run", side_effect=herdr_adapter.subprocess.TimeoutExpired("herdr-app", 15)):
+                    result = worktrees.focus_worktree("/tmp/worktree", "feature")
+        self.assertTrue(result["available"])
+        self.assertEqual(len(result["warnings"]), 1)
+
+
+class ArchiveTests(unittest.TestCase):
+    def test_filename_uses_local_time_readable_fields_and_collision_counter(self):
+        with tempfile.TemporaryDirectory() as directory:
+            moment = dt.datetime(2026, 10, 30, 22, 30, 15, tzinfo=dt.timezone(dt.timedelta(hours=-5)))
+            target = {"source_root": "/projects/antares", "kind": "pr", "pr_number": 123, "title": "Pagination"}
+            preset = {"model": "gpt-6.1-sol", "effort": "xhigh", "filename_model": "sol-6.1"}
+            first = store.report_path(directory, target, preset, moment)
+            first.write_text("keep this review")
+            second = store.report_path(directory, target, preset, moment)
+            self.assertEqual(first.name, "2026-10-30_antares_pr-123-pagination_sol-6.1-xhigh_223015.md")
+            self.assertEqual(second.stem, first.stem + "_2")
+            self.assertEqual(first.read_text(), "keep this review")
+
+    def test_frontmatter_roundtrip_and_validation(self):
+        meta = {"schema_version": 1, "repository": "github.com/a/b", "finding_ids": ["F1"], "title": 'Quoted "title": value'}
+        body = "### F1: Regression\nEvidence.\n"
+        actual, result = store.decode(store.encode(meta, body))
+        self.assertEqual(actual, meta)
+        self.assertEqual(result.strip(), body.strip())
+        with self.assertRaisesRegex(store.StoreError, "unique"):
+            store.finding_ids("### F1: First\n### F1: Second\n")
+        with self.assertRaisesRegex(store.StoreError, "helper-generated"):
+            store.decode("---\ntitle: bare yaml\n---\nbody")
 
 
 class InstallationTests(unittest.TestCase):

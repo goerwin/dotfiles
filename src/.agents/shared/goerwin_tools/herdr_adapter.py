@@ -3,7 +3,6 @@
 import json
 import os
 import subprocess
-from pathlib import Path
 
 
 class AdapterError(RuntimeError):
@@ -29,79 +28,59 @@ def snapshot():
     return command(["ls"])
 
 
-def focus_worktree(worktree, name):
-    state = snapshot()
-    folder = os.path.realpath(worktree)
-    space = next((item for item in state.get("spaces", []) if (
+def local_space(state, folder):
+    return next((item for item in state.get("spaces", []) if (
         not item.get("machine") and item.get("folder")
         and os.path.realpath(item["folder"]) == folder
     )), None)
-    if space:
-        tabs = space.get("tabs", [])
-        tab = next((item for item in tabs if item.get("active")), tabs[0] if tabs else None)
-        if tab:
-            result = command(["do", "tab.select", "--id", tab["id"]])
-            terminals = tab.get("terminals", [])
-            if terminals:
-                command(["do", "pane.focus", "--terminal", terminals[0]["terminal"]])
-        else:
-            result = command(["do", "tab.new", "--space", space["id"], "--name", name, "--folder", folder])
+
+
+def attempt(warnings, args):
+    try:
+        command(args)
+    except AdapterError as error:
+        warnings.append(str(error))
+
+
+def raise_app(warnings):
+    try:
+        raised = subprocess.run(["herdr-app"], capture_output=True, text=True, timeout=15)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        warnings.append(f"Could not raise Herdr: {error}")
+        return
+    if raised.returncode:
+        warnings.append(raised.stderr.strip() or "Could not raise Herdr")
+
+
+def focus_worktree(worktree, name):
+    folder = os.path.realpath(worktree)
+    space = local_space(snapshot(), folder)
+    tabs = space.get("tabs", []) if space else []
+    tab = next((item for item in tabs if item.get("active")), tabs[0] if tabs else None)
+    warnings = []
+    if tab:
+        result = command(["do", "tab.select", "--id", tab["id"]])
+        if tab.get("terminals"):
+            attempt(warnings, ["do", "pane.focus", "--terminal", tab["terminals"][0]["terminal"]])
+    elif space:
+        result = command(["do", "tab.new", "--space", space["id"], "--name", name, "--folder", folder])
     else:
         result = command(["do", "space.new", "--name", name, "--folder", folder, "--tab", name])
-    raised = subprocess.run(["herdr-app"], capture_output=True, text=True, timeout=15)
-    if raised.returncode:
-        return {"available": True, **result, "warning": raised.stderr.strip() or "Could not raise Herdr"}
-    return {"available": True, **result}
+    raise_app(warnings)
+    return {"available": True, **result, "warnings": warnings}
 
 
-def open_review(worktree, name, argv, task, state=None):
-    state = snapshot() if state is None else state
-    folder = os.path.realpath(worktree)
-    space = next(
-        (
-            item
-            for item in state.get("spaces", [])
-            if not item.get("machine")
-            and item.get("folder")
-            and os.path.realpath(item["folder"]) == folder
-        ),
-        None,
-    )
-    args = (
-        ["tab.new", "--space", space["id"], "--name", name]
-        if space
-        else ["space.new", "--tab", name]
-    )
-    result = command(
-        [
-            "do",
-            *args,
-            "--folder",
-            str(Path(worktree)),
-            "--argv",
-            json.dumps(argv),
-            "--task",
-            task,
-        ]
-    )
+def open_review(worktree, name, argv, task, state):
+    space = local_space(state, os.path.realpath(worktree))
+    target = ["tab.new", "--space", space["id"], "--name", name] if space else ["space.new", "--tab", name]
+    result = command([
+        "do", *target, "--folder", str(worktree), "--argv", json.dumps(argv), "--task", task,
+    ])
     # Creation selects the new tab. Focus failures must not spawn a second agent.
     warnings = []
     if result.get("terminal"):
-        try:
-            command(["do", "pane.focus", "--terminal", result["terminal"]])
-        except AdapterError as error:
-            warnings.append(str(error))
+        attempt(warnings, ["do", "pane.focus", "--terminal", result["terminal"]])
     elif result.get("tab"):
-        try:
-            command(["do", "tab.select", "--id", result["tab"]])
-        except AdapterError as error:
-            warnings.append(str(error))
-    try:
-        raised = subprocess.run(
-            ["herdr-app"], capture_output=True, text=True, timeout=15
-        )
-        if raised.returncode:
-            warnings.append(raised.stderr.strip() or "Could not raise Herdr")
-    except subprocess.TimeoutExpired:
-        warnings.append("Herdr foreground activation timed out")
+        attempt(warnings, ["do", "tab.select", "--id", result["tab"]])
+    raise_app(warnings)
     return {**result, "warnings": warnings}

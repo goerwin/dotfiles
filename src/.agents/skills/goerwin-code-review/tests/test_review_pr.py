@@ -1,7 +1,5 @@
 import argparse
 import concurrent.futures
-import datetime as dt
-import importlib.util
 import json
 import os
 import subprocess
@@ -15,13 +13,7 @@ from unittest.mock import patch
 SKILL = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SKILL / "scripts"))
 import review_pr as review
-from goerwin_tools import herdr_adapter, review_store as store, worktrees
-
-receiver_spec = importlib.util.spec_from_file_location(
-    "receiving", SKILL.parent / "goerwin-receiving-code-review/scripts/receiving.py"
-)
-receiving = importlib.util.module_from_spec(receiver_spec)
-receiver_spec.loader.exec_module(receiving)
+from goerwin_tools import herdr_adapter, review_store as store
 
 
 class WorkflowFixture:
@@ -38,6 +30,8 @@ class WorkflowFixture:
         self.git("commit", "-m", "base")
         self.base = self.git("rev-parse", "HEAD")
         self.git("remote", "add", "origin", "https://github.com/example/project.git")
+        self.git("update-ref", "refs/remotes/origin/main", self.base)
+        self.git("symbolic-ref", "refs/remotes/origin/HEAD", "refs/remotes/origin/main")
         self.developer = self.root / "developer tree"
         self.git("worktree", "add", "-b", "feature", str(self.developer), "main")
         (self.developer / "code.txt").write_text("changed\n")
@@ -50,7 +44,7 @@ class WorkflowFixture:
         self.log = self.root / "harness-log.json"
         self.archive = self.root / "archive"
         self.harness = self.executable(
-            "fake-harness",
+            "codex",
             """
             import json, os, sys
             from pathlib import Path
@@ -90,25 +84,18 @@ class WorkflowFixture:
                 "GOERWIN_CODE_REVIEWS_DIR": str(self.archive),
             },
         )
+        (self.bin / "claude").symlink_to(self.harness)
         self.environment.start()
-        preset_data = review.presets(SKILL / "presets.json")
-        for item in preset_data:
-            item["command"] = str(self.harness)
-        self.preset_file = self.root / "presets.json"
-        review.json_write(self.preset_file, preset_data)
         self.opened = []
         self.snapshot_patch = patch.object(herdr_adapter, "snapshot", return_value={"spaces": []})
         self.open_patch = patch.object(herdr_adapter, "open_review", side_effect=self.open_review)
         self.snapshot_patch.start()
         self.open_patch.start()
-        self.focus_patch = patch.object(herdr_adapter, "focus_worktree", return_value={"available": False})
-        self.focus_patch.start()
         self.target_file = self.root / "target.json"
         self.target = review.comparison_target(self.developer, "feature", "main")
         review.json_write(self.target_file, {"status": "ready", "target": self.target})
 
     def tearDown(self):
-        self.focus_patch.stop()
         self.open_patch.stop()
         self.snapshot_patch.stop()
         self.environment.stop()
@@ -133,7 +120,7 @@ class WorkflowFixture:
     def launch(self, preset="sol-high", dry_run=False):
         return review.launch(argparse.Namespace(
             target_file=str(self.target_file), preset=preset,
-            presets=str(self.preset_file), adapter="herdr", dry_run=dry_run,
+            presets=str(SKILL / "presets.json"), archive=None, dry_run=dry_run,
         ))
 
     def resolve_args(self, **kwargs):
@@ -204,7 +191,7 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
         with patch.object(review, "github", side_effect=self.github([])):
             result = review.inspect_target(self.resolve_args())
         self.assertEqual(result["status"], "comparison_confirmation_required")
-        self.assertEqual((result["head"], result["base"]), ("feature", "main"))
+        self.assertEqual((result["head"], result["base"]), ("feature", "origin/main"))
         with patch.object(review, "github", side_effect=self.github([self.pr(), self.pr(number=124)])):
             result = review.inspect_target(self.resolve_args())
         self.assertEqual(result["status"], "pr_selection_required")
@@ -300,6 +287,18 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
         second = self.launch()
         self.assertNotEqual(first["worktree"], second["worktree"])
 
+    def test_dead_running_or_failed_launch_does_not_block_reuse(self):
+        first = self.launch()
+        review.update_record(first["run_file"], {"status": "running", "pid": 2**22 + 1})
+        self.assertTrue(self.launch()["reused"])
+        stuck = review.json_read(first["run_file"])
+        self.assertFalse(review.is_busy({**stuck, "status": "launch_failed", "pid": None}))
+        self.assertTrue(review.is_busy({**stuck, "status": "launching", "pid": None, "reserved_at": review.time.time()}))
+
+    def test_head_comparison_records_its_development_branch(self):
+        target = review.comparison_target(self.developer, "HEAD", "main")
+        self.assertEqual(target["development_branch"], "feature")
+
     def test_changed_pr_or_comparison_requires_new_resolution_before_side_effects(self):
         with patch.object(review, "github", return_value=self.pr()):
             target = review.pr_target(self.developer, self.pr()["url"], {})
@@ -376,255 +375,6 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
         Path(result["report"]).write_text("changed by an external editor\n")
         with self.assertRaisesRegex(store.StoreError, "changed"):
             review.finish(argparse.Namespace(run_file=result["run_file"]))
-
-    def test_list_filters_project_branch_and_preserves_global_browsing(self):
-        first = self.launch("sol-high")
-        self.complete(first)
-        args = argparse.Namespace(cwd=str(self.developer), archive=None, all=False, all_branches=False, pr=None)
-        self.assertEqual(len(review.list_reviews(args)["reviews"]), 1)
-        args.cwd = str(self.repo)
-        self.assertEqual(review.list_reviews(args)["reviews"], [])
-        args.all_branches = True
-        self.assertEqual(len(review.list_reviews(args)["reviews"]), 1)
-        args.all = True
-        args.cwd = str(self.root)
-        self.assertEqual(len(review.list_reviews(args)["reviews"]), 1)
-
-
-class ArchiveTests(unittest.TestCase):
-    def test_filename_uses_local_time_readable_fields_and_collision_counter(self):
-        with tempfile.TemporaryDirectory() as directory:
-            moment = dt.datetime(2026, 10, 30, 22, 30, 15, tzinfo=dt.timezone(dt.timedelta(hours=-5)))
-            target = {"source_root": "/projects/antares", "kind": "pr", "pr_number": 123, "title": "Pagination"}
-            preset = {"model": "gpt-6.1-sol", "effort": "xhigh", "filename_model": "sol-6.1"}
-            first = store.report_path(directory, target, preset, moment)
-            first.write_text("keep this review")
-            second = store.report_path(directory, target, preset, moment)
-            self.assertEqual(first.name, "2026-10-30_antares_pr-123-pagination_sol-6.1-xhigh_223015.md")
-            self.assertEqual(second.stem, first.stem + "_2")
-            self.assertNotIn("__", first.name)
-            self.assertEqual(first.read_text(), "keep this review")
-
-    def test_frontmatter_roundtrip_and_duplicate_finding_rejection(self):
-        meta = {"schema_version": 1, "repository": "github.com/a/b", "finding_ids": ["F1"], "title": 'Quoted "title": value'}
-        body = "### F1: Regression\nEvidence.\n"
-        actual, result = store.decode(store.encode(meta, body))
-        self.assertEqual(actual, meta)
-        self.assertEqual(result.strip(), body.strip())
-        with self.assertRaisesRegex(store.StoreError, "unique"):
-            store.finding_ids("### F1: First\n### F1: Second\n")
-
-
-class ReceivingTests(WorkflowFixture, unittest.TestCase):
-    def make_report(self, preset="sol-high", finding_id="F1"):
-        result = self.launch(preset)
-        Path(result["report"]).write_text(
-            f"# Review\n\n### {finding_id}: Pagination cursor is lost\n"
-            "Location: code.txt:1\nClassification: blocking\nEvidence: The caller passes a cursor.\n"
-        )
-        review.finish(argparse.Namespace(run_file=result["run_file"]))
-        return result
-
-    def prepare(self, paths=(), **overrides):
-        values = dict(
-            cwd=str(self.developer), archive=None, review=list(paths), text_file=None,
-            confirm_unversioned=False, confirm_branch=False, github_user=None,
-        )
-        values.update(overrides)
-        return receiving.prepare(argparse.Namespace(**values))
-
-    def record(self, session, outcomes):
-        path = self.root / "outcomes.json"
-        review.json_write(path, outcomes)
-        return receiving.record(argparse.Namespace(session_file=session["session_file"], outcomes=str(path)))
-
-    def outcome(self, sources, outcome="applied"):
-        return {
-            "sources": sources, "outcome": outcome,
-            "explanation": "Preserved the cursor in the caller.",
-            "evidence": "The current caller passes a cursor; the focused regression verifies it.",
-        }
-
-    def test_duplicate_findings_share_one_outcome_without_changing_originals(self):
-        first, second = self.make_report(), self.make_report("opus-high", "F2")
-        before = {item["report"]: Path(item["report"]).read_bytes() for item in (first, second)}
-        session = self.prepare([first["report"], second["report"]])
-        self.assertEqual(session["status"], "ready")
-        sources = [item["source"] for item in session["findings"]]
-        (self.developer / "code.txt").write_text("fixed cursor\n")
-        result = self.record(session, [self.outcome(sources)])
-        metadata, body = store.decode(Path(result["receipt"]).read_text())
-        self.assertEqual(len(metadata["outcomes"]), 1)
-        self.assertEqual(metadata["outcomes"][0]["sources"], sources)
-        self.assertTrue(all(source in body for source in sources))
-        for path, content in before.items():
-            self.assertEqual(Path(path).read_bytes(), content)
-        listed = review.list_reviews(argparse.Namespace(
-            cwd=str(self.developer), archive=None, all=False, all_branches=False, pr=None,
-        ))["reviews"]
-        self.assertTrue(all(item["receiving"]["remaining"] == 0 for item in listed))
-
-    def test_addressed_findings_skip_and_waiting_findings_remain_active(self):
-        report = self.make_report()
-        session = self.prepare([report["report"]])
-        source = session["findings"][0]["source"]
-        waiting = self.outcome([source], "waiting")
-        with self.assertRaisesRegex(review.ReviewError, "question"):
-            self.record(session, [waiting])
-        waiting["question"] = "Should the cursor persist after filters change?"
-        self.record(session, [waiting])
-        next_session = self.prepare([report["report"]])
-        self.assertTrue(next_session["findings"][0]["active"])
-        self.record(next_session, [self.outcome([source], "pushed_back")])
-        final = self.prepare([report["report"]])
-        self.assertFalse(final["findings"][0]["active"])
-        self.record(final, [])
-
-    def test_stale_review_is_revalidated_instead_of_automatically_rejected(self):
-        report = self.make_report()
-        (self.developer / "code.txt").write_text("later committed fix\n")
-        self.git("add", "code.txt", cwd=self.developer)
-        self.git("commit", "-m", "later fix", cwd=self.developer)
-        session = self.prepare([report["report"]])
-        self.assertEqual(session["status"], "ready")
-        self.assertTrue(session["inputs"][0]["stale"])
-        self.assertTrue(session["findings"][0]["active"])
-
-    def test_branch_mismatch_requires_confirmation_without_switching(self):
-        report = self.make_report()
-        result = self.prepare([report["report"]], cwd=str(self.repo))
-        self.assertEqual(result["status"], "branch_confirmation_required")
-        self.assertEqual(self.git("branch", "--show-current"), "main")
-        confirmed = self.prepare([report["report"]], cwd=str(self.repo), confirm_branch=True)
-        self.assertEqual(confirmed["status"], "ready")
-        self.assertEqual(confirmed["cwd"], str(self.developer))
-        self.assertEqual(confirmed["branch"], "feature")
-        self.assertEqual(self.git("branch", "--show-current"), "main")
-
-    def test_receiving_recreates_a_missing_development_worktree(self):
-        report = self.make_report()
-        self.git("worktree", "remove", "--force", str(self.developer))
-        session = self.prepare([report["report"]], cwd=str(self.repo), confirm_branch=True)
-        self.assertEqual(session["status"], "ready")
-        self.assertEqual(session["branch"], "feature")
-        self.assertEqual(session["head_before"], self.head)
-        self.assertNotEqual(session["cwd"], str(self.repo))
-        self.assertEqual(self.git("branch", "--show-current"), "main")
-
-    def test_head_comparison_retains_its_development_branch_for_receiving(self):
-        self.target = review.comparison_target(self.developer, "HEAD", "main")
-        review.json_write(self.target_file, {"status": "ready", "target": self.target})
-        report = self.make_report()
-        session = self.prepare([report["report"]], cwd=str(self.repo), confirm_branch=True)
-        self.assertEqual(session["cwd"], str(self.developer))
-        self.assertEqual(session["branch"], "feature")
-
-    def test_local_pr_receiving_restores_the_recorded_development_branch(self):
-        pr = self.pr(headRefName="remote-feature")
-        with patch.object(review, "github", side_effect=self.github([pr])):
-            self.target = review.pr_target(self.developer, pr["url"], {}, revision="local")
-            review.json_write(self.target_file, {"status": "ready", "target": self.target})
-            report = self.make_report()
-        self.git("worktree", "remove", "--force", str(self.developer))
-        with patch.object(worktrees, "switch", side_effect=AssertionError("Use the recorded local branch")):
-            session = self.prepare([report["report"]], cwd=str(self.repo), confirm_branch=True)
-        self.assertEqual(session["branch"], "feature")
-        self.assertEqual(session["head_before"], self.head)
-
-    def test_legacy_unnamed_report_requires_development_branch_selection(self):
-        report = self.make_report()
-        metadata, body = store.decode(Path(report["report"]).read_text())
-        metadata.pop("development_branch", None)
-        metadata["head_ref"] = "HEAD"
-        legacy = self.root / "legacy.md"
-        legacy.write_text(store.encode(metadata, body))
-        result = self.prepare([str(legacy)], cwd=str(self.repo), confirm_branch=True)
-        self.assertEqual(result["status"], "branch_selection_required")
-        selected = self.prepare([str(legacy)], cwd=str(self.repo), confirm_branch=True, branch="feature")
-        self.assertEqual(selected["cwd"], str(self.developer))
-
-    def test_plain_paste_requires_context_and_preserves_its_input(self):
-        pasted = self.root / "pasted.txt"
-        pasted.write_text("1. code.txt:1 Check the cursor.\n2. code.txt:2 Validate the next page.\n")
-        before = pasted.read_bytes()
-        result = self.prepare(text_file=str(pasted))
-        self.assertEqual(result["status"], "context_confirmation_required")
-        self.assertFalse((self.archive / ".inputs").exists())
-        session = self.prepare(text_file=str(pasted), confirm_unversioned=True)
-        self.assertEqual(len(session["findings"]), 2)
-        self.assertTrue(session["inputs"][0]["unversioned"])
-        self.assertEqual(pasted.read_bytes(), before)
-        self.assertTrue(Path(session["inputs"][0]["path"]).is_file())
-
-    def test_pasted_full_report_retains_its_provenance_and_progress(self):
-        report = self.make_report()
-        pasted = self.root / "full-pasted.md"
-        pasted.write_text(Path(report["report"]).read_text())
-        session = self.prepare(text_file=str(pasted))
-        self.assertEqual(session["inputs"][0]["review_id"], report["run_id"])
-        source = session["findings"][0]["source"]
-        self.record(session, [self.outcome([source])])
-        again = self.prepare([report["report"]])
-        self.assertFalse(again["findings"][0]["active"])
-
-    def test_coverage_and_immutable_inputs_are_enforced(self):
-        report = self.make_report()
-        session = self.prepare([report["report"]])
-        with self.assertRaisesRegex(review.ReviewError, "every active"):
-            self.record(session, [])
-        Path(report["report"]).write_text("external modification\n")
-        with self.assertRaisesRegex(review.ReviewError, "changed"):
-            self.record(session, [self.outcome([session["findings"][0]["source"]])])
-
-    def test_duplicate_recording_and_head_changes_are_rejected(self):
-        report = self.make_report()
-        session = self.prepare([report["report"]])
-        outcomes = [self.outcome([session["findings"][0]["source"]])]
-        self.record(session, outcomes)
-        with self.assertRaisesRegex(review.ReviewError, "already recorded"):
-            self.record(session, outcomes)
-        pending = self.prepare([report["report"]])
-        (self.developer / "code.txt").write_text("another commit\n")
-        self.git("add", "code.txt", cwd=self.developer)
-        self.git("commit", "-m", "changed head", cwd=self.developer)
-        with self.assertRaisesRegex(review.ReviewError, "HEAD changed"):
-            self.record(pending, [])
-
-
-class HerdrAdapterTests(unittest.TestCase):
-    def test_exact_folder_matching_and_focus_warning_do_not_duplicate_launch(self):
-        calls = []
-        def fake(args):
-            calls.append(args)
-            if args[:2] == ["do", "pane.focus"]:
-                raise herdr_adapter.AdapterError("focus unavailable")
-            return {"space": "sp-existing", "tab": "tab-new", "terminal": "t-new"}
-        with patch.object(herdr_adapter, "command", side_effect=fake):
-            with patch.object(herdr_adapter.subprocess, "run") as raised:
-                raised.return_value.returncode = 0
-                result = herdr_adapter.open_review(
-                    "/tmp/review-space", "Review", ["codex", "--no-daemon"], "Review this",
-                    {"spaces": [
-                        {"id": "sp-wrong", "folder": "/tmp", "machine": None},
-                        {"id": "sp-existing", "folder": "/tmp/review-space", "machine": None},
-                    ]},
-                )
-        create = calls[0]
-        self.assertEqual(create[:4], ["do", "tab.new", "--space", "sp-existing"])
-        self.assertEqual(json.loads(create[create.index("--argv") + 1]), ["codex", "--no-daemon"])
-        self.assertEqual(create[create.index("--task") + 1], "Review this")
-        self.assertEqual(len([item for item in calls if item[:2] == ["do", "tab.new"]]), 1)
-        self.assertEqual(result["warnings"], ["focus unavailable"])
-
-    def test_missing_local_space_creates_a_new_worktree_space(self):
-        with patch.object(herdr_adapter, "command", return_value={"space": "sp", "tab": "tab"}) as command:
-            with patch.object(herdr_adapter.subprocess, "run") as raised:
-                raised.return_value.returncode = 0
-                herdr_adapter.open_review(
-                    "/tmp/review-space", "Review", ["claude"], "Review this",
-                    {"spaces": [{"id": "remote", "folder": "/tmp/review-space", "machine": "server"}]},
-                )
-        self.assertEqual(command.call_args_list[0].args[0][:3], ["do", "space.new", "--tab"])
 
 
 if __name__ == "__main__":

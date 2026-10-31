@@ -1,268 +1,255 @@
 #!/usr/bin/env python3
-"""Prepare local review feedback and record evidence-based receiving outcomes."""
+"""Select saved review feedback and record outcomes in a sidecar next to each report."""
 
 import argparse
-import datetime as dt
-import hashlib
 import json
 import os
 import re
 import sys
-import uuid
 from pathlib import Path
 
-from goerwin_tools import runtime as shared, review_store as store, worktrees
+from goerwin_tools import review_store as store, worktrees
+from goerwin_tools.runtime import (
+    CommandError, allocation_lock, atomic_text, commit, common_dir, current_branch,
+    json_read, now, pr_url, ref_exists, remote_repositories, source_root,
+)
+
+OUTCOMES = ("applied", "pushed_back", "waiting")
+SIDECAR = ".receiving.md"
 
 
 def sections(body):
     matches = list(re.finditer(r"^###\s+(F[1-9][0-9]*)\b[^\n]*", body, re.MULTILINE))
-    if matches:
-        return [
-            {"id": match[1], "text": body[match.start() : matches[index + 1].start() if index + 1 < len(matches) else len(body)].strip()}
-            for index, match in enumerate(matches)
-        ]
-    if re.search(r"\bno (?:actionable )?findings\b", body, re.IGNORECASE):
-        return []
-    matches = list(re.finditer(r"^(?:[0-9]+[.)]|[-*])\s+\S", body, re.MULTILINE))
-    if matches:
-        return [
-            {"id": f"F{index + 1}", "text": body[match.start() : matches[index + 1].start() if index + 1 < len(matches) else len(body)].strip()}
-            for index, match in enumerate(matches)
-        ]
-    return [{"id": "F1", "text": body.strip()}] if body.strip() else []
+    numbered = not matches
+    if numbered:
+        if re.search(r"\bno (?:actionable )?findings\b", body, re.IGNORECASE):
+            return []
+        matches = list(re.finditer(r"^(?:[0-9]+[.)]|[-*])\s+\S", body, re.MULTILINE))
+    if not matches:
+        return [{"id": "F1", "text": body.strip()}] if body.strip() else []
+    ends = [match.start() for match in matches[1:]] + [len(body)]
+    return [
+        {"id": f"F{index}" if numbered else match[1], "text": body[match.start():end].strip()}
+        for index, (match, end) in enumerate(zip(matches, ends), 1)
+    ]
 
 
-def load_paste(path, root):
-    text = Path(path).read_text()
-    if not text.strip():
-        raise shared.CommandError("Pasted feedback is empty")
-    metadata, body = store.decode(text)
-    input_id = "pasted-" + hashlib.sha256(text.encode()).hexdigest()[:24]
-    identifier = input_id
-    try:
-        parsed = store.read_report(path)
-    except store.StoreError:
-        parsed = None
-    if parsed:
-        identifier = parsed["metadata"]["review_id"]
-        for original in root.glob("*.md"):
-            try:
-                known = store.read_report(original)
-            except (OSError, store.StoreError):
-                continue
-            if known["metadata"]["review_id"] == identifier and (
-                known["metadata"] != parsed["metadata"] or known["body"] != parsed["body"]
-            ):
-                raise shared.CommandError("The pasted report differs from its archived original")
-    saved = root / ".inputs" / (input_id + ".md")
-    if not saved.exists():
-        store.atomic_text(saved, text)
-    return {
-        "path": str(saved), "sha256": store.digest(saved), "body": body,
-        "metadata": {**metadata, "review_id": identifier},
-        "pasted": True, "findings": sections(body),
-    }
+def sidecar(report_path):
+    path = Path(report_path)
+    return path.with_name(path.stem + SIDECAR)
+
+
+def outcomes_of(report_path):
+    path = sidecar(report_path)
+    return store.decode(path.read_text())[0].get("outcomes", {}) if path.exists() else {}
+
+
+def reports(root):
+    for path in sorted(root.glob("*.md")):
+        if path.name.endswith(SIDECAR):
+            continue
+        try:
+            yield store.read_report(path)
+        except (OSError, store.StoreError):
+            continue
+
+
+def list_reviews(cwd, archive=None, all_projects=False, all_branches=False, pr=None):
+    root = store.archive_root(archive)
+    identities, branch, head = set(), None, None
+    if not all_projects:
+        current = source_root(cwd)
+        identities = set(remote_repositories(current).values()) | {current}
+        branch, head = current_branch(cwd), commit(cwd, "HEAD")
+    if pr:
+        parsed = pr_url(pr)
+        if not parsed:
+            raise CommandError("Expected a PR URL for --pr")
+        pr = parsed["url"].lower()
+    rows = []
+    for item in reports(root):
+        meta = item["metadata"]
+        if identities and not (meta["source_path"] in identities or meta["repository"] in identities):
+            continue
+        if pr and (meta.get("pr_url") or "").lower() != pr:
+            continue
+        if not pr and identities and not all_branches and (meta.get("development_branch") or meta["head_ref"]) != branch:
+            continue
+        outcomes = outcomes_of(item["path"])
+        ids = meta["finding_ids"]
+        rows.append({
+            "review_id": meta["review_id"], "path": item["path"], "created_at": meta["created_at"],
+            "project": meta["project"], "title": meta["title"], "pr_url": meta.get("pr_url"),
+            "head_sha": meta["head_sha"], "model": meta["model"], "effort": meta["effort"],
+            "stale": head is not None and meta["head_sha"] != head,
+            "findings": len(ids),
+            "remaining": sum(outcomes.get(i) not in ("applied", "pushed_back") for i in ids),
+            "waiting": sum(outcomes.get(i) == "waiting" for i in ids),
+        })
+    rows.sort(key=lambda item: item["created_at"], reverse=True)
+    return {"archive": str(root), "reviews": rows}
+
+
+def development_target(cwd, inputs, selected_branch):
+    expected = set()
+    for meta in (item["metadata"] for item in inputs):
+        branch = selected_branch or meta.get("development_branch")
+        if not branch and meta["head_ref"] != "HEAD":
+            branch = worktrees.development_branch(cwd, meta["head_ref"])
+        if not branch:
+            return None, {
+                "status": "branch_selection_required", "reviewed_ref": meta["head_ref"],
+                "reason": "This report does not identify a development branch. Choose one with --branch.",
+            }
+        expected.add(branch)
+    if len(expected) > 1:
+        return None, {"status": "branch_selection_required", "reviewed_branches": sorted(expected)}
+    return expected.pop(), None
+
+
+def navigate(cwd, branch, meta, github_user):
+    path = worktrees.branch_worktree(cwd, branch)
+    if path:
+        return {"path": path, "branch": branch, "reused": True}
+    if meta.get("pr_url") and branch == meta["head_ref"] and not ref_exists(cwd, "refs/heads/" + branch):
+        return worktrees.switch(meta["pr_url"], cwd, github_user=github_user, focus=False)
+    return worktrees.ensure_branch(cwd, branch, base=meta["head_sha"])
 
 
 def prepare(args):
-    root = store.archive_root(args.archive)
     cwd = str(Path(args.cwd).resolve())
-    source = shared.source_root(cwd)
-    current_common = shared.common_dir(cwd)
-    identities = set(shared.remote_repositories(cwd).values()) | {source}
-    branch = shared.git(cwd, "symbolic-ref", "--quiet", "--short", "HEAD", check=False).stdout.strip()
-    head = shared.commit(cwd, "HEAD")
-    inputs = []
-    for path in args.review:
-        item = store.read_report(path)
-        item["findings"] = sections(item["body"])
-        inputs.append(item)
     if args.text_file:
-        text = Path(args.text_file).read_text()
-        metadata, _ = store.decode(text)
-        if not metadata.get("repository") and not args.confirm_unversioned:
-            return {
-                "status": "context_confirmation_required",
-                "reason": "Pasted feedback has no repository/revision provenance. Confirm the intended current repository and branch.",
-                "source": source, "branch": branch, "head_sha": head,
-            }
-        # Only persist an imported input after context confirmation.
-        inputs.append(load_paste(args.text_file, root))
-    if not inputs:
-        raise shared.CommandError("Select one or more review files, or supply --text-file")
-    wrong_repo = [
-        item["path"] for item in inputs
-        if item["metadata"].get("repository")
-        and not (
-            item["metadata"]["repository"] in identities
-            or item["metadata"].get("source_common_dir") == current_common
-        )
-    ]
-    if wrong_repo:
+        body = Path(args.text_file).read_text()
+        if not body.strip():
+            raise CommandError("Pasted feedback is empty")
         return {
-            "status": "repository_selection_required",
-            "reason": "Selected reports belong to another repository. Choose its checkout before applying feedback.",
-            "reports": wrong_repo,
+            "status": "ready", "recordable": False, "cwd": cwd, "branch": current_branch(cwd),
+            "findings": [{"source": item["id"], "text": item["text"], "active": True} for item in sections(body)],
         }
-    targets = {item["metadata"].get("target_key") for item in inputs if item["metadata"].get("target_key")}
-    if len(targets) > 1:
+    if not args.review:
+        raise CommandError("Select one or more review files, or supply --text-file")
+    inputs = [store.read_report(path) for path in args.review]
+    if len({item["metadata"]["review_id"] for item in inputs}) != len(inputs):
+        raise CommandError("The same review was selected twice")
+    identities = set(remote_repositories(cwd).values()) | {source_root(cwd)}
+    current_common = common_dir(cwd)
+    wrong = [
+        item["path"] for item in inputs
+        if item["metadata"]["repository"] not in identities
+        and item["metadata"].get("source_common_dir") != current_common
+    ]
+    if wrong:
+        return {
+            "status": "repository_selection_required", "reports": wrong,
+            "reason": "Selected reports belong to another repository. Choose its checkout first.",
+        }
+    if len({item["metadata"]["target_key"] for item in inputs}) > 1:
         return {
             "status": "target_selection_required",
-            "reason": "These reports cover different targets. Select reports for one target per receiving session.",
+            "reason": "These reports cover different targets. Receive one target at a time.",
         }
-    selected_branch = getattr(args, "branch", None)
-    expected = set()
-    for item in inputs:
-        metadata = item["metadata"]
-        ref = metadata.get("head_ref")
-        target_branch = selected_branch or metadata.get("development_branch")
-        if not target_branch and ref and ref != "HEAD":
-            target_branch = worktrees.development_branch(cwd, ref)
-        if ref and not target_branch:
-            return {
-                "status": "branch_selection_required", "reviewed_ref": ref,
-                "reason": "This report does not identify a development branch. Choose one with --branch.",
-            }
-        if target_branch:
-            expected.add(target_branch)
-    if expected and branch not in expected and not args.confirm_branch:
-        return {
-            "status": "branch_confirmation_required",
-            "reason": "The current branch differs from the reviewed branch. Ask before switching or proceeding here.",
-            "current_branch": branch or None, "reviewed_branches": sorted(expected),
-        }
+    branch, blocked = development_target(cwd, inputs, args.branch)
+    if blocked:
+        return blocked
     navigation = None
-    if len(expected) > 1:
-        return {"status": "branch_selection_required", "reviewed_branches": sorted(expected)}
-    if expected:
-        target_branch = next(iter(expected))
-        path = worktrees.branch_worktree(cwd, target_branch)
-        if path:
-            navigation = {"path": path, "branch": target_branch, "reused": True}
-        else:
-            metadata = inputs[0]["metadata"]
-            local_exists = shared.git(cwd, "show-ref", "--verify", "--quiet", "refs/heads/" + target_branch, check=False).returncode == 0
-            if metadata.get("pr_url") and target_branch == metadata.get("head_ref") and not local_exists:
-                navigation = worktrees.switch(metadata["pr_url"], cwd, github_user=args.github_user, focus=False)
-            else:
-                navigation = worktrees.ensure_branch(cwd, target_branch, base=metadata.get("head_sha"))
+    if branch != current_branch(cwd):
+        if not args.confirm_branch:
+            return {
+                "status": "branch_confirmation_required", "current_branch": current_branch(cwd),
+                "reviewed_branch": branch,
+                "reason": "The current branch differs from the reviewed branch. Ask before switching.",
+            }
+        navigation = navigate(cwd, branch, inputs[0]["metadata"], args.github_user)
         cwd = navigation["path"]
-        branch = shared.git(cwd, "symbolic-ref", "--quiet", "--short", "HEAD").stdout.strip()
-        head = shared.commit(cwd, "HEAD")
-    previous = store.receiving_outcomes(root)
-    seen, findings, saved_inputs = set(), [], []
-    for item in inputs:
-        meta = item["metadata"]
-        identifier = meta["review_id"]
-        if identifier in seen:
-            raise shared.CommandError("The same review was selected twice")
-        seen.add(identifier)
-        saved_inputs.append({
-            "review_id": identifier, "path": item["path"], "sha256": item["sha256"],
-            "metadata": meta,
-            "stale": bool(meta.get("head_sha")) and meta["head_sha"] != head,
-            "unversioned": not bool(meta.get("head_sha")),
-        })
-        for finding in item["findings"]:
-            reference = identifier + ":" + finding["id"]
-            prior = previous.get(reference)
-            findings.append({
-                "source": reference, "text": finding["text"],
-                "active": not prior or prior["outcome"] == "waiting",
-                "previous": prior,
-            })
-    session_id = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:10]
-    session = {
-        "version": 1, "session_id": session_id, "created_at": shared.now(),
-        "archive": str(root), "cwd": cwd, "source_path": source,
-        "common_dir": current_common,
-        "repository": inputs[0]["metadata"].get("repository") or next(iter(shared.remote_repositories(cwd).values()), source),
-        "branch": branch or None, "head_before": head,
-        "initial_status": shared.git(cwd, "status", "--porcelain").stdout,
-        "inputs": saved_inputs, "findings": findings, "status": "prepared",
-        "github_user": args.github_user,
-    }
-    session_file = root / ".receiving" / ".sessions" / (session_id + ".json")
-    shared.json_write(session_file, session)
-    if navigation:
         navigation["herdr"] = worktrees.focus_worktree(cwd, branch)
-    return {**session, "status": "ready", "session_file": str(session_file), "worktree": navigation}
+    head = commit(cwd, "HEAD")
+    findings = []
+    for item in inputs:
+        meta, outcomes = item["metadata"], outcomes_of(item["path"])
+        for finding in sections(item["body"]):
+            previous = outcomes.get(finding["id"])
+            findings.append({
+                "source": f"{meta['review_id']}:{finding['id']}", "text": finding["text"],
+                "previous": previous, "active": previous in (None, "waiting"),
+            })
+    return {
+        "status": "ready", "recordable": True, "cwd": cwd, "branch": branch, "head_sha": head,
+        "reviews": [
+            {"review_id": item["metadata"]["review_id"], "path": item["path"],
+             "stale": item["metadata"]["head_sha"] != head}
+            for item in inputs
+        ],
+        "findings": findings, "worktree": navigation,
+    }
+
+
+def validate(outcomes, active):
+    if not isinstance(outcomes, list):
+        raise CommandError("Outcomes must be a JSON array")
+    covered = set()
+    for item in outcomes:
+        if not isinstance(item, dict) or item.get("outcome") not in OUTCOMES:
+            raise CommandError("Each outcome must be an object with outcome applied, pushed_back, or waiting")
+        sources = item.get("sources")
+        if not isinstance(sources, list) or not sources or not all(isinstance(ref, str) for ref in sources):
+            raise CommandError("Each outcome needs its source review/finding IDs")
+        if len(sources) != len(set(sources)) or covered.intersection(sources) or not set(sources) <= active:
+            raise CommandError("Outcome sources must be active, selected, and addressed once")
+        if not all(isinstance(item.get(key), str) and item[key].strip() for key in ("explanation", "evidence")):
+            raise CommandError("Every decision needs an explanation and current-code evidence")
+        if item["outcome"] == "waiting" and not str(item.get("question", "")).strip():
+            raise CommandError("Waiting outcomes need a concrete question")
+        covered.update(sources)
+    if covered != active:
+        raise CommandError("Account for every active finding; use waiting when clarification is needed")
+
+
+def entry(item, finding_id, review_id):
+    lines = [f"### {finding_id}: {item['outcome']}", ""]
+    others = [ref for ref in item["sources"] if ref != f"{review_id}:{finding_id}"]
+    if others:
+        lines += ["Grouped with: " + ", ".join(others), ""]
+    lines += [item["explanation"], "", "Evidence: " + item["evidence"], ""]
+    if item.get("question"):
+        lines += ["Question: " + item["question"], ""]
+    if item.get("checks"):
+        lines += ["Checks: " + json.dumps(item["checks"], ensure_ascii=False), ""]
+    return lines
 
 
 def record(args):
-    session = shared.json_read(args.session_file)
-    if session.get("status") != "prepared":
-        raise shared.CommandError("This receiving session was already recorded")
-    cwd = session["cwd"]
-    if shared.common_dir(cwd) != session["common_dir"]:
-        raise shared.CommandError("The checkout changed repositories; prepare again")
-    branch = shared.git(cwd, "symbolic-ref", "--quiet", "--short", "HEAD", check=False).stdout.strip() or None
-    if branch != session["branch"]:
-        raise shared.CommandError("The branch changed during receiving; revalidate in a new session")
-    if shared.commit(cwd, "HEAD") != session["head_before"]:
-        raise shared.CommandError("Committed HEAD changed during receiving; revalidate in a new session")
-    for item in session["inputs"]:
-        if store.digest(item["path"]) != item["sha256"]:
-            raise shared.CommandError("An input review changed during receiving; prepare again")
-    outcomes = shared.json_read(args.outcomes)
-    if not isinstance(outcomes, list):
-        raise shared.CommandError("Outcomes must be a JSON array")
-    active = {item["source"] for item in session["findings"] if item["active"]}
-    covered = set()
-    for item in outcomes:
-        if not isinstance(item, dict):
-            raise shared.CommandError("Each outcome must be a JSON object")
-        if item.get("outcome") not in ("applied", "pushed_back", "waiting"):
-            raise shared.CommandError("Outcome must be applied, pushed_back, or waiting")
-        sources = item.get("sources")
-        if not isinstance(sources, list) or not sources or not all(isinstance(ref, str) for ref in sources):
-            raise shared.CommandError("Each outcome needs its source review/finding IDs")
-        if len(sources) != len(set(sources)) or covered.intersection(sources) or not set(sources) <= active:
-            raise shared.CommandError("Outcome sources must be active, selected, and addressed once")
-        if not all(isinstance(item.get(key), str) and item[key].strip() for key in ("explanation", "evidence")):
-            raise shared.CommandError("Every decision needs an explanation and current-code evidence")
-        if item["outcome"] == "waiting" and not str(item.get("question", "")).strip():
-            raise shared.CommandError("Waiting outcomes need a concrete question")
-        covered.update(sources)
-    if covered != active:
-        raise shared.CommandError("Account for every active finding; use waiting when clarification is needed")
-    root = Path(session["archive"])
-    local = dt.datetime.now().astimezone()
-    stem = f"{local:%Y-%m-%d}_{store.slug(Path(session['source_path']).name)}_receiving_{local:%H%M%S}"
-    # Serialize finalization so retries cannot create duplicate receipts.
-    with shared.allocation_lock(Path(args.session_file).parent, session["session_id"]):
-        if shared.json_read(args.session_file).get("status") != "prepared":
-            raise shared.CommandError("This receiving session was already recorded")
-        path = store.reserve_path(root / ".receiving", stem)
-        metadata = {
-            "schema_version": 1, "kind": "receiving", "receipt_id": session["session_id"],
-            "created_at": shared.now(), "repository": session["repository"],
-            "source_path": session["source_path"], "branch": session["branch"],
-            "head_before": session["head_before"], "head_after": shared.commit(cwd, "HEAD"),
-            "review_ids": [item["review_id"] for item in session["inputs"]],
-            "github_user": session["github_user"],
-            "outcomes": [{"sources": item["sources"], "outcome": item["outcome"]} for item in outcomes],
-        }
-        body = ["# Receiving code review", "", "## Sources", ""]
-        for item in session["inputs"]:
-            body.append(f"- {item['review_id']}: {item['path']}")
-        body.extend(["", "## Outcomes", ""])
-        if not outcomes:
-            body.append("No active findings remained.")
-        for index, item in enumerate(outcomes, 1):
-            body.extend([
-                f"### R{index}: {item['outcome']}", "",
-                "Sources: " + ", ".join(item["sources"]), "",
-                item["explanation"], "", "Evidence: " + item["evidence"], "",
-            ])
-            if item.get("question"):
-                body.extend(["Question: " + item["question"], ""])
-            if item.get("checks"):
-                body.extend(["Checks: " + json.dumps(item["checks"], ensure_ascii=False), ""])
-        store.atomic_text(path, store.encode(metadata, "\n".join(body)))
-        session.update({"status": "recorded", "receipt": str(path), "recorded_at": metadata["created_at"]})
-        shared.json_write(args.session_file, session)
-    return {"status": "recorded", "receipt": str(path), "outcomes": outcomes}
+    inputs = {item["metadata"]["review_id"]: item for item in map(store.read_report, args.review)}
+    outcomes = json_read(args.outcomes)
+    active = {
+        f"{review_id}:{finding_id}"
+        for review_id, item in inputs.items()
+        for finding_id, previous in ((i, outcomes_of(item["path"]).get(i)) for i in item["metadata"]["finding_ids"])
+        if previous in (None, "waiting")
+    }
+    validate(outcomes, active)
+    cwd = str(Path(args.cwd).resolve())
+    heading = f"## {now()} · {current_branch(cwd) or 'detached'} @ {commit(cwd, 'HEAD')[:12]}"
+    written = []
+    for review_id, item in inputs.items():
+        mine = [
+            (ref.split(":", 1)[1], group) for group in outcomes for ref in group["sources"]
+            if ref.split(":", 1)[0] == review_id
+        ]
+        if not mine:
+            continue
+        path = sidecar(item["path"])
+        with allocation_lock(path.parent, "." + path.stem):
+            metadata, body = store.decode(path.read_text()) if path.exists() else (
+                {"schema_version": 1, "kind": "receiving", "review_id": review_id, "outcomes": {}},
+                f"# Receiving {Path(item['path']).name}",
+            )
+            lines = [body.strip(), "", heading, ""]
+            for finding_id, group in mine:
+                metadata["outcomes"][finding_id] = group["outcome"]
+                lines += entry(group, finding_id, review_id)
+            atomic_text(path, store.encode(metadata, "\n".join(lines)))
+        written.append(str(path))
+    return {"status": "recorded", "sidecars": written}
 
 
 def parser():
@@ -276,15 +263,14 @@ def parser():
     p.add_argument("--pr")
     p = sub.add_parser("prepare", help="Load chosen reports without changing source files")
     p.add_argument("--cwd", default=os.getcwd())
-    p.add_argument("--archive")
     p.add_argument("--review", action="append", default=[])
-    p.add_argument("--text-file")
-    p.add_argument("--confirm-unversioned", action="store_true")
+    p.add_argument("--text-file", help="Pasted feedback; evaluated but not recorded")
     p.add_argument("--confirm-branch", action="store_true")
     p.add_argument("--branch", help="Development branch for a report of a tag, SHA, or unnamed ref")
     p.add_argument("--github-user")
-    p = sub.add_parser("record", help="Save separate receiving outcomes; originals stay unchanged")
-    p.add_argument("--session-file", required=True)
+    p = sub.add_parser("record", help="Append outcomes to each report's sidecar; originals stay unchanged")
+    p.add_argument("--cwd", default=os.getcwd())
+    p.add_argument("--review", action="append", required=True)
     p.add_argument("--outcomes", required=True)
     return result
 
@@ -293,14 +279,14 @@ def main():
     args = parser().parse_args()
     try:
         if args.command == "list":
-            result = store.list_reviews(args)
+            result = list_reviews(args.cwd, args.archive, args.all, args.all_branches, args.pr)
         elif args.command == "prepare":
             result = prepare(args)
         else:
             result = record(args)
         print(json.dumps(result, indent=2, ensure_ascii=False))
         return 0
-    except (shared.CommandError, store.StoreError, OSError) as error:
+    except (CommandError, store.StoreError, OSError) as error:
         print(json.dumps({"status": "error", "error": str(error)}), file=sys.stderr)
         return 1
 

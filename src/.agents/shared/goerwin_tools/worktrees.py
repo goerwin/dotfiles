@@ -6,8 +6,9 @@ from pathlib import Path
 
 from . import herdr_adapter
 from .runtime import (
-    CommandError, common_dir, config, find_source, git, github, github_environment,
-    pr_url, remote_repositories, run, source_root, worktrees,
+    CommandError, common_dir, config, current_branch, default_base, find_source, git,
+    github, github_environment, pr_url, ref_exists, remote_repositories, remotes, run,
+    source_root, worktrees,
 )
 
 
@@ -24,14 +25,10 @@ def branch_worktree(repo, branch):
 
 
 def switch_worktree(repo, branch, create=False, base=None, env=None):
-    args = ["wt", "-C", str(repo), "switch"]
-    if create:
-        args.append("--create")
-    args.append(branch)
+    args = ["wt", "-C", str(repo), "switch", *(["--create"] if create else []), branch]
     if base:
         args.extend(["--base", base])
-    args.extend(["--no-cd", "--format=json"])
-    result = run(args, env=env, timeout=1800)
+    result = run([*args, "--no-cd", "--format=json"], env=env, timeout=1800)
     if result.stderr:
         print(result.stderr.rstrip(), file=sys.stderr)
     try:
@@ -45,9 +42,13 @@ def switch_worktree(repo, branch, create=False, base=None, env=None):
     return path
 
 
-def remote_ref(repo, ref):
+def remote_of(repo, ref):
     ref = ref.removeprefix("refs/remotes/")
-    return next((name for name in git(repo, "remote").stdout.splitlines() if ref.startswith(name + "/")), None)
+    return next((name for name in remotes(repo) if ref.startswith(name + "/")), None)
+
+
+def fetch(repo, remote, env=None):
+    git(repo, "fetch", "--no-tags", "--", remote, env=env)
 
 
 def development_branch(repo, ref):
@@ -55,36 +56,14 @@ def development_branch(repo, ref):
     if symbolic.startswith("refs/heads/"):
         return symbolic.removeprefix("refs/heads/")
     value = symbolic.removeprefix("refs/remotes/") if symbolic.startswith("refs/remotes/") else ref
-    remote = remote_ref(repo, value)
+    remote = remote_of(repo, value)
     if remote:
         return value[len(remote) + 1:]
-    if symbolic.startswith("refs/tags/") or ref == "HEAD" or re.fullmatch(r"[0-9a-fA-F]{7,64}", ref):
-        return None
-    if ref.startswith("refs/"):
+    if symbolic.startswith("refs/tags/") or ref == "HEAD" or ref.startswith("refs/") or re.fullmatch(r"[0-9a-fA-F]{7,64}", ref):
         return None
     if git(repo, "check-ref-format", "--branch", ref, check=False).returncode == 0:
         return ref
     return None
-
-
-def default_remote_base(repo, env=None):
-    remotes = git(repo, "remote").stdout.splitlines()
-    remote = next((name for name in ("origin", "upstream") if name in remotes), None)
-    if remote is None:
-        if remotes:
-            if len(remotes) != 1:
-                raise CommandError("Specify a base branch; the default remote is ambiguous")
-            remote = remotes[0]
-        else:
-            raise CommandError("Specify a local base branch; this repository has no remote")
-    symbolic = git(repo, "symbolic-ref", "--quiet", f"refs/remotes/{remote}/HEAD", check=False)
-    if symbolic.returncode == 0:
-        return symbolic.stdout.strip().removeprefix("refs/remotes/")
-    result = run(["git", "-C", str(repo), "ls-remote", "--symref", "--", remote, "HEAD"], env=env)
-    match = re.search(r"^ref: refs/heads/(.+)\tHEAD$", result.stdout, re.MULTILINE)
-    if not match:
-        raise CommandError("Cannot determine the remote default branch; provide a base explicitly")
-    return f"{remote}/{match[1]}"
 
 
 def ensure_branch(repo, branch, base=None, env=None):
@@ -94,34 +73,30 @@ def ensure_branch(repo, branch, base=None, env=None):
     path = branch_worktree(repo, branch)
     if path:
         return {"path": path, "branch": branch, "reused": True}
-    exists = git(repo, "show-ref", "--verify", "--quiet", "refs/heads/" + branch, check=False).returncode == 0
-    if exists:
+    if ref_exists(repo, "refs/heads/" + branch):
         return {"path": switch_worktree(repo, branch, env=env), "branch": branch, "reused": False}
-    selected_remote = remote_ref(repo, branch)
-    if selected_remote and git(repo, "show-ref", "--verify", "--quiet", "refs/remotes/" + branch, check=False).returncode == 0:
+    selected_remote = remote_of(repo, branch)
+    if selected_remote and ref_exists(repo, "refs/remotes/" + branch):
         local = branch[len(selected_remote) + 1:]
-        if git(repo, "show-ref", "--verify", "--quiet", "refs/heads/" + local, check=False).returncode == 0:
+        if ref_exists(repo, "refs/heads/" + local):
             tracking_remote = git(repo, "config", "--get", f"branch.{local}.remote", check=False).stdout.strip()
             merge = git(repo, "config", "--get", f"branch.{local}.merge", check=False).stdout.strip()
             if tracking_remote != selected_remote or merge != "refs/heads/" + local:
                 raise CommandError(f"Local branch {local} tracks another target; resolve the branch conflict first")
             return ensure_branch(repo, local, env=env)
-        run(["git", "-C", str(repo), "fetch", "--no-tags", "--", selected_remote], env=env)
+        fetch(repo, selected_remote, env)
         return {"path": switch_worktree(repo, branch, env=env), "branch": local, "reused": False}
-    remotes = git(repo, "remote").stdout.splitlines()
-    candidates = [name for name in remotes if git(
-        repo, "show-ref", "--verify", "--quiet", f"refs/remotes/{name}/{branch}", check=False,
-    ).returncode == 0]
+    candidates = [name for name in remotes(repo) if ref_exists(repo, f"refs/remotes/{name}/{branch}")]
     if candidates:
         if len(candidates) > 1 and "origin" not in candidates:
             raise CommandError(f"Multiple remotes contain {branch}; use an explicit remote branch")
         remote = "origin" if "origin" in candidates else candidates[0]
-        run(["git", "-C", str(repo), "fetch", "--no-tags", "--", remote], env=env)
+        fetch(repo, remote, env)
         return {"path": switch_worktree(repo, f"{remote}/{branch}", env=env), "branch": branch, "reused": False}
-    base = base or default_remote_base(repo, env)
-    remote = remote_ref(repo, base)
+    base = base or default_base(repo, env)
+    remote = remote_of(repo, base)
     if remote:
-        run(["git", "-C", str(repo), "fetch", "--no-tags", "--", remote], env=env)
+        fetch(repo, remote, env)
     return {"path": switch_worktree(repo, branch, create=True, base=base, env=env), "branch": branch, "reused": False}
 
 
@@ -134,7 +109,7 @@ def pr_branch(repo, pr, parsed):
     if not head_identity and owner.get("login") and head_repo.get("name"):
         head_identity = f"{owner['login']}/{head_repo['name']}"
     identity = f"{parsed['host']}/{head_identity}".lower() if head_identity else parsed["repo"]
-    remotes = remote_repositories(repo)
+    known_remotes = remote_repositories(repo)
     settings = {}
     configured = git(repo, "config", "--null", "--get-regexp", r"^branch\..*\.(remote|merge|goerwin-pr-url)$", check=False)
     for item in configured.stdout.split("\0"):
@@ -146,12 +121,10 @@ def pr_branch(repo, pr, parsed):
         if not branch or branch.startswith("chore/review-"):
             continue
         fields = settings.get(branch, {})
-        association = fields.get("goerwin-pr-url", "")
         remote = fields.get("remote", "")
-        merge = fields.get("merge", "")
-        tracked = remotes.get(remote) == identity and merge == f"refs/heads/{head}"
+        tracked = known_remotes.get(remote) == identity and fields.get("merge") == f"refs/heads/{head}"
         local = not remote and identity == parsed["repo"] and branch == head
-        if association.lower() == parsed["url"].lower() or tracked or local:
+        if fields.get("goerwin-pr-url", "").lower() == parsed["url"].lower() or tracked or local:
             matches.append(branch)
     if len(matches) > 1:
         raise CommandError("Multiple development branches match this PR: " + ", ".join(matches))
@@ -165,8 +138,8 @@ def ensure_pr(cwd, target, settings, user=None):
         host = parsed["host"]
     else:
         repo = source_root(cwd)
-        remotes = remote_repositories(repo)
-        preferred = remotes.get("upstream") or remotes.get("origin")
+        known_remotes = remote_repositories(repo)
+        preferred = known_remotes.get("upstream") or known_remotes.get("origin")
         host = preferred.split("/")[0] if preferred else None
     pr = github([
         "pr", "view", str(target), "--json",
@@ -181,10 +154,10 @@ def ensure_pr(cwd, target, settings, user=None):
     if existing:
         result = ensure_branch(repo, existing, env=env)
     else:
-        if git(repo, "show-ref", "--verify", "--quiet", "refs/heads/" + pr["headRefName"], check=False).returncode == 0:
+        if ref_exists(repo, "refs/heads/" + pr["headRefName"]):
             raise CommandError("A local branch with the PR's name belongs to another target; resolve the branch conflict first")
         path = switch_worktree(repo, canonical["url"], env=env)
-        branch = git(path, "symbolic-ref", "--quiet", "--short", "HEAD").stdout.strip()
+        branch = current_branch(path)
         git(repo, "config", f"branch.{branch}.goerwin-pr-url", canonical["url"])
         result = {"path": path, "branch": branch, "reused": False}
     return {**result, "repository": canonical["repo"], "pr_url": canonical["url"]}
@@ -193,8 +166,8 @@ def ensure_pr(cwd, target, settings, user=None):
 def focus_worktree(path, branch):
     try:
         return herdr_adapter.focus_worktree(path, branch)
-    except (herdr_adapter.AdapterError, OSError, herdr_adapter.subprocess.TimeoutExpired) as error:
-        return {"available": False, "warning": str(error)}
+    except herdr_adapter.AdapterError as error:
+        return {"available": False, "warnings": [str(error)]}
 
 
 def switch(target, cwd=None, base=None, config_path=None, github_user=None, focus=True):
@@ -206,9 +179,8 @@ def switch(target, cwd=None, base=None, config_path=None, github_user=None, focu
             raise CommandError("A PR number must be positive")
         result = ensure_pr(cwd, target, config(config_path) if config_path else config(), github_user)
     else:
-        repo = source_root(cwd)
         env = github_environment(github_user) if github_user else None
-        result = ensure_branch(repo, target, base, env)
+        result = ensure_branch(source_root(cwd), target, base, env)
     if focus:
         result["herdr"] = focus_worktree(result["path"], result["branch"])
     return result

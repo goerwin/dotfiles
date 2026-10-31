@@ -5,12 +5,9 @@ import hashlib
 import json
 import os
 import re
-import tempfile
 from pathlib import Path
 
-from .runtime import (
-    CommandError, commit, git, pr_url, remote_repositories, source_root,
-)
+from .runtime import atomic_text
 
 
 class StoreError(RuntimeError):
@@ -31,19 +28,6 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def atomic_text(path, text):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, temporary = tempfile.mkstemp(prefix=".writing-", dir=path.parent)
-    try:
-        with os.fdopen(fd, "w") as stream:
-            stream.write(text)
-        os.replace(temporary, path)
-    finally:
-        if os.path.exists(temporary):
-            os.unlink(temporary)
-
-
 def encode(metadata, body):
     header = "\n".join(
         key + ": " + json.dumps(value, ensure_ascii=False)
@@ -53,7 +37,7 @@ def encode(metadata, body):
 
 
 def decode(text):
-    """Read our flat YAML mapping; JSON-encoded values are valid YAML scalars."""
+    """Read the helper's flat frontmatter; every value is JSON, which is also valid YAML."""
     normalized = text.replace("\r\n", "\n")
     if not normalized.startswith("---\n"):
         return {}, text
@@ -62,22 +46,13 @@ def decode(text):
         raise StoreError("Unterminated report frontmatter")
     metadata = {}
     for line in normalized[4:end].splitlines():
-        if not line.strip() or line.lstrip().startswith("#"):
-            continue
-        key, separator, raw = line.partition(":")
+        key, separator, raw = line.partition(": ")
         if not separator or not re.fullmatch(r"[a-z][a-z0-9_]*", key) or key in metadata:
             raise StoreError("Invalid or duplicate report metadata field")
-        raw = raw.strip()
         try:
-            value = json.loads(raw)
-        except ValueError:
-            if raw.startswith("'") and raw.endswith("'"):
-                value = raw[1:-1].replace("''", "'")
-            elif raw and raw[0] not in "[{!&*|>\"":
-                value = raw
-            else:
-                raise StoreError("Unsupported YAML value; use helper-generated metadata")
-        metadata[key] = value
+            metadata[key] = json.loads(raw)
+        except ValueError as error:
+            raise StoreError("Report metadata must be helper-generated") from error
     return metadata, normalized[end + 5 :].lstrip("\n")
 
 
@@ -88,21 +63,6 @@ def finding_ids(body):
     if not ids and not re.search(r"\bno (?:actionable )?findings\b", body, re.IGNORECASE):
         raise StoreError("Use '### F1: ...' headings, or explicitly state 'No actionable findings.'")
     return ids
-
-
-def reserve_path(directory, stem):
-    directory = Path(directory)
-    directory.mkdir(parents=True, exist_ok=True)
-    counter = 1
-    while True:
-        suffix = "" if counter == 1 else f"_{counter}"
-        path = directory / f"{stem}{suffix}.md"
-        try:
-            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            os.close(fd)
-            return path
-        except FileExistsError:
-            counter += 1
 
 
 def report_path(directory, target, preset, local_time=None):
@@ -116,14 +76,20 @@ def report_path(directory, target, preset, local_time=None):
     model = re.sub(
         r"[^a-z0-9.]+", "-", preset.get("filename_model", preset["model"]).lower()
     ).strip("-.")[:32]
-    stem = "_".join(
-        (
-            local_time.strftime("%Y-%m-%d"), project, topic,
-            f"{model}-{slug(preset['effort'], 12)}",
-            local_time.strftime("%H%M%S"),
-        )
-    )
-    return reserve_path(directory, stem)
+    stem = "_".join((
+        local_time.strftime("%Y-%m-%d"), project, topic,
+        f"{model}-{slug(preset['effort'], 12)}", local_time.strftime("%H%M%S"),
+    ))
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    counter = 1
+    while True:
+        path = directory / f"{stem}{'' if counter == 1 else f'_{counter}'}.md"
+        try:
+            os.close(os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600))
+            return path
+        except FileExistsError:
+            counter += 1
 
 
 def report_metadata(manifest):
@@ -170,8 +136,7 @@ def finalize_report(manifest):
     _, body = decode(path.read_text())
     if not body.strip():
         raise StoreError("Write a nonempty report before completing the run")
-    ids = finding_ids(body)
-    metadata = {**report_metadata(manifest), "finding_ids": ids}
+    metadata = {**report_metadata(manifest), "finding_ids": finding_ids(body)}
     atomic_text(path, encode(metadata, body))
     return digest(path)
 
@@ -184,98 +149,6 @@ def read_report(path):
     required = ("review_id", "repository", "source_path", "head_ref", "head_sha", "base_sha")
     if any(not isinstance(metadata.get(key), str) or not metadata[key] for key in required):
         raise StoreError("Report provenance is incomplete")
-    ids = finding_ids(body)
-    if metadata.get("finding_ids") != ids:
+    if metadata.get("finding_ids") != finding_ids(body):
         raise StoreError("Report finding IDs do not match its metadata")
-    return {"path": str(path), "metadata": metadata, "body": body, "sha256": digest(path)}
-
-
-def receiving_outcomes(root):
-    outcomes, receipts = {}, []
-    for path in (Path(root) / ".receiving").glob("*.md"):
-        try:
-            metadata, _ = decode(path.read_text())
-            if metadata.get("schema_version") != 1 or metadata.get("kind") != "receiving":
-                continue
-            groups = metadata.get("outcomes", [])
-            if not isinstance(metadata.get("created_at"), str) or not isinstance(groups, list):
-                continue
-            if any(
-                not isinstance(group, dict)
-                or group.get("outcome") not in ("applied", "pushed_back", "waiting")
-                or not isinstance(group.get("sources"), list)
-                or not all(isinstance(source, str) for source in group["sources"])
-                for group in groups
-            ):
-                continue
-            receipts.append((metadata["created_at"], path, metadata))
-        except (OSError, ValueError, KeyError, TypeError, StoreError):
-            continue
-    for _, path, metadata in sorted(receipts, key=lambda item: (item[0], str(item[1]))):
-        for group in metadata.get("outcomes", []):
-            for source in group["sources"]:
-                outcomes[source] = {
-                    "outcome": group["outcome"], "receipt": str(path),
-                    "created_at": metadata["created_at"],
-                }
-    return outcomes
-
-
-def receiving_progress(report, outcomes):
-    refs = [report["metadata"]["review_id"] + ":" + item for item in report["metadata"]["finding_ids"]]
-    done = sum(
-        outcomes.get(ref, {}).get("outcome") in ("applied", "pushed_back")
-        for ref in refs
-    )
-    waiting = sum(outcomes.get(ref, {}).get("outcome") == "waiting" for ref in refs)
-    return {"total": len(refs), "addressed": done, "waiting": waiting, "remaining": len(refs) - done}
-
-
-def list_reviews(args):
-    root = archive_root(getattr(args, "archive", None))
-    outcomes = receiving_outcomes(root)
-    current_root = None
-    branch = None
-    identities = set()
-    current_head = None
-    if not getattr(args, "all", False):
-        current_root = source_root(args.cwd)
-        identities = set(remote_repositories(current_root).values())
-        identities.add(current_root)
-        branch = git(args.cwd, "symbolic-ref", "--quiet", "--short", "HEAD", check=False).stdout.strip()
-        current_head = commit(args.cwd, "HEAD")
-    requested_pr = getattr(args, "pr", None)
-    if requested_pr:
-        parsed = pr_url(requested_pr)
-        if not parsed:
-            raise CommandError("Expected a PR URL for --pr")
-        requested_pr = parsed["url"].lower()
-    reviews, skipped = [], []
-    for path in root.glob("*.md"):
-        try:
-            item = read_report(path)
-        except (OSError, StoreError) as error:
-            skipped.append({"path": str(path), "reason": str(error)})
-            continue
-        meta = item["metadata"]
-        if current_root and not (
-            meta["source_path"] == current_root or meta["repository"] in identities
-        ):
-            continue
-        if requested_pr:
-            if (meta.get("pr_url") or "").lower() != requested_pr:
-                continue
-        elif current_root and not getattr(args, "all_branches", False):
-            if not branch or (meta.get("development_branch") or meta["head_ref"]) != branch:
-                continue
-        reviews.append({
-            "review_id": meta["review_id"], "path": item["path"],
-            "created_at": meta["created_at"], "project": meta["project"],
-            "repository": meta["repository"], "title": meta["title"],
-            "pr_url": meta.get("pr_url"), "head_ref": meta["head_ref"],
-            "head_sha": meta["head_sha"], "model": meta["model"], "effort": meta["effort"],
-            "stale": current_head is not None and meta["head_sha"] != current_head,
-            "receiving": receiving_progress(item, outcomes),
-        })
-    reviews.sort(key=lambda item: item["created_at"], reverse=True)
-    return {"archive": str(root), "reviews": reviews, "skipped": skipped}
+    return {"path": str(path), "metadata": metadata, "body": body}

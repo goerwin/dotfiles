@@ -13,7 +13,7 @@ if [[ -L "$sharedDestination" || ( -e "$wtsCommand" && ! -L "$wtsCommand" ) ]]; 
 fi
 mkdir -p "$sharedDestination" "$skillsInstallHome/.local/bin" \
   "$skillsInstallHome/.agents/skills" "$skillsInstallHome/.claude/skills"
-rsync -a --exclude='__pycache__' --exclude='*.pyc' ./src/.agents/shared/ "$sharedDestination/"
+rsync -a --delete --exclude='__pycache__' --exclude='*.pyc' --exclude='tests' ./src/.agents/shared/ "$sharedDestination/"
 ln -sfn ../../.agents/shared/goerwin-wts "$wtsCommand"
 print -r -- "Installed goerwin-wts → $wtsCommand"
 for source in ./src/.agents/skills/*(/N); do
@@ -30,7 +30,7 @@ for source in ./src/.agents/skills/*(/N); do
     exit 1
   fi
   mkdir -p "$destination"
-  rsync -a --delete --exclude='__pycache__' --exclude='*.pyc' "$source/" "$destination/"
+  rsync -a --delete --exclude='__pycache__' --exclude='*.pyc' --exclude='tests' "$source/" "$destination/"
   ln -sfn "../../.agents/skills/$skill" "$claudeLink"
   print -r -- "Installed $skill"
 done
