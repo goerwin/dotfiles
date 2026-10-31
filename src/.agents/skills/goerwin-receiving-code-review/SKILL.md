@@ -13,9 +13,8 @@ feedback alone must not trigger this skill. Work in the invoking conversation;
 this skill does not launch a new reviewer or require another model selection.
 
 Read repository instructions, including AGENTS.local.md. The helper is
-scripts/receiving.py relative to this skill. It uses the sibling
-goerwin-code-review skill's archive contract and standard-library helpers;
-both skills must be installed together.
+scripts/receiving.py relative to this skill. Both review skills use the shared
+helpers installed by `make install-skills` through symlinks.
 
 ## Choose the feedback
 
@@ -56,11 +55,17 @@ When prepare requests context confirmation, ask which repository/branch the
 unversioned feedback refers to. Only then retry with --confirm-unversioned.
 Wrong-repository reports require choosing the correct checkout. If reviewed and
 current branches differ, ask before switching or proceeding; --confirm-branch
-records an explicit decision to evaluate on the current branch. Never silently
+opens the reviewed branch's development worktree. Preparation returns its `cwd`;
+read instructions and apply fixes in that checkout, keeping this conversation.
+The helper reuses the development worktree or creates it through Worktrunk and
+focuses it in Herdr when available. Never silently
 stash, reset, discard local work, or apply feedback to an unrelated checkout.
+If prepare requests branch selection for a tag, SHA, or older unnamed ref, ask
+which development branch should receive the fixes and pass it with `--branch`.
 
 Pass --github-user USER when repository instructions specify an account.
-No GitHub or model-provider authentication is needed to receive local reports.
+An existing development worktree needs no GitHub lookup. Opening a missing PR
+worktree uses the existing `gh` login.
 
 ## Verify and address
 

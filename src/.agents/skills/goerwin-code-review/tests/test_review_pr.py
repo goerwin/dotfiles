@@ -15,8 +15,7 @@ from unittest.mock import patch
 SKILL = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SKILL / "scripts"))
 import review_pr as review
-import herdr_adapter
-import review_store as store
+from goerwin_tools import herdr_adapter, review_store as store, worktrees
 
 receiver_spec = importlib.util.spec_from_file_location(
     "receiving", SKILL.parent / "goerwin-receiving-code-review/scripts/receiving.py"
@@ -72,11 +71,13 @@ class WorkflowFixture:
             from pathlib import Path
             args=sys.argv[1:]
             repo=args[args.index("-C")+1]
-            branch=args[args.index("--create")+1]
-            base=args[args.index("--base")+1]
+            create="--create" in args
+            branch=args[args.index("--create")+1] if create else args[args.index("switch")+1]
+            base=args[args.index("--base")+1] if "--base" in args else None
             folder=Path(os.environ["REVIEW_TEST_WT_ROOT"])/branch.replace("/","__")
-            subprocess.run(["git","-C",repo,"worktree","add","-b",branch,str(folder),base],
-                           check=True,stdout=sys.stderr)
+            command=["git","-C",repo,"worktree","add"]
+            command += ["-b",branch,str(folder),base] if create else [str(folder),branch]
+            subprocess.run(command,check=True,stdout=sys.stderr)
             print(json.dumps({"path":str(folder)}))
             """,
         )
@@ -100,11 +101,14 @@ class WorkflowFixture:
         self.open_patch = patch.object(herdr_adapter, "open_review", side_effect=self.open_review)
         self.snapshot_patch.start()
         self.open_patch.start()
+        self.focus_patch = patch.object(herdr_adapter, "focus_worktree", return_value={"available": False})
+        self.focus_patch.start()
         self.target_file = self.root / "target.json"
         self.target = review.comparison_target(self.developer, "feature", "main")
         review.json_write(self.target_file, {"status": "ready", "target": self.target})
 
     def tearDown(self):
+        self.focus_patch.stop()
         self.open_patch.stop()
         self.snapshot_patch.stop()
         self.environment.stop()
@@ -493,6 +497,51 @@ class ReceivingTests(WorkflowFixture, unittest.TestCase):
         self.assertEqual(self.git("branch", "--show-current"), "main")
         confirmed = self.prepare([report["report"]], cwd=str(self.repo), confirm_branch=True)
         self.assertEqual(confirmed["status"], "ready")
+        self.assertEqual(confirmed["cwd"], str(self.developer))
+        self.assertEqual(confirmed["branch"], "feature")
+        self.assertEqual(self.git("branch", "--show-current"), "main")
+
+    def test_receiving_recreates_a_missing_development_worktree(self):
+        report = self.make_report()
+        self.git("worktree", "remove", "--force", str(self.developer))
+        session = self.prepare([report["report"]], cwd=str(self.repo), confirm_branch=True)
+        self.assertEqual(session["status"], "ready")
+        self.assertEqual(session["branch"], "feature")
+        self.assertEqual(session["head_before"], self.head)
+        self.assertNotEqual(session["cwd"], str(self.repo))
+        self.assertEqual(self.git("branch", "--show-current"), "main")
+
+    def test_head_comparison_retains_its_development_branch_for_receiving(self):
+        self.target = review.comparison_target(self.developer, "HEAD", "main")
+        review.json_write(self.target_file, {"status": "ready", "target": self.target})
+        report = self.make_report()
+        session = self.prepare([report["report"]], cwd=str(self.repo), confirm_branch=True)
+        self.assertEqual(session["cwd"], str(self.developer))
+        self.assertEqual(session["branch"], "feature")
+
+    def test_local_pr_receiving_restores_the_recorded_development_branch(self):
+        pr = self.pr(headRefName="remote-feature")
+        with patch.object(review, "github", side_effect=self.github([pr])):
+            self.target = review.pr_target(self.developer, pr["url"], {}, revision="local")
+            review.json_write(self.target_file, {"status": "ready", "target": self.target})
+            report = self.make_report()
+        self.git("worktree", "remove", "--force", str(self.developer))
+        with patch.object(worktrees, "switch", side_effect=AssertionError("Use the recorded local branch")):
+            session = self.prepare([report["report"]], cwd=str(self.repo), confirm_branch=True)
+        self.assertEqual(session["branch"], "feature")
+        self.assertEqual(session["head_before"], self.head)
+
+    def test_legacy_unnamed_report_requires_development_branch_selection(self):
+        report = self.make_report()
+        metadata, body = store.decode(Path(report["report"]).read_text())
+        metadata.pop("development_branch", None)
+        metadata["head_ref"] = "HEAD"
+        legacy = self.root / "legacy.md"
+        legacy.write_text(store.encode(metadata, body))
+        result = self.prepare([str(legacy)], cwd=str(self.repo), confirm_branch=True)
+        self.assertEqual(result["status"], "branch_selection_required")
+        selected = self.prepare([str(legacy)], cwd=str(self.repo), confirm_branch=True, branch="feature")
+        self.assertEqual(selected["cwd"], str(self.developer))
 
     def test_plain_paste_requires_context_and_preserves_its_input(self):
         pasted = self.root / "pasted.txt"

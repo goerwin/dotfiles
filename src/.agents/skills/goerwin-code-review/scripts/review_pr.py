@@ -2,9 +2,7 @@
 """Resolve committed review targets and launch isolated, parallel reviews."""
 
 import argparse
-import contextlib
 import datetime as dt
-import fcntl
 import json
 import os
 import re
@@ -13,190 +11,27 @@ import shutil
 import signal
 import subprocess
 import sys
-import tempfile
 import uuid
 from pathlib import Path
-from urllib.parse import urlsplit
-from review_store import (
+from goerwin_tools.review_store import (
     StoreError, archive_root, finalize_report, read_report,
-    receiving_outcomes, receiving_progress, report_path,
+    report_path, list_reviews,
 )
+
+from goerwin_tools.runtime import (
+    CommandError as ReviewError, DEFAULT_CONFIG, allocation_lock, commit, common_dir,
+    config, default_base, find_source, git, github, json_read, json_write, now,
+    pr_url, register_checkout, remote_repositories, repository_url, run, source_root,
+    worktrees,
+)
+from goerwin_tools.worktrees import development_branch, switch_worktree
 
 HERE = Path(__file__).resolve().parent
 SKILL = HERE.parent
-DEFAULT_CONFIG = Path.home() / ".config/goerwin-code-review/config.json"
-LEGACY_CONFIG = Path.home() / ".config/review-pr/config.json"
 PR_FIELDS = (
     "id,number,url,title,state,headRefOid,baseRefOid,headRefName,baseRefName,"
     "headRepository,headRepositoryOwner"
 )
-
-
-class ReviewError(RuntimeError):
-    pass
-
-
-def run(args, cwd=None, env=None, check=True, timeout=120):
-    try:
-        result = subprocess.run(
-            [str(arg) for arg in args],
-            cwd=cwd,
-            env=env,
-            text=True,
-            capture_output=True,
-            timeout=timeout,
-        )
-    except (OSError, subprocess.TimeoutExpired) as error:
-        raise ReviewError(str(error)) from error
-    if check and result.returncode:
-        raise ReviewError(
-            result.stderr.strip() or f"{args[0]} exited {result.returncode}"
-        )
-    return result
-
-
-def git(repo, *args, check=True):
-    return run(["git", "-C", str(repo), *args], check=check)
-
-
-def json_read(path):
-    try:
-        return json.loads(Path(path).read_text())
-    except (OSError, ValueError) as error:
-        raise ReviewError(f"Cannot read JSON from {path}: {error}") from error
-
-
-def json_write(path, data):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, temporary = tempfile.mkstemp(prefix=".review-", dir=path.parent)
-    try:
-        with os.fdopen(fd, "w") as stream:
-            json.dump(data, stream, indent=2, ensure_ascii=False)
-            stream.write("\n")
-        os.replace(temporary, path)
-    finally:
-        if os.path.exists(temporary):
-            os.unlink(temporary)
-
-
-def now():
-    return dt.datetime.now(dt.timezone.utc).isoformat()
-
-
-def config(path):
-    if Path(path) == DEFAULT_CONFIG and not Path(path).exists() and LEGACY_CONFIG.exists():
-        return json_read(LEGACY_CONFIG)
-    return json_read(path) if Path(path).exists() else {}
-
-
-def repository_url(value):
-    value = value.strip()
-    if re.fullmatch(r"[^/@\s]+@[^/:\s]+:.+", value):
-        value = "ssh://" + value.replace(":", "/", 1)
-    parsed = urlsplit(value)
-    parts = parsed.path.strip("/").removesuffix(".git").split("/")
-    if not parsed.hostname or len(parts) != 2 or not all(parts):
-        return None
-    return "/".join([parsed.hostname.lower(), *[p.lower() for p in parts]])
-
-
-def pr_url(value):
-    parsed = urlsplit(value)
-    match = re.fullmatch(r"/([^/]+)/([^/]+)/pull/([1-9][0-9]*)(?:/.*)?", parsed.path)
-    if parsed.scheme not in ("https", "http") or not parsed.hostname or not match:
-        return None
-    owner, repo, number = match.groups()
-    if not all(re.fullmatch(r"[A-Za-z0-9_.-]+", p) for p in (owner, repo)):
-        return None
-    host = parsed.hostname.lower()
-    return {
-        "repo": f"{host}/{owner.lower()}/{repo.lower()}",
-        "url": f"https://{host}/{owner}/{repo}/pull/{number}",
-        "number": int(number),
-        "host": host,
-    }
-
-
-def worktrees(repo):
-    output = git(repo, "worktree", "list", "--porcelain", "-z").stdout
-    entries, current = [], {}
-    for field in output.split("\0"):
-        if not field:
-            if current:
-                entries.append(current)
-                current = {}
-            continue
-        key, _, value = field.partition(" ")
-        current[key] = value if value else True
-    if current:
-        entries.append(current)
-    return entries
-
-
-def source_root(cwd):
-    items = worktrees(cwd)
-    if not items or "bare" in items[0]:
-        raise ReviewError("A non-bare primary source checkout is required")
-    return str(Path(items[0]["worktree"]).resolve())
-
-
-def common_dir(repo):
-    return str(
-        Path(
-            git(repo, "rev-parse", "--path-format=absolute", "--git-common-dir")
-            .stdout.strip()
-        ).resolve()
-    )
-
-
-def remote_repositories(repo):
-    result = {}
-    for name in git(repo, "remote").stdout.splitlines():
-        url = git(repo, "remote", "get-url", name).stdout.strip()
-        parsed = repository_url(url)
-        if parsed:
-            result[name] = parsed
-    return result
-
-
-def find_source(cwd, repo_name, settings):
-    candidates = [str(Path(cwd).resolve())]
-    registered = settings.get("repositories", {}).get(repo_name)
-    if registered:
-        candidates.append(str(Path(registered).expanduser().resolve()))
-    for candidate in candidates:
-        if repo_name in remote_repositories(candidate).values():
-            return source_root(candidate)
-    raise ReviewError(
-        f"No registered local checkout for {repo_name}. Register it with "
-        f"'register --repository https://{repo_name} --path /local/checkout'."
-    )
-
-
-def github(args, cwd, user=None, host=None):
-    env = os.environ.copy()
-    if host:
-        env["GH_HOST"] = host
-    if user:
-        # Capture the existing account token; never print, persist, or switch it.
-        token_env = {
-            key: value
-            for key, value in env.items()
-            if key not in ("GH_TOKEN", "GITHUB_TOKEN", "GH_ENTERPRISE_TOKEN", "GITHUB_ENTERPRISE_TOKEN")
-        }
-        token = run(
-            ["gh", "auth", "token", "--hostname", host or "github.com", "--user", user],
-            env=token_env,
-        ).stdout.strip()
-        if not token:
-            raise ReviewError(f"No existing gh login for {user}")
-        env["GH_TOKEN" if (host or "github.com") == "github.com" else "GH_ENTERPRISE_TOKEN"] = token
-    result = run(["gh", *args], cwd=cwd, env=env)
-    try:
-        return json.loads(result.stdout)
-    except ValueError as error:
-        raise ReviewError("gh returned invalid JSON") from error
 
 
 def pr_target(cwd, url, settings, user=None, revision="pr", instructions=""):
@@ -234,6 +69,7 @@ def pr_target(cwd, url, settings, user=None, revision="pr", instructions=""):
         "title": pr["title"],
         "pr_state": pr["state"],
         "head_ref": pr["headRefName"],
+        "development_branch": development_branch(cwd, "HEAD") if revision == "local" else pr["headRefName"],
         "base_ref": pr["baseRefName"],
         "head_sha": head,
         "base_sha": pr["baseRefOid"],
@@ -243,10 +79,6 @@ def pr_target(cwd, url, settings, user=None, revision="pr", instructions=""):
         "github_user": user,
         "instructions": instructions,
     }
-
-
-def commit(repo, ref):
-    return git(repo, "rev-parse", "--verify", "--end-of-options", f"{ref}^{{commit}}").stdout.strip()
 
 
 def comparison_target(cwd, head, base, instructions=""):
@@ -262,22 +94,12 @@ def comparison_target(cwd, head, base, instructions=""):
         "target_key": f"{common_dir(root)}:{base}...{head}",
         "title": f"{head} against {base}",
         "head_ref": head,
+        "development_branch": development_branch(cwd, head),
         "base_ref": base,
         "head_sha": head_sha,
         "base_sha": base_sha,
         "instructions": instructions,
     }
-
-
-def default_base(repo):
-    for remote in ("origin", "upstream"):
-        value = git(repo, "symbolic-ref", "--quiet", f"refs/remotes/{remote}/HEAD", check=False)
-        if value.returncode == 0:
-            return value.stdout.strip().removeprefix("refs/remotes/")
-    for branch in ("main", "master"):
-        if git(repo, "show-ref", "--verify", f"refs/heads/{branch}", check=False).returncode == 0:
-            return branch
-    return None
 
 
 def inspect_target(args):
@@ -520,15 +342,6 @@ def make_prompt(manifest, manifest_path):
     )
 
 
-@contextlib.contextmanager
-def allocation_lock(directory, key=".allocation"):
-    directory.mkdir(parents=True, exist_ok=True)
-    with (directory / (key + ".lock")).open("a") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        yield
-        fcntl.flock(lock, fcntl.LOCK_UN)
-
-
 def update_record(path, updates):
     with allocation_lock(Path(path).parent, Path(path).stem):
         data = json_read(path)
@@ -557,7 +370,7 @@ def launch(args):
         raise ReviewError(f"The selected harness is not installed: {argv[0]}")
     if args.adapter != "herdr":
         raise ReviewError("No tab adapter configured; the initial implementation supports Herdr")
-    import herdr_adapter
+    from goerwin_tools import herdr_adapter
     try:
         snapshot = herdr_adapter.snapshot()
     except herdr_adapter.AdapterError as error:
@@ -602,13 +415,7 @@ def launch(args):
             worktree, branch = reused
         else:
             branch = f"chore/review-{label}-{slug(preset['id'], 24)}-{run_id[-10:]}"
-            run(
-                [
-                    "wt", "-C", target["source_root"], "switch", "--create", branch,
-                    "--base", target["head_sha"], "--no-cd", "--format=json",
-                ],
-                timeout=1800,
-            )
+            switch_worktree(target["source_root"], branch, create=True, base=target["head_sha"])
             entry = next(
                 (item for item in worktrees(target["source_root"]) if item.get("branch") == "refs/heads/" + branch),
                 None,
@@ -717,56 +524,6 @@ def finish(args):
     return {"status": "completed", "report": str(report), **updates}
 
 
-def list_reviews(args):
-    root = archive_root(getattr(args, "archive", None))
-    outcomes = receiving_outcomes(root)
-    current_root = None
-    branch = None
-    identities = set()
-    current_head = None
-    if not getattr(args, "all", False):
-        current_root = source_root(args.cwd)
-        identities = set(remote_repositories(current_root).values())
-        identities.add(current_root)
-        branch = git(args.cwd, "symbolic-ref", "--quiet", "--short", "HEAD", check=False).stdout.strip()
-        current_head = commit(args.cwd, "HEAD")
-    requested_pr = getattr(args, "pr", None)
-    if requested_pr:
-        parsed = pr_url(requested_pr)
-        if not parsed:
-            raise ReviewError("Expected a PR URL for --pr")
-        requested_pr = parsed["url"].lower()
-    reviews, skipped = [], []
-    for path in root.glob("*.md"):
-        try:
-            item = read_report(path)
-        except (OSError, StoreError) as error:
-            skipped.append({"path": str(path), "reason": str(error)})
-            continue
-        meta = item["metadata"]
-        if current_root and not (
-            meta["source_path"] == current_root or meta["repository"] in identities
-        ):
-            continue
-        if requested_pr:
-            if (meta.get("pr_url") or "").lower() != requested_pr:
-                continue
-        elif current_root and not getattr(args, "all_branches", False):
-            if not branch or meta["head_ref"] != branch:
-                continue
-        reviews.append({
-            "review_id": meta["review_id"], "path": item["path"],
-            "created_at": meta["created_at"], "project": meta["project"],
-            "repository": meta["repository"], "title": meta["title"],
-            "pr_url": meta.get("pr_url"), "head_ref": meta["head_ref"],
-            "head_sha": meta["head_sha"], "model": meta["model"], "effort": meta["effort"],
-            "stale": current_head is not None and meta["head_sha"] != current_head,
-            "receiving": receiving_progress(item, outcomes),
-        })
-    reviews.sort(key=lambda item: item["created_at"], reverse=True)
-    return {"archive": str(root), "reviews": reviews, "skipped": skipped}
-
-
 def github_context(args):
     manifest = json_read(args.run_file)
     target = manifest["target"]
@@ -787,16 +544,7 @@ def github_context(args):
 
 
 def register(args):
-    repo = repository_url(args.repository)
-    if not repo:
-        raise ReviewError("Expected a repository URL")
-    root = source_root(args.path)
-    if repo not in remote_repositories(root).values():
-        raise ReviewError("The checkout has no remote matching that repository")
-    settings = config(args.config)
-    settings.setdefault("repositories", {})[repo] = root
-    json_write(args.config, settings)
-    return {"repository": repo, "source_root": root, "config": str(args.config)}
+    return register_checkout(args.path, args.config, args.repository)
 
 
 def parser():

@@ -58,7 +58,7 @@ installEntry() {
   local destination="$2"
   local file
 
-  rsync -a --exclude='.DS_Store' --exclude='/.agents/skills' \
+  rsync -a --exclude='.DS_Store' --exclude='/.agents/skills' --exclude='/.agents/shared' \
     --exclude="/$capsLockAgentRelativePath" "$entry" "$destination/" || return 1
   [[ "${entry:t}" == ".DS_Store" ]] && return 0
 

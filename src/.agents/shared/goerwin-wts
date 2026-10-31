@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import os
+import sys
+
+from goerwin_tools.runtime import CommandError, DEFAULT_CONFIG, register_checkout
+from goerwin_tools.worktrees import switch
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Create or focus a Worktrunk worktree.")
+    parser.add_argument("target", help="PR number, PR URL, branch name, or 'register'")
+    parser.add_argument("base", nargs="?", help="Base for a new branch; checkout path with register")
+    parser.add_argument("-C", "--cwd", default=os.getcwd())
+    parser.add_argument("--config", default=str(DEFAULT_CONFIG))
+    parser.add_argument("--github-user")
+    parser.add_argument("--json", action="store_true")
+    parser.add_argument("--no-focus", action="store_true")
+    args = parser.parse_args()
+    try:
+        if args.target == "register":
+            result = register_checkout(args.base or args.cwd, args.config)
+            path = result["source_root"]
+        else:
+            result = switch(args.target, args.cwd, args.base, args.config, args.github_user, not args.no_focus)
+            path = result["path"]
+        print(json.dumps(result, indent=2) if args.json else path)
+        warning = result.get("herdr", {}).get("warning")
+        if warning:
+            print(f"Herdr: {warning}", file=sys.stderr)
+        return 0
+    except (CommandError, OSError) as error:
+        print(f"goerwin-wts: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

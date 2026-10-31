@@ -8,6 +8,10 @@ import re
 import tempfile
 from pathlib import Path
 
+from .runtime import (
+    CommandError, commit, git, pr_url, remote_repositories, source_root,
+)
+
 
 class StoreError(RuntimeError):
     pass
@@ -139,6 +143,7 @@ def report_metadata(manifest):
         "pr_url": target.get("pr_url"),
         "pr_number": target.get("pr_number"),
         "head_ref": target["head_ref"],
+        "development_branch": target.get("development_branch"),
         "base_ref": target["base_ref"],
         "head_sha": target["head_sha"],
         "base_sha": target["base_sha"],
@@ -224,3 +229,53 @@ def receiving_progress(report, outcomes):
     )
     waiting = sum(outcomes.get(ref, {}).get("outcome") == "waiting" for ref in refs)
     return {"total": len(refs), "addressed": done, "waiting": waiting, "remaining": len(refs) - done}
+
+
+def list_reviews(args):
+    root = archive_root(getattr(args, "archive", None))
+    outcomes = receiving_outcomes(root)
+    current_root = None
+    branch = None
+    identities = set()
+    current_head = None
+    if not getattr(args, "all", False):
+        current_root = source_root(args.cwd)
+        identities = set(remote_repositories(current_root).values())
+        identities.add(current_root)
+        branch = git(args.cwd, "symbolic-ref", "--quiet", "--short", "HEAD", check=False).stdout.strip()
+        current_head = commit(args.cwd, "HEAD")
+    requested_pr = getattr(args, "pr", None)
+    if requested_pr:
+        parsed = pr_url(requested_pr)
+        if not parsed:
+            raise CommandError("Expected a PR URL for --pr")
+        requested_pr = parsed["url"].lower()
+    reviews, skipped = [], []
+    for path in root.glob("*.md"):
+        try:
+            item = read_report(path)
+        except (OSError, StoreError) as error:
+            skipped.append({"path": str(path), "reason": str(error)})
+            continue
+        meta = item["metadata"]
+        if current_root and not (
+            meta["source_path"] == current_root or meta["repository"] in identities
+        ):
+            continue
+        if requested_pr:
+            if (meta.get("pr_url") or "").lower() != requested_pr:
+                continue
+        elif current_root and not getattr(args, "all_branches", False):
+            if not branch or (meta.get("development_branch") or meta["head_ref"]) != branch:
+                continue
+        reviews.append({
+            "review_id": meta["review_id"], "path": item["path"],
+            "created_at": meta["created_at"], "project": meta["project"],
+            "repository": meta["repository"], "title": meta["title"],
+            "pr_url": meta.get("pr_url"), "head_ref": meta["head_ref"],
+            "head_sha": meta["head_sha"], "model": meta["model"], "effort": meta["effort"],
+            "stale": current_head is not None and meta["head_sha"] != current_head,
+            "receiving": receiving_progress(item, outcomes),
+        })
+    reviews.sort(key=lambda item: item["created_at"], reverse=True)
+    return {"archive": str(root), "reviews": reviews, "skipped": skipped}

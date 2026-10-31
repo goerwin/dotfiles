@@ -15,6 +15,7 @@ model AND effort for this invocation; do not fork this launcher into a reviewer.
 The shared helper is scripts/review_pr.py relative to this skill directory.
 Invoke it with python3 and an absolute path. It returns JSON. Use argument arrays
 or proper shell quoting; never evaluate custom input as shell code.
+Install with `make install-skills` so the shared helper symlinks are available.
 
 ## Resolve the target
 
@@ -57,7 +58,7 @@ python3 /absolute/skill/scripts/review_pr.py resolve \
 
 Reviewing uncommitted changes needs an explicitly agreed snapshot workflow and
 is not implemented here. Unknown repositories must have an existing checkout;
-register it with the helper's register command. Never clone automatically.
+register it with `goerwin-wts register /path/to/checkout`. Never clone automatically.
 
 ## Require a fresh model and effort choice
 
@@ -146,8 +147,8 @@ their processes before reusing a checkout. No automatic cleanup is performed.
 
 The archive contains private run metadata under .runs. An optional --archive
 argument or GOERWIN_CODE_REVIEWS_DIR overrides its location. Repository
-registrations live in ~/.config/goerwin-code-review/config.json; the helper
-also reads the previous ~/.config/review-pr/config.json when needed. No existing
+registrations are shared with goerwin-wts in ~/.config/goerwin-wts/config.json;
+the previous goerwin-code-review and review-pr configurations are also read. No existing
 configuration or repository-local reports are deleted or moved automatically.
 
 Edit presets.json to maintain the short local model list. Use launch --dry-run
