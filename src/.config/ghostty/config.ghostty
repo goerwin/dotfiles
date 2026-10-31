@@ -1,5 +1,9 @@
 theme = Starlight
 
+background-opacity = 0.9
+background-blur-radius = 20
+macos-titlebar-style = tabs
+
 # Forward Cmd+H and Cmd+L to Herdr for tab navigation.
 keybind = command+h=csi:104;9u
 keybind = command+l=csi:108;9u
