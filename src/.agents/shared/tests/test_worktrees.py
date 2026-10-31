@@ -55,12 +55,7 @@ class WorktreeTests(unittest.TestCase):
                 create, base = True, "main"
             path = Path(os.environ["WTS_TEST_ROOT"]) / branch.replace("/", "__")
             command = ["git", "-C", repo, "worktree", "add"]
-            if create:
-                command += ["-b", branch, str(path), base]
-            elif branch.startswith("origin/"):
-                command += ["--track", "-b", branch.removeprefix("origin/"), str(path), branch]
-            else:
-                command += [str(path), branch]
+            command += ["-b", branch, str(path), base] if create else [str(path), branch]
             subprocess.run(command, check=True, capture_output=True)
             print(json.dumps({"path": str(path)}))
         ''').lstrip())
@@ -136,6 +131,37 @@ class WorktreeTests(unittest.TestCase):
             self.assertEqual(result["branch"], branch)
             self.assertEqual(self.git("branch", "--show-current", cwd=result["path"]), branch)
             self.assertEqual(self.git("config", f"branch.{branch}.remote"), "origin")
+
+    def add_remote(self, name):
+        bare = self.root / f"{name}.git"
+        subprocess.run(["git", "clone", "--bare", str(self.repo), str(bare)], check=True, capture_output=True)
+        self.git("remote", "add", name, str(bare))
+        return bare
+
+    def push_elsewhere(self, remote, branch):
+        clone = self.root / f"clone-{branch}"
+        subprocess.run(["git", "clone", str(remote), str(clone)], check=True, capture_output=True)
+        self.git("-c", "user.name=t", "-c", "user.email=t@t", "commit", "--allow-empty", "-m", branch, cwd=clone)
+        self.git("push", "origin", f"HEAD:{branch}", cwd=clone)
+        return self.git("rev-parse", "HEAD", cwd=clone)
+
+    def test_branch_on_several_remotes_tracks_origin_or_the_explicit_remote(self):
+        self.add_remote("upstream")
+        for name in ("shared", "chosen"):
+            self.git("push", "origin", f"main:{name}")
+            self.git("push", "upstream", f"main:{name}")
+        self.git("fetch", "--all")
+        self.switch("shared")
+        self.assertEqual(self.git("config", "branch.shared.remote"), "origin")
+        result = self.switch("upstream/chosen")
+        self.assertEqual(result["branch"], "chosen")
+        self.assertEqual(self.git("config", "branch.chosen.remote"), "upstream")
+
+    def test_unfetched_remote_branch_is_tracked_not_recreated(self):
+        expected = self.push_elsewhere(self.remote, "teammate-topic")
+        result = self.switch("teammate-topic")
+        self.assertEqual(self.git("rev-parse", "HEAD", cwd=result["path"]), expected)
+        self.assertEqual(self.git("config", "branch.teammate-topic.remote"), "origin")
 
     def test_failed_fetch_creates_nothing(self):
         self.git("remote", "set-url", "origin", str(self.root / "missing.git"))

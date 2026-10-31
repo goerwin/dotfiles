@@ -66,38 +66,51 @@ def development_branch(repo, ref):
     return None
 
 
+def with_default_remote(env, remote):
+    """Let Git's remote-branch DWIM pick this remote when several have the branch."""
+    env = dict(env or os.environ)
+    index = int(env.get("GIT_CONFIG_COUNT", 0))
+    env.update({
+        "GIT_CONFIG_COUNT": str(index + 1),
+        f"GIT_CONFIG_KEY_{index}": "checkout.defaultRemote", f"GIT_CONFIG_VALUE_{index}": remote,
+    })
+    return env
+
+
 def ensure_branch(repo, branch, base=None, env=None):
     if branch.startswith("-"):
         raise CommandError("Expected a branch name")
     git(repo, "check-ref-format", "--branch", branch)
-    path = branch_worktree(repo, branch)
+    remote = remote_of(repo, branch)
+    local = branch[len(remote) + 1:] if remote else branch
+    path = branch_worktree(repo, local)
+    if remote and ref_exists(repo, "refs/heads/" + local):
+        tracking_remote = git(repo, "config", "--get", f"branch.{local}.remote", check=False).stdout.strip()
+        merge = git(repo, "config", "--get", f"branch.{local}.merge", check=False).stdout.strip()
+        if tracking_remote != remote or merge != "refs/heads/" + local:
+            raise CommandError(f"Local branch {local} tracks another target; resolve the branch conflict first")
     if path:
-        return {"path": path, "branch": branch, "reused": True}
-    if ref_exists(repo, "refs/heads/" + branch):
-        return {"path": switch_worktree(repo, branch, env=env), "branch": branch, "reused": False}
-    selected_remote = remote_of(repo, branch)
-    if selected_remote and ref_exists(repo, "refs/remotes/" + branch):
-        local = branch[len(selected_remote) + 1:]
-        if ref_exists(repo, "refs/heads/" + local):
-            tracking_remote = git(repo, "config", "--get", f"branch.{local}.remote", check=False).stdout.strip()
-            merge = git(repo, "config", "--get", f"branch.{local}.merge", check=False).stdout.strip()
-            if tracking_remote != selected_remote or merge != "refs/heads/" + local:
-                raise CommandError(f"Local branch {local} tracks another target; resolve the branch conflict first")
-            return ensure_branch(repo, local, env=env)
-        fetch(repo, selected_remote, env)
-        return {"path": switch_worktree(repo, branch, env=env), "branch": local, "reused": False}
-    candidates = [name for name in remotes(repo) if ref_exists(repo, f"refs/remotes/{name}/{branch}")]
-    if candidates:
-        if len(candidates) > 1 and "origin" not in candidates:
-            raise CommandError(f"Multiple remotes contain {branch}; use an explicit remote branch")
-        remote = "origin" if "origin" in candidates else candidates[0]
-        fetch(repo, remote, env)
-        return {"path": switch_worktree(repo, f"{remote}/{branch}", env=env), "branch": branch, "reused": False}
-    base = base or default_base(repo, env)
-    remote = remote_of(repo, base)
+        return {"path": path, "branch": local, "reused": True}
+    if ref_exists(repo, "refs/heads/" + local):
+        return {"path": switch_worktree(repo, local, env=env), "branch": local, "reused": False}
     if remote:
         fetch(repo, remote, env)
-    return {"path": switch_worktree(repo, branch, create=True, base=base, env=env), "branch": branch, "reused": False}
+        if not ref_exists(repo, f"refs/remotes/{branch}"):
+            raise CommandError(f"No remote branch {branch}")
+        candidates = [remote]
+    else:
+        base = base or default_base(repo, env)
+        base_remote = remote_of(repo, base)
+        if base_remote:
+            fetch(repo, base_remote, env)
+        candidates = [name for name in remotes(repo) if ref_exists(repo, f"refs/remotes/{name}/{local}")]
+    if not candidates:
+        return {"path": switch_worktree(repo, local, create=True, base=base, env=env), "branch": local, "reused": False}
+    if len(candidates) > 1 and "origin" not in candidates:
+        raise CommandError(f"Multiple remotes contain {local}; use an explicit remote branch")
+    chosen = "origin" if "origin" in candidates else candidates[0]
+    path = switch_worktree(repo, local, env=with_default_remote(env, chosen))
+    return {"path": path, "branch": local, "reused": False}
 
 
 def pr_branch(repo, pr, parsed):
