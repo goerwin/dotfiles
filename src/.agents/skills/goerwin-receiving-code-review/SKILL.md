@@ -113,7 +113,7 @@ direct, casual, no hedging, no em dashes. A waiting reply is the question for
 the reviewer. Number them with where they land and who posts them:
 
 ~~~text
-Posting as @egaitan-godaddy:
+Posting as @<viewer>:
 1. menu-playground.tsx:62 (applied) Good catch, the playground now switches rows with the mode.
 2. menu.tsx:118 (pushed back) I'd keep this one. Splitting it would change the API this PR adds.
 3. menu.tsx:140 (waiting) Should multiple selection keep the order users clicked? Didn't want to guess.
