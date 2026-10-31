@@ -12,7 +12,10 @@ main() {
     case "$app" in
       financer)
         needsIOS=1
-        installs+=("Financer (iOS)|Installed|zsh ${(q)HOME}/Projects/financer/ios/install.zsh") ;;
+        installs+=(
+          "Financer (macOS)|Installed|make -C ${(q)HOME}/Projects/financer/ios install-mac"
+          "Financer (iOS)|Installed|zsh ${(q)HOME}/Projects/financer/ios/install.zsh"
+        ) ;;
       noter)
         needsIOS=1
         installs+=("Noter (iOS)|Installed|zsh ${(q)HOME}/Projects/noter/install.zsh") ;;

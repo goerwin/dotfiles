@@ -1,4 +1,4 @@
-# Shared macOS install step for the daylier, mic-muter and key-remapper apps.
+# Shared macOS install step for the daylier, financer, mic-muter and key-remapper apps.
 # The caller builds the app (each project has its own build specifics) and sets:
 #   MAC_APP_NAME      process and display name, e.g. "Mic Muter"
 #   MAC_SOURCE_APP    path of the freshly built "$MAC_APP_NAME.app"
@@ -123,4 +123,37 @@ mac_install_app() {
   else
     print -- "$MAC_APP_NAME wasn't running before the install; left closed."
   fi
+}
+
+# Builds a Mac Catalyst app and installs it with mac_install_app. Callers set:
+#   APP_NAME          app name (also the .xcodeproj and scheme name)
+#   PROJECT_ROOT      directory that contains "$APP_NAME.xcodeproj"
+# Optional: SCHEME, CONFIGURATION (default Release), DERIVED_DATA_DIR,
+#   DEVELOPMENT_TEAM, MAC_INSTALL_DIR.
+catalyst_install_app() {
+  : "${APP_NAME:?APP_NAME must be set}"
+  : "${PROJECT_ROOT:?PROJECT_ROOT must be set}"
+  local scheme="${SCHEME:-$APP_NAME}"
+  local configuration="${CONFIGURATION:-Release}"
+  local derivedData="${DERIVED_DATA_DIR:-$PROJECT_ROOT/.build/DerivedData}"
+
+  local -a buildCommand=(
+    xcodebuild -quiet
+    -project "$PROJECT_ROOT/$APP_NAME.xcodeproj"
+    -scheme "$scheme"
+    -configuration "$configuration"
+    -destination "platform=macOS,variant=Mac Catalyst,arch=$(uname -m)"
+    -derivedDataPath "$derivedData"
+    -allowProvisioningUpdates
+  )
+  if [[ -n "${DEVELOPMENT_TEAM:-}" ]]; then
+    buildCommand+=(DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM")
+  fi
+
+  print -- "Building $APP_NAME for Mac Catalyst ($configuration)..."
+  "${buildCommand[@]}" build || return 1
+
+  MAC_APP_NAME="$APP_NAME"
+  MAC_SOURCE_APP="$derivedData/Build/Products/$configuration-maccatalyst/$APP_NAME.app"
+  mac_install_app
 }
