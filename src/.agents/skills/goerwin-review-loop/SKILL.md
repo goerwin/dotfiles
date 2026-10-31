@@ -13,15 +13,19 @@ You only collect choices, start or resume it, and report the result.
 
 ## Start
 
-1. Split the user's message into inline intent text, existing file paths
-   (task/plan files), and image paths. Don't summarize or rewrite them.
-2. Run `python3 ~/.agents/skills/goerwin-code-review/scripts/review_pr.py presets`
-   and ask for a **reviewer** and an **implementer** preset in one question
-   each. If both use the same model, say a different reviewer catches more and
-   ask them to confirm.
-3. Confirm once: up to N rounds (default 3) on the current branch against its
-   remote default branch; the implementer runs with full permissions; the loop
-   commits locally each round and never pushes.
+1. Take loop settings out of the user's message: round count ("5 rounds" →
+   `--max-rounds 5`), base ("against develop" → `--base`), and reviewer or
+   implementer models when named ("review with Sol xhigh"). Split the rest into
+   inline intent text, existing file paths (task/plan files), and image paths,
+   without summarizing or rewriting them. Settings never go into the intent.
+2. Run `python3 ~/.agents/skills/goerwin-code-review/scripts/review_pr.py presets`.
+   Match named models to presets; ask only for a role that is unnamed or
+   ambiguous. If both use the same model, say a different reviewer catches more
+   and ask them to confirm.
+3. Confirm once in a single message: the parsed settings (rounds, default 3;
+   base, default the remote default branch; both presets) and the intent
+   sources; the implementer runs with full permissions; the loop commits
+   locally each round and never pushes.
 
 ~~~sh
 python3 /abs/skill/scripts/review_loop.py start --cwd /checkout \
