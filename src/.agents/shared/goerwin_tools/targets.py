@@ -15,11 +15,11 @@ PR_FIELDS = (
 )
 
 
-def pr_target(cwd, url, settings, user=None, revision="pr", instructions=""):
+def pr_target(cwd, url, user=None, revision="pr", instructions=""):
     parsed = pr_url(url)
     if not parsed:
         raise CommandError("Expected a GitHub pull-request URL")
-    root = find_source(cwd, parsed["repo"], settings)
+    root = find_source(cwd, parsed["repo"])
     pr = github(
         ["pr", "view", parsed["url"], "--json", PR_FIELDS],
         cwd=root,

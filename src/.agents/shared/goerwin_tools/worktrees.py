@@ -6,7 +6,7 @@ from pathlib import Path
 
 from . import herdr_adapter
 from .runtime import (
-    CommandError, common_dir, config, current_branch, default_base, find_source, git,
+    CommandError, common_dir, current_branch, default_base, find_source, git,
     git_config_env, github, github_environment, pr_url, ref_exists, remote_repositories, remotes, run,
     source_root, worktrees,
 )
@@ -138,10 +138,10 @@ def pr_branch(repo, pr, parsed):
     return matches[0] if matches else None
 
 
-def ensure_pr(cwd, target, settings, user=None):
+def ensure_pr(cwd, target, user=None):
     parsed = pr_url(target)
     if parsed:
-        repo = find_source(cwd, parsed["repo"], settings)
+        repo = find_source(cwd, parsed["repo"])
         host = parsed["host"]
     else:
         repo = source_root(cwd)
@@ -155,7 +155,7 @@ def ensure_pr(cwd, target, settings, user=None):
     canonical = pr_url(pr.get("url", ""))
     if not canonical or (parsed and canonical["repo"] != parsed["repo"]):
         raise CommandError("GitHub returned an unexpected pull request")
-    repo = find_source(repo, canonical["repo"], settings)
+    repo = find_source(repo, canonical["repo"])
     existing = pr_branch(repo, pr, canonical)
     env = github_environment(user, canonical["host"])
     if existing:
@@ -177,14 +177,14 @@ def focus_worktree(path, branch, focus=True):
         return {"available": False, "warnings": [str(error)]}
 
 
-def switch(target, cwd=None, base=None, config_path=None, github_user=None, focus=True, open_tab=False):
+def switch(target, cwd=None, base=None, github_user=None, focus=True, open_tab=False):
     cwd = str(Path(cwd or os.getcwd()).resolve())
     if pr_url(target) or target.isdecimal():
         if base:
             raise CommandError("A base branch is only valid when creating a named branch")
         if target.isdecimal() and int(target) < 1:
             raise CommandError("A PR number must be positive")
-        result = ensure_pr(cwd, target, config(config_path) if config_path else config(), github_user)
+        result = ensure_pr(cwd, target, github_user)
     else:
         env = github_environment(github_user) if github_user else None
         result = ensure_branch(source_root(cwd), target, base, env)

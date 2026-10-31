@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from goerwin_tools.review_store import StoreError, archive_root, finalize_report, report_path
-from goerwin_tools.runtime import CommandError, DEFAULT_CONFIG, config, git, json_read, new_id, now
+from goerwin_tools.runtime import CommandError, git, json_read, new_id, now
 from goerwin_tools.targets import comparison_target, pr_target, snapshot_target
 
 
@@ -19,7 +19,7 @@ def save(args):
             raise CommandError("The target file is not resolved")
         target = resolved["target"]
     elif args.pr:
-        target = pr_target(args.cwd, args.pr, config(args.config), args.github_user)
+        target = pr_target(args.cwd, args.pr, args.github_user)
     elif args.head or args.base:
         if not (args.head and args.base):
             raise CommandError("A comparison needs both --head and --base")
@@ -61,7 +61,6 @@ def main():
     parser.add_argument("-C", "--cwd", default=os.getcwd())
     parser.add_argument("--github-user")
     parser.add_argument("--archive")
-    parser.add_argument("--config", default=str(DEFAULT_CONFIG))
     args = parser.parse_args()
     try:
         print(json.dumps(save(args), indent=2))

@@ -128,7 +128,7 @@ class WorkflowFixture:
 
     def resolve_args(self, **kwargs):
         values = dict(
-            cwd=str(self.developer), config=str(self.root / "config.json"),
+            cwd=str(self.developer),
             github_user=None, input=None, head=None, base=None, instructions="", rubric="default", in_place=False,
             revision="pr",
         )
@@ -213,7 +213,7 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
     def test_custom_input_requires_resolution_and_unknown_repo_is_not_cloned(self):
         result = review.inspect_target(self.resolve_args(input="review caching against main"))
         self.assertEqual(result["status"], "clarification_required")
-        with self.assertRaisesRegex(review.ReviewError, "registered"):
+        with self.assertRaisesRegex(review.ReviewError, "never cloned"):
             review.inspect_target(self.resolve_args(input="https://github.com/other/repo/pull/123"))
 
     def test_explicit_local_revision_uses_invoking_worktree_head(self):
@@ -350,7 +350,7 @@ class WorkflowTests(WorkflowFixture, unittest.TestCase):
 
     def test_changed_pr_or_comparison_requires_new_resolution_before_side_effects(self):
         with self.fake_github(return_value=self.pr()):
-            target = review.pr_target(self.developer, self.pr()["url"], {})
+            target = review.pr_target(self.developer, self.pr()["url"])
         review.json_write(self.target_file, {"status": "ready", "target": target})
         with self.fake_github(return_value=self.pr(headRefOid=self.base)):
             result = self.launch()

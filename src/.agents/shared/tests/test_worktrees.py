@@ -61,7 +61,6 @@ class WorktreeTests(unittest.TestCase):
         ''').lstrip())
         executable.chmod(0o755)
         self.log = self.root / "wt.jsonl"
-        self.config = self.root / "config.json"
         self.environment = patch.dict(os.environ, {
             "PATH": str(self.bin) + os.pathsep + os.environ["PATH"],
             "WTS_TEST_ROOT": str(self.root / "worktrees"), "WTS_TEST_LOG": str(self.log),
@@ -79,7 +78,7 @@ class WorktreeTests(unittest.TestCase):
                               check=True, capture_output=True, text=True).stdout.strip()
 
     def switch(self, target, base=None, cwd=None):
-        return worktrees.switch(target, str(cwd or self.repo), base, self.config, focus=False)
+        return worktrees.switch(target, str(cwd or self.repo), base, focus=False)
 
     def pr(self, **overrides):
         return {"url": "https://github.com/example/project/pull/123", "number": 123,
@@ -179,18 +178,18 @@ class WorktreeTests(unittest.TestCase):
         self.assertEqual(result["path"], existing["path"])
         self.assertFalse(self.log.exists())
 
-    def test_registered_url_works_outside_any_repository(self):
+    def test_pr_url_works_from_its_checkout(self):
         self.git("remote", "set-url", "origin", "https://github.com/example/project.git")
-        runtime.register_checkout(self.repo, self.config)
         with patch.object(worktrees, "github", return_value=self.pr()):
-            result = self.switch(self.pr()["url"], cwd=self.root)
+            result = self.switch(self.pr()["url"])
         self.assertEqual(result["branch"], "pr-topic")
         self.assertEqual(self.git("config", "branch.pr-topic.goerwin-pr-url"), self.pr()["url"])
         self.assertIn(self.pr()["url"], json.loads(self.log.read_text()))
 
-    def test_unknown_repository_does_not_clone_or_create(self):
-        with self.assertRaisesRegex(runtime.CommandError, "register"):
-            self.switch("https://github.com/unknown/project/pull/123", cwd=self.root)
+    def test_other_repository_pr_does_not_clone_or_create(self):
+        for cwd in (self.root, self.repo):
+            with self.assertRaisesRegex(runtime.CommandError, "never cloned"):
+                self.switch("https://github.com/unknown/project/pull/123", cwd=cwd)
         self.assertFalse(self.log.exists())
 
     def test_fork_branch_conflict_does_not_reuse_an_unrelated_local_branch(self):

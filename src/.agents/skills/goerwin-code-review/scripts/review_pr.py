@@ -16,8 +16,8 @@ from pathlib import Path
 from goerwin_tools import harness, herdr_adapter
 from goerwin_tools.review_store import StoreError, archive_root, finalize_report, report_path, slug
 from goerwin_tools.runtime import (
-    CommandError as ReviewError, DEFAULT_CONFIG, allocation_lock, commit, common_dir,
-    config, current_branch, default_base, git, github, json_read, json_write,
+    CommandError as ReviewError, allocation_lock, commit, common_dir,
+    current_branch, default_base, git, github, json_read, json_write,
     new_id, now, pr_url, remote_repositories, repository_url, source_root, worktrees,
 )
 from goerwin_tools.targets import PR_FIELDS, comparison_target, in_place, pr_target
@@ -38,7 +38,7 @@ def inspect_target(args):
             return result
         target = comparison_target(cwd, result["head"], result["base"], args.instructions)
     elif result["status"] == "revision_selection_required":
-        target = pr_target(cwd, result["pr_url"], config(args.config), args.github_user, instructions=args.instructions)
+        target = pr_target(cwd, result["pr_url"], args.github_user, instructions=args.instructions)
     else:
         target = result["target"]
     target, warnings = in_place(target, cwd)
@@ -47,7 +47,6 @@ def inspect_target(args):
 
 def resolve_target(args):
     cwd = str(Path(args.cwd).resolve())
-    settings = config(args.config)
     if args.head or args.base:
         if not (args.head and args.base):
             raise ReviewError("A branch comparison requires both --head and --base")
@@ -60,7 +59,7 @@ def resolve_target(args):
                 "reason": "Resolve the custom request to a PR URL or explicit --head and --base refs.",
                 "input": value,
             }
-        return ready(pr_target(cwd, value, settings, args.github_user, args.revision, args.instructions), args)
+        return ready(pr_target(cwd, value, args.github_user, args.revision, args.instructions), args)
     branch = current_branch(cwd)
     if not branch:
         return {"status": "clarification_required", "reason": "Detached HEAD: ask for a PR or branch comparison."}
@@ -103,7 +102,7 @@ def resolve_target(args):
             "reason": "More than one open PR matches this branch; ask which one.",
             "choices": [{"url": pr["url"], "title": pr["title"]} for pr in prs],
         }
-    target = pr_target(cwd, prs[0]["url"], settings, args.github_user, instructions=args.instructions)
+    target = pr_target(cwd, prs[0]["url"], args.github_user, instructions=args.instructions)
     local_head = commit(cwd, "HEAD")
     if local_head != target["head_sha"]:
         return {
@@ -476,7 +475,6 @@ def parser():
     p = commands.add_parser("resolve", help="Inspect a target; unresolved cases require user answers")
     p.add_argument("input", nargs="?")
     p.add_argument("--cwd", default=os.getcwd())
-    p.add_argument("--config", default=str(DEFAULT_CONFIG))
     p.add_argument("--github-user")
     p.add_argument("--head")
     p.add_argument("--base")

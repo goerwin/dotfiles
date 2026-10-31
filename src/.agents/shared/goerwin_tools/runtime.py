@@ -10,7 +10,6 @@ import uuid
 from pathlib import Path
 from urllib.parse import urlsplit
 
-DEFAULT_CONFIG = Path.home() / ".config/goerwin-wts/config.json"
 
 
 class CommandError(RuntimeError):
@@ -232,38 +231,11 @@ def allocation_lock(directory, key=".allocation"):
         fcntl.flock(lock, fcntl.LOCK_UN)
 
 
-def config(path=DEFAULT_CONFIG):
-    path = Path(path)
-    settings = json_read(path) if path.exists() else {}
-    if not isinstance(settings, dict) or not isinstance(settings.get("repositories", {}), dict):
-        raise CommandError(f"Invalid repository configuration: {path}")
-    return settings
-
-
-def find_source(cwd, repo_name, settings):
-    candidates = [str(Path(cwd).resolve())]
-    registered = settings.get("repositories", {}).get(repo_name)
-    if registered:
-        candidates.append(str(Path(registered).expanduser().resolve()))
-    for candidate in candidates:
-        try:
-            if repo_name in remote_repositories(candidate).values():
-                return source_root(candidate)
-        except CommandError:
-            continue
-    raise CommandError(
-        f"No registered local checkout for {repo_name}. "
-        "Run 'goerwin-wts register /path/to/checkout' first."
-    )
-
-
-def register_checkout(path, config_path=DEFAULT_CONFIG):
-    root = source_root(path)
-    identities = set(remote_repositories(root).values())
-    if not identities:
-        raise CommandError("The checkout has no recognizable GitHub remotes")
-    with allocation_lock(Path(config_path).parent, ".repositories"):
-        settings = config(config_path)
-        settings.setdefault("repositories", {}).update({identity: root for identity in identities})
-        json_write(config_path, settings)
-    return {"repositories": sorted(identities), "source_root": root, "config": str(config_path)}
+def find_source(cwd, repo_name):
+    """The checkout containing cwd, when it is a clone of repo_name."""
+    try:
+        if repo_name in remote_repositories(cwd).values():
+            return source_root(cwd)
+    except CommandError:
+        pass
+    raise CommandError(f"Run this from a local checkout of {repo_name}; repositories are never cloned.")

@@ -72,6 +72,6 @@ timeout, check `status --cwd PATH` and Herdr before retrying.
 Reports go to `~/goerwin-code-reviews/<project>/YYYY-MM-DD-NN-topic.md`
 (`--archive` or `GOERWIN_CODE_REVIEWS_DIR` overrides the root) and are
 immutable; receiving outcomes go in a `*.receiving.md` sidecar. Use
-`goerwin-receiving-code-review` to act on them. A PR from an unknown repository
-needs a checkout registered with `goerwin-wts register /path`; never clone.
+`goerwin-receiving-code-review` to act on them. A PR URL must belong to the
+current checkout's repository; never clone.
 Presets live in `~/.agents/shared/presets.json`.
