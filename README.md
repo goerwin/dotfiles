@@ -8,8 +8,8 @@ key remaps, and VS Code / Cursor settings.
 ```sh
 make install # Install the local checkout, including uncommitted changes
 make update # Pull the latest changes (fast-forward only), then install
-./bin/install-brew.zsh # Install Homebrew packages
-./bin/install-brew-force.zsh # Install Homebrew packages (remove unlisted ones)
+./bin/install-brew.zsh # Install or upgrade Homebrew packages
+./bin/install-brew-force.zsh # Install or upgrade Homebrew packages (remove unlisted ones)
 make install-apps # Install local apps
 make install-apps APP=mic-muter # Update and install only Mic Muter
 ```
@@ -20,8 +20,8 @@ Homebrew must be on your PATH (follow its `brew shellenv` instructions on a new 
 
 ```sh
 ./bin/brew-backup.zsh        # Refresh package list and generated descriptions
-./bin/install-brew.zsh       # Install listed packages; keep extras
-./bin/install-brew-force.zsh # Install listed packages; remove unlisted ones
+./bin/install-brew.zsh       # Install or upgrade listed packages; keep extras
+./bin/install-brew-force.zsh # Install or upgrade listed packages; remove unlisted ones
 ```
 
 The matching `make` targets also work.

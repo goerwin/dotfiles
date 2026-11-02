@@ -153,12 +153,8 @@ if [[ "$MACHINE_TYPE" == "godaddy" ]]; then
 
   # NOTE: Maybe you need to uncomment this when needing to do AWS stuff
   # export USER=egaitan # user should be your godaddy email username
-  alias okta='OKTA_DOMAIN=godaddy.okta.com; KEY=$(openssl rand -hex 18); eval $(aws-okta-processor authenticate -e -o $OKTA_DOMAIN -u $USER -k $KEY -d 7200)'
   alias kasm='. kasm-wrapper'
   export AWS_REGION=us-west-2 # (ar does not set the region properly, so doing it manually)
-
-  # Load awsprofile's zsh completion setup.
-  isCommand awsprofile && eval "$(awsprofile completion zsh)"
 
   # Before commands such as deploy-assets, select a profile (e.g. ap uxp_prod_ops).
   # AWS_REGION above sets the region; authenticate through SSO if prompted.

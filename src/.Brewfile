@@ -3,6 +3,8 @@ tap "cameroncooke/axe"
 brew "aws-iam-authenticator"
 # Official Amazon AWS command-line interface
 brew "awscli"
+# Incredibly fast JavaScript runtime, bundler, test runner, and package manager
+brew "bun"
 # Cross-platform make
 brew "cmake"
 # Console Matrix
@@ -15,10 +17,14 @@ brew "fnm"
 brew "fzf"
 # GitHub command-line tool
 brew "gh"
+# Agent multiplexer that lives in your terminal
+brew "herdr"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
 # AI coding agent, built for the terminal
 brew "opencode"
+# AI agent toolkit
+brew "pi-coding-agent"
 # Fast, disk space efficient package manager
 brew "pnpm"
 # Autoformat shell script source code
@@ -41,6 +47,10 @@ brew "zsh-completions"
 brew "zsh-syntax-highlighting"
 # CLI tool for interacting with iOS Simulators via accessibility and HID APIs
 brew "cameroncooke/axe/axe", trusted: true
+# Terminal-based AI coding assistant
+cask "claude-code"
+# OpenAI's coding agent that runs in your terminal
+cask "codex"
 # Write, edit, and chat about your code with AI
 cask "cursor"
 # Graphically shows disk usage within a file system
@@ -51,7 +61,3 @@ cask "hammerspoon"
 cask "monitorcontrol"
 # Terminal-based web browser
 cask "terminal-browser"
-uv "aws-okta-processor"
-uv "fonttools", with: ["brotli"]
-uv "vale"
-uv "xawsprofile"
