@@ -1,7 +1,7 @@
 {
   "global": {
     "cmd-t": "tab.new",
-    "cmd-w": "tab.close",
+    "cmd-w": "mod.open:confirm-close",
     "f3": "tab.prev",
     "cmd-h": "tab.prev",
     "f4": "tab.next",
