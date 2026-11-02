@@ -142,9 +142,6 @@ bindkey '^[[1;3C' forward-word
 # Let lowercase completion input match uppercase characters.
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
-# Load cargo environment variables.
-[[ -r "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
-
 # Godaddy
 
 if [[ "$MACHINE_TYPE" == "godaddy" ]]; then

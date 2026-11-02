@@ -26,8 +26,6 @@ make install-brew-force # Same, then remove unlisted packages
 Homebrew must be on your PATH (follow its `brew shellenv` instructions on a new
 Mac). Backup drops custom comments and ordering; commit `src/.Brewfile` after
 it. It installs as `~/.Brewfile`, so `brew bundle --global` works anywhere.
-Force install also manages uv tools and keeps required dependencies. Python
-versions and CLI tools use `uv`. Use Time Machine for app data and settings.
 
 ## Development
 

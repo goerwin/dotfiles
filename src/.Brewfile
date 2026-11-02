@@ -1,6 +1,4 @@
 tap "cameroncooke/axe"
-# Use AWS IAM credentials to authenticate to Kubernetes
-brew "aws-iam-authenticator"
 # Official Amazon AWS command-line interface
 brew "awscli"
 # Incredibly fast JavaScript runtime, bundler, test runner, and package manager
