@@ -10,7 +10,7 @@
     "alt-l": "space.next",
     "alt-f3": "space.prev",
     "alt-f4": "space.next",
-    "cmd-shift-o": "open-cursor.open",
+    "cmd-shift-o": "mod.open:open-cursor",
 
     "cmd-q": "app.quit",
     "cmd-alt-h": "app.hide_others",
