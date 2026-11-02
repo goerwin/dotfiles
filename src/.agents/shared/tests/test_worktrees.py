@@ -379,7 +379,7 @@ class InstallationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="install-skills-") as tmp:
             home = Path(tmp).resolve()
             env = dict(os.environ, GOERWIN_SKILLS_HOME=tmp, HOME=tmp, PYTHONDONTWRITEBYTECODE="1")
-            subprocess.run(["zsh", "bin/install-skills.zsh"], cwd=ROOT, env=env, check=True, capture_output=True)
+            subprocess.run(["zsh", "bin/install-skills.zsh", "--no-update"], cwd=ROOT, env=env, check=True, capture_output=True)
             for name in ("goerwin-wts", "goerwin-review"):
                 command = home / ".local/bin" / name
                 self.assertTrue(command.is_symlink())

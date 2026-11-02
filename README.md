@@ -1,52 +1,37 @@
 # Dotfiles
 
 Personal macOS dotfiles: shell, Homebrew packages, window management,
-key remaps, and VS Code / Cursor settings.
+key remaps, VS Code / Cursor settings, and agent skills.
 
 ## Install
 
 ```sh
-make install # Install the local checkout, including uncommitted changes
-make update # Pull the latest changes (fast-forward only), then install
-./bin/install-brew.zsh # Install or upgrade Homebrew packages
-./bin/install-brew-force.zsh # Install or upgrade Homebrew packages (remove unlisted ones)
-make install-apps # Install local apps
-make install-apps APP=mic-muter # Update and install only Mic Muter
+make install                    # Dotfiles, editor settings, and agent skills
+make install-skills             # Agent skills only (see each skill's SKILL.md)
+make install-apps APP=mic-muter # Local apps; omit APP for all
 ```
 
-Homebrew must be on your PATH (follow its `brew shellenv` instructions on a new Mac).
+These `git pull --ff-only` first. Add `NO_UPDATE=1` to install the local
+checkout as is, uncommitted changes included (`--no-update` when running a
+`bin/` script directly).
 
 ## Homebrew
 
 ```sh
-./bin/brew-backup.zsh        # Refresh package list and generated descriptions
-./bin/install-brew.zsh       # Install or upgrade listed packages; keep extras
-./bin/install-brew-force.zsh # Install or upgrade listed packages; remove unlisted ones
+make brew-backup        # Rewrite src/.Brewfile from installed packages
+make install-brew       # Install or upgrade listed packages; keep extras
+make install-brew-force # Same, then remove unlisted packages
 ```
 
-The matching `make` targets also work.
-
-Commit and push `src/.Brewfile` after refreshing. It installs as `~/.Brewfile`;
-use `brew bundle --global` anywhere. Force install manages Homebrew and uv tools,
-keeping required dependencies. Backup replaces custom comments and ordering.
-Use Time Machine for app data and settings.
-
-Python versions and CLI tools use `uv` (`uv python install`, `uv tool install`).
-
-## Agent skills
-
-Skills live in `src/.agents/skills` and are included in `make install`.
-To install just the skills:
-
-```sh
-make install-skills
-```
-
-See each skill's `SKILL.md` for usage.
+Homebrew must be on your PATH (follow its `brew shellenv` instructions on a new
+Mac). Backup drops custom comments and ordering; commit `src/.Brewfile` after
+it. It installs as `~/.Brewfile`, so `brew bundle --global` works anywhere.
+Force install also manages uv tools and keeps required dependencies. Python
+versions and CLI tools use `uv`. Use Time Machine for app data and settings.
 
 ## Development
 
 ```sh
-make lint
-make fix
+make lint # make fix to apply fixes
+make test-skills
 ```

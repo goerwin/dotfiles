@@ -1,6 +1,7 @@
 BIOME := npm_config_registry=https://registry.npmjs.org npx @biomejs/biome@2.5.3
+UPDATE_FLAG := $(if $(NO_UPDATE),--no-update)
 
-.PHONY: lint fix test-skills install-skills install update install-apps brew-backup install-brew install-brew-force
+.PHONY: lint fix test-skills install-skills install install-apps brew-backup install-brew install-brew-force
 
 lint:
 	$(BIOME) check .
@@ -9,14 +10,10 @@ fix:
 	$(BIOME) check --write .
 
 install:
-	zsh bin/install.zsh
-
-update:
-	git pull --ff-only
-	$(MAKE) install
+	zsh bin/install.zsh $(UPDATE_FLAG)
 
 install-apps:
-	@zsh bin/install-apps.zsh "$(APP)"
+	@zsh bin/install-apps.zsh $(UPDATE_FLAG) "$(APP)"
 
 brew-backup:
 	@./bin/brew-backup.zsh
@@ -33,4 +30,4 @@ test-skills:
 	done
 
 install-skills:
-	zsh bin/install-skills.zsh
+	zsh bin/install-skills.zsh $(UPDATE_FLAG)

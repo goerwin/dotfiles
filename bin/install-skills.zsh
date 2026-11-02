@@ -1,7 +1,21 @@
 #!/bin/zsh
+# alfred-title: Install skills
+# alfred-subtitle: Pull, then install only the agent skills · Tab → --no-update: local changes
+# alfred-args: --no-update: skip git pull and install the local skills as is
 
 set -euo pipefail
-cd "${0:A:h:h}" || exit 1
+scriptPath=${0:A}
+cd "${scriptPath:h:h}" || exit 1
+
+# Pulls, then reruns the updated installer with --no-update.
+case "${1:-}" in
+  --no-update) ;;
+  "")
+    print -r -- "Pulling latest dotfiles"
+    git pull --ff-only
+    exec zsh "$scriptPath" --no-update ;;
+  *) print -ru2 -- "Usage: install-skills.zsh [--no-update]"; exit 1 ;;
+esac
 
 skillsInstallHome="${GOERWIN_SKILLS_HOME:-$HOME}"
 

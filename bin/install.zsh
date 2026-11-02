@@ -1,9 +1,22 @@
 #!/bin/zsh
 # alfred-title: Install dotfiles
+# alfred-subtitle: Pull, then install · Tab → --no-update: install local changes
+# alfred-args: --no-update: skip git pull and install the local checkout as is
 
 set -euo pipefail
 
-cd "${0:A:h:h}" || exit 1
+scriptPath=${0:A}
+cd "${scriptPath:h:h}" || exit 1
+
+# Pulls, then reruns the updated installer with --no-update.
+case "${1:-}" in
+  --no-update) ;;
+  "")
+    echo "⬇️  Pulling latest dotfiles"
+    git pull --ff-only
+    exec zsh "$scriptPath" --no-update ;;
+  *) print -ru2 -- "Usage: install.zsh [--no-update]"; exit 1 ;;
+esac
 
 if ! command -v brew &>/dev/null; then
   brewExecutable="/opt/homebrew/bin/brew"
@@ -95,7 +108,7 @@ done
   done
 }
 
-GOERWIN_SKILLS_HOME="$homeDir" zsh bin/install-skills.zsh
+GOERWIN_SKILLS_HOME="$homeDir" zsh bin/install-skills.zsh --no-update
 
 # Restore spacing: defaults -currentHost delete -globalDomain NSStatusItemSpacing
 defaults -currentHost write -globalDomain NSStatusItemSpacing -int 12

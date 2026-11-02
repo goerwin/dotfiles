@@ -1,5 +1,6 @@
 #!/bin/zsh
 # alfred-title: Back up Homebrew packages
+# alfred-subtitle: Rewrite src/.Brewfile from what's installed (drops custom comments)
 
 set -euo pipefail
 

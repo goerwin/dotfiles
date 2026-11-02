@@ -1,5 +1,6 @@
 #!/bin/zsh
 # alfred-title: Install Homebrew packages
+# alfred-subtitle: Install or upgrade Brewfile packages · keeps unlisted ones
 
 set -euo pipefail
 

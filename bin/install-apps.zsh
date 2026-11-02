@@ -1,7 +1,7 @@
 #!/bin/zsh
 # alfred-title: Install apps
-# alfred-subtitle: Enter: install all apps · Tab: choose one (e.g. mic-muter)
-# alfred-args: Apps: financer, noter, daylier, mic-muter, key-remapper · empty = all
+# alfred-subtitle: Pull and install all apps · Tab → an app name and/or --no-update
+# alfred-args: financer, noter, daylier, mic-muter, key-remapper (empty = all) · --no-update: skip git pull
 set -euo pipefail
 
 main() {
@@ -32,7 +32,11 @@ main() {
     esac
   done
 
-  print -r -- "Updating repos and installing: ${(j:, :)apps}. Logs: $logDir"
+  if (( update )); then
+    print -r -- "Updating repos and installing: ${(j:, :)apps}. Logs: $logDir"
+  else
+    print -r -- "Installing without updating repos: ${(j:, :)apps}. Logs: $logDir"
+  fi
 
   if (( needsIOS )); then
     configure_ios
@@ -41,21 +45,29 @@ main() {
       "Signing credentials|Checked|ios_check_signing"
   fi
 
-  run_section "Updating repositories" "${updates[@]}"
+  (( update )) && run_section "Updating repositories" "${updates[@]}"
   run_section "Installing apps" "${installs[@]}"
 
   printf '\n✅ Installed %s (%s).\n' "${(j:, :)apps}" "$(duration "$((SECONDS - startedAt))")"
 }
 
 usage() {
-  print -r -- "Usage: install-apps.zsh [app]"
+  print -r -- "Usage: install-apps.zsh [--no-update] [app]"
   print -r -- "Apps: financer, noter, daylier, mic-muter, key-remapper"
   print -r -- "Omit app to install all. Daylier installs both macOS and iOS apps."
+  print -r -- "--no-update skips pulling the app repos, to install local changes."
 }
 
+# Alfred passes everything as one string, so the flag is matched as a word.
+update=1
+words=()
+for word in ${=*}; do
+  if [[ "$word" == --no-update ]]; then update=0; else words+=("$word"); fi
+done
+requestedApp="${(L)words[*]}"
+
 apps=(financer noter daylier mic-muter key-remapper)
-if [[ -n "$*" ]]; then
-  requestedApp="${(L)*}"
+if [[ -n "$requestedApp" ]]; then
   case "${requestedApp//[-_[:space:]]/}" in
     help|h) usage; exit 0 ;;
     financer) apps=(financer) ;;
@@ -63,7 +75,7 @@ if [[ -n "$*" ]]; then
     daylier) apps=(daylier) ;;
     micmuter) apps=(mic-muter) ;;
     keyremapper) apps=(key-remapper) ;;
-    *) print -ru2 -- "Unknown app: $*"; usage >&2; exit 1 ;;
+    *) print -ru2 -- "Unknown app: ${words[*]}"; usage >&2; exit 1 ;;
   esac
 fi
 
