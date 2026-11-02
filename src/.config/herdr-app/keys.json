@@ -8,6 +8,8 @@
     "cmd-l": "tab.next",
     "alt-h": "space.prev",
     "alt-l": "space.next",
+    "alt-f3": "space.prev",
+    "alt-f4": "space.next",
 
     "cmd-q": "app.quit",
     "cmd-alt-h": "app.hide_others",
