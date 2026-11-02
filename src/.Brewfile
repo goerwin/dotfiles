@@ -53,6 +53,8 @@ cask "claude-code"
 cask "codex"
 # Write, edit, and chat about your code with AI
 cask "cursor"
+# Command-line agent for Cursor
+cask "cursor-cli"
 # Graphically shows disk usage within a file system
 cask "grandperspective"
 # Desktop automation application
