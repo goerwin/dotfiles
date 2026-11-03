@@ -1,0 +1,11 @@
+{
+  "place": "none",
+  "title": "Move tab right",
+  "overlay": {
+    "kind": "window",
+    "frame": "none",
+    "width": 2,
+    "height": 2,
+    "props": { "delta": 1 }
+  }
+}

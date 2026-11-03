@@ -11,6 +11,8 @@
     "alt-f3": "space.prev",
     "alt-f4": "space.next",
     "cmd-shift-o": "mod.open:open-cursor",
+    "cmd-,": "mod.open:move-tab-left",
+    "cmd-.": "mod.open:move-tab-right",
 
     "cmd-q": "app.quit",
     "cmd-alt-h": "app.hide_others",
@@ -24,7 +26,6 @@
     "cmd-[": "agent.prev",
     "cmd-shift-l": "layout.switch",
     "cmd-n": "space.new",
-    "cmd-,": "app.settings",
     "cmd-d": "pane.split:right",
     "cmd-shift-d": "pane.split:down",
     "cmd-shift-w": "pane.close",
