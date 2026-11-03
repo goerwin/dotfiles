@@ -21,8 +21,6 @@ brew "herdr"
 brew "jq"
 # AI coding agent, built for the terminal
 brew "opencode"
-# AI agent toolkit
-brew "pi-coding-agent"
 # Fast, disk space efficient package manager
 brew "pnpm"
 # Autoformat shell script source code
@@ -37,6 +35,8 @@ brew "swiftlint"
 brew "uv"
 # CLI for Git worktree management, designed for parallel AI agent workflows
 brew "worktrunk"
+# JavaScript package manager
+brew "yarn"
 # Fish-like fast/unobtrusive autosuggestions for zsh
 brew "zsh-autosuggestions"
 # Additional completion definitions for zsh
