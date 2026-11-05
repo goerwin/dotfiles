@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .runtime import CommandError, json_read
 
-PRESETS = Path(__file__).resolve().parents[1] / "presets.json"
+PRESETS = Path(__file__).with_name("presets.json")
 
 
 def presets(path=PRESETS):

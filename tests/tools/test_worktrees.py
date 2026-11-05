@@ -10,17 +10,18 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-SHARED = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(SHARED))
+ROOT = Path(__file__).resolve().parents[2]
+LIB = ROOT / "src/.local/lib"
+BIN = ROOT / "src/.local/bin"
+sys.path.insert(0, str(LIB))
 from goerwin_tools import herdr_adapter, review_store as store, runtime, targets, worktrees
 
-ROOT = SHARED.parents[2]
-COMMAND = SHARED / "goerwin-wts"
+COMMAND = BIN / "goerwin-wt"
 
 
 class WorktreeTests(unittest.TestCase):
     def setUp(self):
-        self.temporary = tempfile.TemporaryDirectory(prefix="goerwin-wts-")
+        self.temporary = tempfile.TemporaryDirectory(prefix="goerwin-wt-")
         self.root = Path(self.temporary.name).resolve()
         self.repo = self.root / "repo with spaces $(literal)"
         self.repo.mkdir()
@@ -46,6 +47,26 @@ class WorktreeTests(unittest.TestCase):
             with open(os.environ["WTS_TEST_LOG"], "a") as log:
                 log.write(json.dumps(args) + "\\n")
             repo = args[args.index("-C") + 1]
+            if "list" in args:
+                output = subprocess.run(["git", "-C", repo, "worktree", "list", "--porcelain"], check=True, capture_output=True, text=True).stdout
+                items = []
+                for index, block in enumerate(output.strip().split("\\n\\n")):
+                    fields = dict(line.partition(" ")[::2] for line in block.splitlines())
+                    path = fields["worktree"]
+                    dirty = subprocess.run(["git", "-C", path, "status", "--porcelain"], capture_output=True, text=True).stdout
+                    tree = {"path": path, "main": index == 0, "changes": {"modified": bool(dirty)}}
+                    if "locked" in fields:
+                        tree["locked"] = {"reason": fields["locked"]}
+                    items.append({"branch": fields.get("branch", "").removeprefix("refs/heads/") or None, "worktree": tree})
+                print(json.dumps({"schema": 2, "repo": {"default_branch": "main"}, "collected": {}, "items": items}))
+                sys.exit(0)
+            if "remove" in args:
+                if os.environ.get("WTS_TEST_REMOVE_FAIL"):
+                    sys.exit("pre-remove hook failed")
+                target = args[args.index("remove") + 1]
+                subprocess.run(["git", "-C", repo, "worktree", "remove", *(["--force"] if "--force" in args else []), target], check=True, capture_output=True)
+                print(json.dumps({"kind": "worktree", "path": target, "branch_outcome": "not_attempted"}))
+                sys.exit(0)
             selector = args[args.index("switch") + 1]
             create = selector == "--create"
             branch = args[args.index("--create") + 1] if create else selector
@@ -206,13 +227,13 @@ class WorktreeTests(unittest.TestCase):
         wt.write_text(wt.read_text().replace(
             'subprocess.run(command, check=True, capture_output=True)',
             'print("SETUP PROGRESS", file=sys.stderr, flush=True)\nsubprocess.run(command, check=True, capture_output=True)'))
-        result = subprocess.run([sys.executable, str(COMMAND), "feature", "main", "--no-focus"],
+        result = subprocess.run([sys.executable, str(COMMAND), "switch", "feature", "main"],
                                 cwd=self.repo, check=True, capture_output=True, text=True)
         self.assertIn("SETUP PROGRESS", result.stderr)
         self.assertNotIn("SETUP PROGRESS", result.stdout)
 
     def test_cli_prints_only_the_path(self):
-        result = subprocess.run([sys.executable, str(COMMAND), "feature", "main", "--no-focus"],
+        result = subprocess.run([sys.executable, str(COMMAND), "switch", "feature", "main"],
                                 cwd=self.repo, check=True, capture_output=True, text=True)
         self.assertTrue(Path(result.stdout.strip()).is_dir())
         self.assertEqual(len(result.stdout.splitlines()), 1)
@@ -231,7 +252,7 @@ class WorktreeTests(unittest.TestCase):
         body.write_text("# Architecture\n\n### F1: Duplicate helper\n`a.py:1` · suggestion\n")
         env = dict(os.environ, GOERWIN_CODE_REVIEWS_DIR=str(self.root / "archive"))
         result = subprocess.run([
-            sys.executable, str(SHARED / "goerwin-review"), "save", "--body", str(body),
+            sys.executable, str(BIN / "goerwin-review"), "save", "--body", str(body),
             "--skill", "goerwin-architecture-review", "--harness", "claude",
             "--model", "claude-opus-5-5", "--effort", "high", "--scope", "src", "-C", str(self.repo),
         ], env=env, check=True, capture_output=True, text=True)
@@ -244,7 +265,7 @@ class WorktreeTests(unittest.TestCase):
         target, _ = targets.in_place(targets.comparison_target(self.repo, "main", "main"), self.repo)
         runtime.json_write(target_file, {"status": "ready", "target": target})
         result = subprocess.run([
-            sys.executable, str(SHARED / "goerwin-review"), "save", "--body", str(body), "--target-file", str(target_file),
+            sys.executable, str(BIN / "goerwin-review"), "save", "--body", str(body), "--target-file", str(target_file),
             "--skill", "goerwin-code-review", "--harness", "claude", "--model", "claude-opus-5-5", "--effort", "unknown",
         ], env=env, check=True, capture_output=True, text=True)
         meta = store.read_report(json.loads(result.stdout)["report"])["metadata"]
@@ -252,7 +273,7 @@ class WorktreeTests(unittest.TestCase):
         self.assertEqual((meta["effort"], meta["revision"]), ("unknown", "local"))
         (self.repo / "file").write_text("base\n")
         body.write_text("loose notes without headings")
-        failed = subprocess.run([sys.executable, str(SHARED / "goerwin-review"), "save", "--body", str(body),
+        failed = subprocess.run([sys.executable, str(BIN / "goerwin-review"), "save", "--body", str(body),
                                  "--skill", "x", "--harness", "claude", "--model", "m", "--effort", "e",
                                  "-C", str(self.repo)], env=env, capture_output=True, text=True)
         self.assertEqual(failed.returncode, 1)
@@ -373,16 +394,16 @@ class ArchiveTests(unittest.TestCase):
 
 
 class InstallationTests(unittest.TestCase):
-    def test_install_skills_installs_one_shared_copy_and_working_links(self):
+    def test_install_skills_installs_tools_and_working_library_links(self):
         if not shutil.which("zsh") or not shutil.which("rsync"):
             self.skipTest("zsh and rsync are required for installer checks")
         with tempfile.TemporaryDirectory(prefix="install-skills-") as tmp:
             home = Path(tmp).resolve()
             env = dict(os.environ, GOERWIN_SKILLS_HOME=tmp, HOME=tmp, PYTHONDONTWRITEBYTECODE="1")
             subprocess.run(["zsh", "bin/install-skills.zsh", "--no-update"], cwd=ROOT, env=env, check=True, capture_output=True)
-            for name in ("goerwin-wts", "goerwin-review"):
+            for name in ("goerwin-wt", "goerwin-review"):
                 command = home / ".local/bin" / name
-                self.assertTrue(command.is_symlink())
+                self.assertFalse(command.is_symlink())
                 subprocess.run([str(command), "--help"], check=True, env=env, capture_output=True)
             self.assertFalse(list(home.glob(".agents/**/tests")))
             for skill, args in (("goerwin-code-review", ["review_pr.py", "presets"]),
@@ -390,5 +411,5 @@ class InstallationTests(unittest.TestCase):
                                ("goerwin-review-loop", ["review_loop.py", "--help"])):
                 scripts = home / ".agents/skills" / skill / "scripts"
                 self.assertTrue((scripts / "goerwin_tools").is_symlink())
-                self.assertEqual((scripts / "goerwin_tools").resolve(), home / ".agents/shared/goerwin_tools")
+                self.assertEqual((scripts / "goerwin_tools").resolve(), home / ".local/lib/goerwin_tools")
                 subprocess.run([sys.executable, str(scripts / args[0]), *args[1:]], check=True, env=env, capture_output=True)

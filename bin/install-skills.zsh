@@ -1,6 +1,6 @@
 #!/bin/zsh
 # alfred-title: Install skills
-# alfred-subtitle: Pull, then install only the agent skills · Tab → --no-update: local changes
+# alfred-subtitle: Pull, then install agent skills and supporting CLI tools
 # alfred-args: --no-update: skip git pull and install the local skills as is
 
 set -euo pipefail
@@ -19,25 +19,8 @@ esac
 
 skillsInstallHome="${GOERWIN_SKILLS_HOME:-$HOME}"
 
-sharedDestination="$skillsInstallHome/.agents/shared"
-sharedCommands=(goerwin-wts goerwin-review)
-if [[ -L "$sharedDestination" ]]; then
-  print -u2 -- "Refusing to replace an existing shared helper path."
-  exit 1
-fi
-for command in $sharedCommands; do
-  if [[ -e "$skillsInstallHome/.local/bin/$command" && ! -L "$skillsInstallHome/.local/bin/$command" ]]; then
-    print -u2 -- "Refusing to replace $skillsInstallHome/.local/bin/$command"
-    exit 1
-  fi
-done
-mkdir -p "$sharedDestination" "$skillsInstallHome/.local/bin" \
-  "$skillsInstallHome/.agents/skills" "$skillsInstallHome/.claude/skills"
-rsync -a --delete --exclude='__pycache__' --exclude='*.pyc' --exclude='tests' ./src/.agents/shared/ "$sharedDestination/"
-for command in $sharedCommands; do
-  ln -sfn "../../.agents/shared/$command" "$skillsInstallHome/.local/bin/$command"
-  print -r -- "Installed $command"
-done
+GOERWIN_TOOLS_HOME="$skillsInstallHome" zsh bin/install-tools.zsh --no-update
+mkdir -p "$skillsInstallHome/.agents/skills" "$skillsInstallHome/.claude/skills" "$skillsInstallHome/.codex/skills"
 for source in ./src/.agents/skills/*(/N); do
   [[ -f "$source/SKILL.md" ]] || continue
   skill="${source:t}"
@@ -51,9 +34,29 @@ for source in ./src/.agents/skills/*(/N); do
     print -u2 -- "Refusing to replace a Claude skill directory: $claudeLink"
     exit 1
   fi
+  codexLink="$skillsInstallHome/.codex/skills/$skill"
+  if [[ -e "$codexLink" && ! -L "$codexLink" ]]; then
+    print -u2 -- "Refusing to replace a Codex skill directory: $codexLink"
+    exit 1
+  fi
+  if [[ -L "$codexLink" && "${codexLink:A}" != "${source:A}" && "${codexLink:A}" != "${destination:A}" ]]; then
+    print -u2 -- "Refusing to replace an unrelated Codex skill symlink: $codexLink"
+    exit 1
+  fi
   mkdir -p "$destination"
   rsync -a --delete --exclude='__pycache__' --exclude='*.pyc' --exclude='tests' "$source/" "$destination/"
   ln -sfn "../../.agents/skills/$skill" "$claudeLink"
+  # Preserve an existing direct link to this checkout, including in-progress skills.
+  if [[ ! -L "$codexLink" || "${codexLink:A}" != "${source:A}" ]]; then
+    ln -sfn "../../.agents/skills/$skill" "$codexLink"
+  fi
   print -r -- "Installed $skill"
 done
+legacyShared="$skillsInstallHome/.agents/shared"
+if [[ -d "$legacyShared" && ! -L "$legacyShared" && -f "$legacyShared/.goerwin-tools-legacy-owned" ]]; then
+  mkdir -p "$skillsInstallHome/.local/state/goerwin-tools"
+  legacyBackup=$(mktemp -d "$skillsInstallHome/.local/state/goerwin-tools/legacy-shared.XXXXXX")
+  mv "$legacyShared" "$legacyBackup/shared"
+  print -r -- "Preserved legacy helpers in $legacyBackup/shared"
+fi
 mkdir -p "$skillsInstallHome/goerwin-code-reviews"

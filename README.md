@@ -7,7 +7,8 @@ key remaps, VS Code / Cursor settings, and agent skills.
 
 ```sh
 make install                    # Dotfiles, editor settings, and agent skills
-make install-skills             # Agent skills only (see each skill's SKILL.md)
+make install-tools              # Personal CLI tools and their reference
+make install-skills             # Agent skills and supporting CLI tools
 make install-apps APP=mic-muter # Local apps; omit APP for all
 ```
 
@@ -33,3 +34,10 @@ it. It installs as `~/.Brewfile`, so `brew bundle --global` works anywhere.
 make lint # make fix to apply fixes
 make test-skills
 ```
+
+## Worktrees and reviews
+
+Use `goerwin-wt switch|list|open|remove` for Worktrunk-backed worktrees and
+explicit Herdr navigation/cleanup, and `goerwin-review save` for review reports.
+See the [CLI reference](src/.local/share/goerwin-tools/README.md) or `--help`.
+Invoke `$goerwin-handoff` explicitly to launch a fresh visible agent session.

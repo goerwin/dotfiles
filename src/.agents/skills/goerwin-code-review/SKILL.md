@@ -74,4 +74,4 @@ Reports go to `~/goerwin-code-reviews/<project>/YYYY-MM-DD-NN-topic.md`
 immutable; receiving outcomes go in a `*.receiving.md` sidecar. Use
 `goerwin-receiving-code-review` to act on them. A PR URL must belong to the
 current checkout's repository; never clone.
-Presets live in `~/.agents/shared/presets.json`.
+Presets live in `~/.local/lib/goerwin_tools/presets.json`.

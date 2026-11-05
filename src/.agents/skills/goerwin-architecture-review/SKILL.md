@@ -88,7 +88,7 @@ Group findings by severity (high, medium, low). For each finding, include:
 - Why it matters
 - Suggested fix
 
-If there are findings, ask whether to save them. If yes, follow `~/.agents/shared/references/saving.md`
+If there are findings, ask whether to save them. If yes, follow `~/.local/share/goerwin-tools/saving.md`
 with `--skill goerwin-architecture-review` and `--scope` set to the reviewed folder (`.` for the whole
 repository), using `high`/`medium`/`low` as each finding's severity.
 

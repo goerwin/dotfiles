@@ -8,7 +8,7 @@ from . import herdr_adapter
 from .runtime import (
     CommandError, common_dir, current_branch, default_base, find_source, git,
     git_config_env, github, github_environment, pr_url, ref_exists, remote_repositories, remotes, run,
-    source_root, worktrees,
+    source_root, toplevel, worktrees,
 )
 
 
@@ -177,9 +177,28 @@ def focus_worktree(path, branch, focus=True):
         return {"available": False, "warnings": [str(error)]}
 
 
-def switch(target, cwd=None, base=None, github_user=None, focus=True, open_tab=False):
+def switch(target, cwd=None, base=None, github_user=None, focus=False, open_tab=False):
     cwd = str(Path(cwd or os.getcwd()).resolve())
-    if pr_url(target) or target.isdecimal():
+    candidate = Path(target).expanduser()
+    if not candidate.is_absolute():
+        candidate = Path(cwd) / candidate
+    explicit_path = Path(target).expanduser().is_absolute() or target.startswith(("./", "../", "~"))
+    is_checkout = False
+    if candidate.is_dir():
+        is_checkout = str(candidate.resolve()) in {
+            str(Path(item["worktree"]).resolve()) for item in worktrees(cwd)
+        }
+    if candidate.is_dir() and (explicit_path or is_checkout):
+        if base:
+            raise CommandError("A base is only valid for a branch target")
+        repo = source_root(cwd)
+        path = toplevel(candidate)
+        if common_dir(path) != common_dir(repo):
+            raise CommandError("Worktree path belongs to another repository")
+        if path not in {str(Path(item["worktree"]).resolve()) for item in worktrees(repo)}:
+            raise CommandError("Path is not a registered worktree")
+        result = {"path": path, "branch": current_branch(path), "reused": True}
+    elif pr_url(target) or target.isdecimal():
         if base:
             raise CommandError("A base branch is only valid when creating a named branch")
         if target.isdecimal() and int(target) < 1:
@@ -191,3 +210,41 @@ def switch(target, cwd=None, base=None, github_user=None, focus=True, open_tab=F
     if focus or open_tab:
         result["herdr"] = focus_worktree(result["path"], result["branch"], focus)
     return result
+
+
+def listing(cwd):
+    """Use an explicit Worktrunk schema rather than the user's configured schema."""
+    source_root(cwd)  # Validate the shared primary checkout, preserving list's context.
+    repo = toplevel(cwd)
+    output = run([
+        "wt", "-C", repo, "--config-set", "list.json-schema=2", "list", "--format=json",
+    ], timeout=120, stderr=None)
+    try:
+        data = json.loads(output.stdout)
+        if data["schema"] != 2 or not isinstance(data["items"], list):
+            raise ValueError("expected schema 2")
+        for item in data["items"]:
+            if not isinstance(item, dict):
+                raise ValueError("expected list row")
+            tree = item.get("worktree")
+            if tree is not None and (not isinstance(tree, dict) or not isinstance(tree.get("path"), str)):
+                raise ValueError("worktree path missing")
+    except (ValueError, KeyError, TypeError) as error:
+        raise CommandError("Worktrunk did not return list schema 2") from error
+    return data
+
+
+def resolve_existing(cwd, target, data=None):
+    """Resolve exact branch names or checkout paths; never create a branch here."""
+    data = data if data is not None else listing(cwd)
+    candidate = Path(target).expanduser()
+    if not candidate.is_absolute():
+        candidate = Path(cwd) / candidate
+    path = str(candidate.resolve())
+    matches = [item for item in data["items"] if item.get("worktree") and (
+        item.get("branch") == target
+        or str(Path(item["worktree"]["path"]).resolve()) == path
+    )]
+    if len(matches) != 1:
+        raise CommandError(f"Expected one existing worktree for {target!r}; found {len(matches)}")
+    return matches[0]

@@ -72,6 +72,9 @@ installEntry() {
   local file
 
   rsync -a --exclude='.DS_Store' --exclude='/.agents/skills' --exclude='/.agents/shared' \
+    --exclude='/.local/bin/goerwin-wt' --exclude='/.local/bin/goerwin-review' \
+    --exclude='/.local/lib/goerwin_tools' --exclude='/.local/share/goerwin-tools' \
+    --exclude='__pycache__' --exclude='*.pyc' \
     --exclude="/$capsLockAgentRelativePath" "$entry" "$destination/" || return 1
   [[ "${entry:t}" == ".DS_Store" ]] && return 0
 

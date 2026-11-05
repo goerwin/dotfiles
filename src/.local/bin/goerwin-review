@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
+# goerwin-tools entry point
 
 import argparse
 import json
 import os
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
 
 from goerwin_tools.review_store import StoreError, archive_root, finalize_report, report_path
 from goerwin_tools.runtime import CommandError, git, json_read, new_id, now
@@ -45,7 +48,8 @@ def save(args):
 def main():
     parser = argparse.ArgumentParser(
         description="Save an inline review into the shared goerwin-code-reviews archive.",
-        epilog="Without --pr or --head/--base, the review is a snapshot of HEAD limited to --scope.",
+        epilog="Without --pr or --head/--base, the review is a snapshot of HEAD limited to --scope. "
+               f"Reference: {Path(__file__).resolve().parents[1] / 'share/goerwin-tools/saving.md'}",
     )
     parser.add_argument("command", choices=["save"])
     parser.add_argument("--body", required=True, help="Markdown file with '### F1: ...' findings or 'No actionable findings.'")

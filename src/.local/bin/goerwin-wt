@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+# goerwin-tools entry point
+"""Worktrunk-backed worktrees, with explicit Herdr navigation and cleanup."""
+
+import argparse
+import json
+import os
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
+
+from goerwin_tools import herdr_adapter as herdr, removal, worktrees
+from goerwin_tools.runtime import CommandError
+
+REFERENCE = Path(__file__).resolve().parents[1] / "share/goerwin-tools/README.md"
+
+
+def common(parser, defaults=False):
+    parser.add_argument("-C", "--cwd", default=os.getcwd() if defaults else argparse.SUPPRESS,
+                        help="Repository/context directory (default: current directory)")
+    parser.add_argument("--json", action="store_true", default=False if defaults else argparse.SUPPRESS,
+                        help="Print machine-readable results, including partial failures")
+
+
+def parser():
+    root = argparse.ArgumentParser(description=__doc__, epilog=f"Reference and examples: {REFERENCE}")
+    common(root, defaults=True)
+    subs = root.add_subparsers(dest="command", required=True)
+    switch = subs.add_parser("switch", help="Create or reuse a checkout; print its path without changing cwd",
+        description="Create or reuse a Worktrunk checkout. Existing work is preserved; base is ignored on reuse.",
+        epilog="New branches default to the fetched remote default. Worktrunk paths and hooks apply. "
+               "Examples: goerwin-wt switch feat/example origin/main; goerwin-wt switch 123 --herdr --focus")
+    common(switch)
+    switch.add_argument("target", help="Branch, PR number/URL, or existing worktree path")
+    switch.add_argument("base", nargs="?", help="Base for a new named branch")
+    switch.add_argument("--github-user", help="Use an existing gh account without switching accounts")
+    switch.add_argument("--herdr", action="store_true", help="Open/reuse a Herdr space, preserving focus")
+    switch.add_argument("--focus", action="store_true", help="Select the worktree and raise Herdr (requires --herdr)")
+    listing = subs.add_parser("list", help="List this repository's worktrees through Worktrunk")
+    common(listing)
+    listing.add_argument("--herdr", action="store_true", help="Show all available worktrees as Herdr spaces; preserve focus; no agents")
+    opening = subs.add_parser("open", help="Open and focus an existing worktree in Herdr; no agent launch")
+    common(opening)
+    opening.add_argument("target", help="Exact branch name or worktree path")
+    removing = subs.add_parser("remove", help="Remove a checkout through Worktrunk, then clean up Herdr",
+        description="Requires an explicit target. Protects main/caller checkouts and mixed Herdr spaces. "
+                    "Preserves branches and waits for Worktrunk; live agents count as occupied even when idle.",
+        epilog="--stop and --force are independent. Shutdown may succeed before a hook/removal fails; "
+               "inspect the result/receipt before retrying. Retry the same target to finish pending Herdr cleanup.")
+    common(removing)
+    removing.add_argument("target", help="Exact branch name or worktree path (required; never defaults to current)")
+    removing.add_argument("--stop", action="store_true", help="Authorize graceful shutdown followed by targeted termination if necessary")
+    removing.add_argument("-f", "--force", action="store_true", help="Authorize discarding dirty files; does not authorize stopping jobs")
+    removing.add_argument("--no-hooks", action="store_true", help="Pass Worktrunk's --no-hooks; approvals are otherwise preserved")
+    return root
+
+
+def show_worktree(result, focus):
+    state = herdr.presentation()
+    result["herdr"] = herdr.focus_worktree(result["path"], result.get("branch") or Path(result["path"]).name,
+                                            focus=focus, state=state)
+
+
+def execute(args, result):
+    if args.command == "switch":
+        result.update(worktrees.switch(args.target, args.cwd, args.base, args.github_user))
+        if args.herdr:
+            show_worktree(result, args.focus)
+    elif args.command == "open":
+        row = worktrees.resolve_existing(args.cwd, args.target)
+        folder = row["worktree"]["path"]
+        if "prunable" in row["worktree"] or not Path(folder).is_dir():
+            raise CommandError("Worktree is unavailable; inspect it with Worktrunk")
+        result.update(path=os.path.realpath(folder), branch=row.get("branch"))
+        show_worktree(result, True)
+    elif args.command == "list":
+        result.update(worktrees.listing(args.cwd))
+        if args.herdr:
+            original = herdr.presentation()
+            result["herdr"] = []
+            try:
+                for row in result["items"]:
+                    tree = row.get("worktree")
+                    if not tree or "prunable" in tree or not Path(tree["path"]).is_dir():
+                        continue
+                    shown = herdr.focus_worktree(tree["path"], row.get("branch") or Path(tree["path"]).name,
+                                                focus=False, state=herdr.presentation())
+                    result["herdr"].append({"path": tree["path"], **shown})
+            finally:
+                warnings = []
+                herdr.restore(original, warnings)
+                if warnings:
+                    result["warnings"] = warnings
+    else:
+        result.update(removal.remove(args.target, args.cwd, caller=os.getcwd(), stop_work=args.stop,
+                                     force=args.force, no_hooks=args.no_hooks))
+    shown = result.get("herdr", [])
+    shown = [shown] if isinstance(shown, dict) else shown
+    warnings = [*result.get("warnings", []), *(warning for item in shown for warning in item.get("warnings", []))]
+    if warnings:
+        raise CommandError("Herdr navigation incomplete: " + "; ".join(warnings))
+
+
+def print_result(args, result):
+    if args.json:
+        print(json.dumps(result, indent=2))
+    elif args.command == "list" and "items" in result:
+        for row in result["items"]:
+            tree = row.get("worktree")
+            if tree:
+                flags = [name for name in ("main", "locked", "prunable") if tree.get(name)]
+                if any((tree.get("changes") or {}).get(key) for key in ("staged", "modified", "untracked", "conflicted")):
+                    flags.append("dirty")
+                print(f"{row.get('branch') or '(detached)'}\t{','.join(flags) or '-'}\t{tree['path']}")
+    elif result.get("path"):
+        print(result["path"])
+    if result.get("receipt"):
+        print(f"Removal receipt: {result['receipt']}", file=sys.stderr)
+
+
+def main(argv=None):
+    root = parser()
+    args = root.parse_args(argv)
+    if args.command == "switch" and args.focus and not args.herdr:
+        root.error("--focus requires --herdr")
+    result = {}
+    try:
+        execute(args, result)
+        print_result(args, result)
+        return 0
+    except (CommandError, herdr.AdapterError, OSError) as error:
+        result.update(getattr(error, "result", {}))
+        result.update(error=str(error), status="partial" if result else "failed")
+        print_result(args, result)
+        print(f"goerwin-wt: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
