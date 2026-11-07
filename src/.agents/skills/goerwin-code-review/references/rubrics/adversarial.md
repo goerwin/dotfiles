@@ -16,11 +16,11 @@ Separate changes to existing public behavior from new functionality. Only raise 
 
 ## Validate
 
-- Check findings against surrounding code, callers, docs, and tests. Don't invent findings to fit the adversarial framing.
+- Check the user's or PR's intent before judging behavior. Validate findings against code, callers, docs, and tests; don't invent adversarial findings.
 - Behavioral defects need a reproducible failure or a concrete failure path in the code.
 - Design, usability, or maintainability findings need a concrete usage example or maintenance task that shows the avoidable cost, plus a clearer, robust alternative.
 - State any conditions a finding depends on.
-- Check existing tests before claiming coverage is missing. Passing tests don't disprove a demonstrated defect: they may assert wrong behavior or skip the failing case.
+- Check existing tests before claiming coverage is missing. Adapt them only if their original purpose and assertions remain; add tests for uncovered behavior. Mutation-test new code by removing or reversing its behavior and confirming relevant tests fail. Passing tests don't disprove a demonstrated defect: they may assert wrong behavior or skip the failing case.
 
 ## Findings
 
