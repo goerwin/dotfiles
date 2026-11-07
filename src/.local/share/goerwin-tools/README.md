@@ -1,12 +1,13 @@
 # Personal CLI tools
 
 `goerwin-wt` wraps Worktrunk (`wt`) for worktree operations and coordinates
-Herdr spaces and terminals. `goerwin-review` saves review reports. Start with
-`goerwin-wt --help`, a subcommand's `--help`, or `goerwin-review --help`.
+Herdr spaces and terminals. Start with `goerwin-wt --help` or a subcommand's
+`--help`.
 
 Install from the dotfiles checkout with `make install-tools NO_UPDATE=1`.
 `make install-skills NO_UPDATE=1` installs the tools and dependent skills.
-Commands live in `~/.local/bin`, Python code in `~/.local/lib/goerwin_tools`,
+Commands live in `~/.local/bin`, shared Python code (also used by the
+`goerwin-review` and `goerwin-handoff` skills) in `~/.local/lib/goerwin_tools`,
 and this reference in `~/.local/share/goerwin-tools`.
 
 ## Worktrees
@@ -120,11 +121,14 @@ starts with supplied task context rather than restoring an old conversation.
 Plain `switch`, `open`, and `list --herdr` never launch agents. General
 multi-agent orchestration is outside this workflow.
 
-## Review archive and migration
+## Presets and migration
 
-See [saving.md](saving.md) for `goerwin-review save`. Its behavior is unchanged.
-Model presets live in `~/.local/lib/goerwin_tools/presets.json` and are exposed
-by the review skill's `presets` command.
+Model presets live in `~/.local/lib/goerwin_tools/presets.json`; the
+`goerwin-review` skill lists them with `review.py presets`. Saving review
+reports moved from `goerwin-review save` to that skill's `review.py save`;
+installation removes only the managed `goerwin-review` command and retires
+installed copies of the old review skills into
+`~/.local/state/goerwin-tools/retired-skills.*`.
 
 `goerwin-wts` is replaced by `goerwin-wt switch`; the misleading `--no-focus`
 flag is gone. Plain switch now has no Herdr effect. Installation removes only

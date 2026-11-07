@@ -38,6 +38,8 @@ make test-skills
 ## Worktrees and reviews
 
 Use `goerwin-wt switch|list|open|remove` for Worktrunk-backed worktrees and
-explicit Herdr navigation/cleanup, and `goerwin-review save` for review reports.
-See the [CLI reference](src/.local/share/goerwin-tools/README.md) or `--help`.
-Invoke `$goerwin-handoff` explicitly to launch a fresh visible agent session.
+explicit Herdr navigation/cleanup. See the
+[CLI reference](src/.local/share/goerwin-tools/README.md) or `--help`.
+Invoke `$goerwin-review` for code review, receiving feedback, review loops, and
+architecture reviews, and `$goerwin-handoff` to launch a fresh visible agent
+session. Both are explicit-only and confirm a summary before acting.
