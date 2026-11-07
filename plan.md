@@ -1,75 +1,77 @@
-# Plan: Consolidate Goerwin skills behind one dispatcher
+# Plan: Consolidate the review skills into `goerwin-review`
 
 ## Objective
 
-Replace the five independently installed Goerwin skills with one explicitly invoked `goerwin` skill. Keep each workflow's detailed instructions in a separate reference file, share review standards where useful, and preserve each workflow's safeguards and behavior.
+Replace `goerwin-code-review`, `goerwin-receiving-code-review`,
+`goerwin-review-loop`, and `goerwin-architecture-review` with one explicitly
+invoked `goerwin-review` skill. Keep `goerwin-handoff` separate. Remove
+duplicated review rules and report formats, and keep every file short.
 
-Current skills:
-
-- `goerwin-code-review`
-- `goerwin-receiving-code-review`
-- `goerwin-review-loop`
-- `goerwin-architecture-review`
-- `goerwin-handoff`
-
-## Proposed structure
+## Structure
 
 ```text
-src/.agents/skills/goerwin/
-  SKILL.md
+src/.agents/skills/goerwin-review/
+  SKILL.md                     # routing, summary fields, confirmation rule
   agents/openai.yaml
   references/
-    review-standards.md
+    standards.md               # shared review rules
+    findings.md                # F-format and saving (replaces saving.md)
+    reviewer.md                # isolated reviewer task
     rubrics/default.md
     rubrics/adversarial.md
-    workflows/
-      code-review.md
-      receiving-code-review.md
-      review-loop.md
-      architecture-review.md
-      handoff.md
+    workflows/code-review.md
+    workflows/receiving.md     # choose feedback, preview, commit/push/reply
+    workflows/addressing.md    # verify, address, outcomes (shared with the loop)
+    workflows/review-loop.md
+    workflows/architecture.md
   scripts/
-    review_pr.py
+    review.py                  # was review_pr.py; adds `save`
     receiving.py
     review_loop.py
-    launch.py
+    review_tools/              # review_store, targets, github_threads
+    goerwin_tools -> ~/.local/lib/goerwin_tools
   tests/
-    test_review_pr.py
-    test_receiving.py
-    test_review_loop.py
 ```
 
-The dispatcher should classify an explicit request and read only the relevant workflow reference. Route review, receiving feedback, review loop, architecture review, and handoff as distinct modes. Ask if the requested mode is unclear. References are workflow guides, not independently invokable skills.
+## Decisions
 
-Put shared code-review rules in `review-standards.md`: establish intent first, verify claims with evidence, fix root causes, reject test-only green changes and workarounds, preserve existing test intent when adapting tests, and mutation-test new production behavior. Keep mode-specific steps in their workflow references.
-
-Keep the existing report IDs such as `goerwin-code-review` and `goerwin-architecture-review` where they are stored in report metadata. This preserves report history and filters even though the user-facing skill becomes `$goerwin`.
-
-## Implementation steps
-
-1. Create the umbrella skill and dispatcher. Preserve explicit invocation requirements and route each mode without inferring handoff or review-loop actions from ordinary review requests.
-2. Move the five skill guides into `references/workflows/`. Extract shared review rules once. Retain default and adversarial rubrics as separate references.
-3. Move each helper script and its tests under the umbrella folder. Update script-relative paths, imports, guide loading, rubric loading, and review-loop helper paths. Keep behavior unchanged apart from paths and dispatch.
-4. Update all user-facing references and metadata: `README.md`, `agents/openai.yaml`, helper command examples, report skill IDs where appropriate, and `bin/install-skills.zsh`.
-5. Handle old installed skill names safely. The installer currently copies skills into `.agents/skills` and creates Claude/Codex links, but does not remove obsolete entries. Retire only managed legacy entries, preserve customized or unrelated content, and verify the migration in a temporary `GOERWIN_SKILLS_HOME`.
-6. Carry forward the current uncommitted review-guidance edits from the code-review rubrics and receiving-review guide into the shared standards and workflow references. Do not drop or duplicate those rules.
+- Routing: code review is the default (bare call, PR URL, branch, "in isolation
+  with <model>"); receiving needs "address/receive/feedback/reply/comments" or
+  saved report paths; the loop needs "loop" (or "resume" for a waiting loop);
+  architecture needs "architecture" plus an optional folder. Ask when a request
+  matches several modes or none.
+- Every mode shows one summary after its read-only helper resolves the target
+  and waits for confirmation before editing, writing, or launching. Existing
+  up-front confirmations fold into it; commit/push/reply and squash gates stay.
+  Handoff gets its own shorter summary before launch.
+- One finding format everywhere, including architecture output in chat.
+  Rubrics and modes keep their own severity scales.
+- Rubrics keep only what to look for, what to skip, and severity; shared rules
+  live in `standards.md`. The loop implementer gets `standards.md` and
+  `addressing.md` only.
+- `goerwin-review save` becomes `review.py save`; `~/.local/bin/goerwin-review`
+  is retired. `harness`, `presets.json`, and the worktree/Herdr modules stay in
+  `~/.local/lib/goerwin_tools`.
+- Report skill IDs stay `goerwin-code-review` and `goerwin-architecture-review`.
 
 ## Safeguards to preserve
 
-- Handoff must remain explicitly requested, create a fresh visible interactive agent, and never relaunch after an uncertain launch.
-- Review loop must keep its confirmation boundary, no-push behavior, waiting flow, and single final squash behavior.
-- Receiving feedback must continue to require a user choice when feedback is not specified, preview GitHub replies before posting, and ask before commit, push, or reply.
-- Code review must retain frozen-revision handling, existing-comment checks, read-only review behavior, and report completion requirements.
-- Architecture review must remain report-only unless the user asks for fixes.
+- Code review: frozen revisions, existing-comment checks, read-only review,
+  report completion.
+- Receiving: user picks feedback, replies are previewed, ask before commit,
+  push, or reply.
+- Loop: confirmation boundary, no push, waiting/resume, single final squash.
+- Architecture: report-only unless asked for fixes.
 
-## Verification and acceptance
+## Installation
 
-- Run the existing code-review, receiving-review, and review-loop test suites from their new locations. Add or adjust tests only for changed path or dispatch behavior.
-- Verify each dispatcher mode loads its intended workflow and does not run a different mode when the request is ambiguous.
-- Install to a temporary skills home and confirm only the umbrella skill is installed, old managed entries are retired safely, and unrelated files or links are preserved.
-- Check all script and documentation references for old skill paths. Confirm legacy report IDs and existing review archives remain readable.
-- Do not launch a handoff, post to GitHub, push, or commit as part of verification.
+The skills installer retires the three old installed skill copies and only the
+Claude/Codex links pointing to them, warning about anything else. The tools
+installer removes `~/.local/bin/goerwin-review` only when it carries the
+entry-point marker. Library and docs syncs already delete removed files.
 
-## Handoff note
+## Verification
 
-Start by checking the working tree and preserving the four existing modified review-guidance files. Implement the structural migration in focused steps, then verify paths, install behavior, and existing tests before removing any legacy installation entries.
+Run every test suite from its new location, install into a temporary
+`GOERWIN_SKILLS_HOME`, and search for stale paths. Don't launch handoffs, post
+to GitHub, or push.
