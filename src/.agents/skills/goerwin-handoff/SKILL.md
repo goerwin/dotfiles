@@ -27,6 +27,11 @@ Use the branch, PR, or existing worktree the user specified. Reuse an existing
 worktree and its uncommitted changes. For a new branch, infer the base from the
 task when clear; ask only if choosing the wrong base would change the work.
 
+A new worktree runs setup hooks that can be slow. Create one only when the work
+needs another branch or must run alongside further edits in the source
+checkout. Otherwise target the source checkout's own path; the source agent
+then stops editing it.
+
 Write a UTF-8 handoff file outside the repository, preferably in a temporary
 task directory. Include the objective, user preferences, scope, relevant links
 and paths, investigation findings, changed files, checks already run, unresolved
@@ -98,3 +103,8 @@ the recorded tab and focusing its terminal. Never kill unrelated terminals.
 Confirm the worktree and tab name, the requested model/effort, and whether
 the agent acknowledged the handoff. After a successful continuation handoff,
 leave the interactive session running and end the source turn.
+
+Removing the worktree is a separate step the user asks for when the work is
+done. `goerwin-wt remove BRANCH -C REPO` runs from another checkout, refuses
+while agents are live unless given `--stop`, and closes the worktree's Herdr
+space.

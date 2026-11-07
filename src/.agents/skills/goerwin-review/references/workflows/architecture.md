@@ -23,7 +23,7 @@ replacing it with a different style.
 - **Hacky implementations:** code that reimplements a platform, framework, or library feature; timeouts, retries, or flags that hide a bug; casts, suppressed errors, or disabled lint rules that silence real problems. Prefer the simpler, native, maintainable solution.
 - **Unused code:** check indirect usages first (dynamic imports, config files, routes, public exports, scripts, tests).
 - **Documentation:** flag docs for unrelated or unused features. READMEs and public docs stay high-level; fixes and minor changes are often over-explained.
-- **Comments** that explain code that is already simple.
+- **Comments** that restate self-explanatory code or narrate earlier implementations. Keep only constraints the code can't show and API documentation (e.g. JSDoc).
 
 ## Report
 

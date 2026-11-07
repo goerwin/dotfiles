@@ -10,6 +10,7 @@ the design's assumptions even when the code matches them and tests pass.
 - Judge APIs as a consumer and code as the next maintainer: surprising defaults, hidden ordering requirements, error-prone combinations, boilerplate, implicit coupling, duplicated behavior, and control flow that makes ordinary changes hard. Include accessibility and styling failures.
 - Flag hacky fixes that hide a symptom: special-casing one input, sleeps, retries or timeouts that mask races, swallowed errors, casts or lint and type suppressions, `!important` or other forced overrides, hardcoded values, test-only branches, or tests changed to match wrong behavior.
 - Flag inconsistent solutions: code that breaks patterns the codebase already follows, or adds exceptions, special cases, or one-off flags where a general rule would cover every case.
+- Flag comment noise: comments that restate what the code already says, or narrate previous implementations, rejected alternatives, or why the code changed. The comment itself is the evidence; the fix is deleting it or, rarely, reducing it to the constraint the code can't show.
 
 Separate changes to existing public behavior from new functionality. Raise
 backward-compatibility risks only for previously released public behavior or

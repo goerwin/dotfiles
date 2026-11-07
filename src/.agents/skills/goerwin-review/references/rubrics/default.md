@@ -6,6 +6,7 @@ Report what the author would likely act on:
 - Unnecessary scope, duplicated logic, or departures from established patterns
   that materially harm correctness or maintenance.
 - Workarounds that hide the cause or change tests only to force a pass.
+- Added comments that restate the code or describe previous implementations.
 - Missing regression coverage or repository-required release metadata.
 
 Skip formatting, pre-existing issues, speculation, praise, and generated
