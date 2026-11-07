@@ -21,33 +21,36 @@ if [[ -L "$toolsBin/goerwin-wts" && "$(readlink "$toolsBin/goerwin-wts")" == ../
   legacyOwned=1
 fi
 
+managedCommand() { [[ -f "$1" && ! -L "$1" ]] && rg -q '^# goerwin-tools entry point$' "$1" }
+
 for destination in "$toolsLibrary" "$toolsDocs"; do
   if [[ -L "$destination" || ( -e "$destination" && ! -f "$destination/.dotfiles-managed" ) ]]; then
     print -ru2 -- "Refusing to replace an unmanaged tool directory: $destination"
     exit 1
   fi
 done
-for command in goerwin-wt goerwin-review; do
-  destination="$toolsBin/$command"
-  if [[ -L "$destination" ]]; then
-    if [[ "$command" != goerwin-review || "$(readlink "$destination")" != ../../.agents/shared/goerwin-review ]]; then
-      print -ru2 -- "Refusing to replace an unrelated command symlink: $destination"
-      exit 1
-    fi
-  elif [[ -e "$destination" ]] && ! rg -q '^# goerwin-tools entry point$' "$destination"; then
-    print -ru2 -- "Refusing to replace an unmanaged command: $destination"
-    exit 1
-  fi
-done
+wtCommand="$toolsBin/goerwin-wt"
+if [[ -L "$wtCommand" ]]; then
+  print -ru2 -- "Refusing to replace an unrelated command symlink: $wtCommand"
+  exit 1
+elif [[ -e "$wtCommand" ]] && ! managedCommand "$wtCommand"; then
+  print -ru2 -- "Refusing to replace an unmanaged command: $wtCommand"
+  exit 1
+fi
 
 mkdir -p "$toolsBin" "$toolsLibrary" "$toolsDocs"
 rsync -a --delete --exclude='__pycache__' --exclude='*.pyc' src/.local/lib/goerwin_tools/ "$toolsLibrary/"
 rsync -a --delete src/.local/share/goerwin-tools/ "$toolsDocs/"
-for command in goerwin-wt goerwin-review; do
-  [[ ! -L "$toolsBin/$command" ]] || rm "$toolsBin/$command"
-  install -m 755 "src/.local/bin/$command" "$toolsBin/$command"
-  print -r -- "Installed $command"
-done
+install -m 755 src/.local/bin/goerwin-wt "$wtCommand"
+print -r -- "Installed goerwin-wt"
+# goerwin-review save is now the goerwin-review skill's `review.py save`.
+retired="$toolsBin/goerwin-review"
+if managedCommand "$retired" || [[ -L "$retired" && "$(readlink "$retired")" == ../../.agents/shared/goerwin-review ]]; then
+  rm "$retired"
+  print -r -- "Removed retired goerwin-review"
+elif [[ -e "$retired" || -L "$retired" ]]; then
+  print -ru2 -- "Left unrelated goerwin-review untouched: $retired"
+fi
 if (( legacyOwned )); then
   rm "$toolsBin/goerwin-wts"
   if [[ -d "$legacyShared" && ! -L "$legacyShared" ]]; then
