@@ -1,5 +1,0 @@
-interface:
-  display_name: "Goerwin Receiving Code Review"
-  short_description: "Evaluate feedback and record evidence-based outcomes"
-policy:
-  allow_implicit_invocation: false

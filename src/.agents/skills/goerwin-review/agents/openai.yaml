@@ -1,0 +1,5 @@
+interface:
+  display_name: "Goerwin Review"
+  short_description: "Review, receive feedback, loop, or review architecture"
+policy:
+  allow_implicit_invocation: false

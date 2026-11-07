@@ -1,5 +1,0 @@
-interface:
-  display_name: "Goerwin Code Review"
-  short_description: "Choose a model and launch an isolated code review"
-policy:
-  allow_implicit_invocation: false

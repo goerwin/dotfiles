@@ -1,5 +1,0 @@
-interface:
-  display_name: "Goerwin Review Loop"
-  short_description: "Review, fix, and commit a local branch in rounds"
-policy:
-  allow_implicit_invocation: false

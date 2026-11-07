@@ -1,7 +1,5 @@
-import datetime as dt
 import json
 import os
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -14,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 LIB = ROOT / "src/.local/lib"
 BIN = ROOT / "src/.local/bin"
 sys.path.insert(0, str(LIB))
-from goerwin_tools import herdr_adapter, review_store as store, runtime, targets, worktrees
+from goerwin_tools import herdr_adapter, runtime, worktrees
 
 COMMAND = BIN / "goerwin-wt"
 
@@ -247,38 +245,6 @@ class WorktreeTests(unittest.TestCase):
         self.assertFalse("GH_TOKEN" in run.call_args.kwargs["env"])
 
 
-    def test_save_command_archives_a_snapshot_review(self):
-        body = self.root / "body.md"
-        body.write_text("# Architecture\n\n### F1: Duplicate helper\n`a.py:1` · suggestion\n")
-        env = dict(os.environ, GOERWIN_CODE_REVIEWS_DIR=str(self.root / "archive"))
-        result = subprocess.run([
-            sys.executable, str(BIN / "goerwin-review"), "save", "--body", str(body),
-            "--skill", "goerwin-architecture-review", "--harness", "claude",
-            "--model", "claude-opus-5-5", "--effort", "high", "--scope", "src", "-C", str(self.repo),
-        ], env=env, check=True, capture_output=True, text=True)
-        saved = store.read_report(json.loads(result.stdout)["report"])
-        meta = saved["metadata"]
-        self.assertEqual((meta["skill"], meta["scope"], meta["base_sha"]), ("goerwin-architecture-review", "src", None))
-        self.assertEqual((meta["head_sha"], meta["finding_ids"]), (self.base, ["F1"]))
-        target_file = self.root / "target.json"
-        (self.repo / "file").write_text("dirty\n")
-        target, _ = targets.in_place(targets.comparison_target(self.repo, "main", "main"), self.repo)
-        runtime.json_write(target_file, {"status": "ready", "target": target})
-        result = subprocess.run([
-            sys.executable, str(BIN / "goerwin-review"), "save", "--body", str(body), "--target-file", str(target_file),
-            "--skill", "goerwin-code-review", "--harness", "claude", "--model", "claude-opus-5-5", "--effort", "unknown",
-        ], env=env, check=True, capture_output=True, text=True)
-        meta = store.read_report(json.loads(result.stdout)["report"])["metadata"]
-        self.assertTrue(meta["includes_uncommitted"])
-        self.assertEqual((meta["effort"], meta["revision"]), ("unknown", "local"))
-        (self.repo / "file").write_text("base\n")
-        body.write_text("loose notes without headings")
-        failed = subprocess.run([sys.executable, str(BIN / "goerwin-review"), "save", "--body", str(body),
-                                 "--skill", "x", "--harness", "claude", "--model", "m", "--effort", "e",
-                                 "-C", str(self.repo)], env=env, capture_output=True, text=True)
-        self.assertEqual(failed.returncode, 1)
-        self.assertEqual(len(list((self.root / "archive").glob("*/*.md"))), 2)
-
 class FocusTests(unittest.TestCase):
     def test_focus_reuses_existing_local_space_and_active_tab(self):
         state = {"spaces": [{"id": "space", "folder": "/tmp/worktree", "machine": None,
@@ -361,55 +327,3 @@ class FocusTests(unittest.TestCase):
                     result = worktrees.focus_worktree("/tmp/worktree", "feature")
         self.assertTrue(result["available"])
         self.assertEqual(len(result["warnings"]), 1)
-
-
-class ArchiveTests(unittest.TestCase):
-    def test_daily_index_per_project_and_owner_on_name_clash(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            day = dt.datetime(2026, 11, 11, 9, tzinfo=dt.timezone.utc)
-            target = {"source_root": "/x/antares", "repository": "github.com/godaddy/antares",
-                      "kind": "pr", "pr_number": 123, "title": "Pagination"}
-            first = store.report_path(root, target, day)
-            second = store.report_path(root, {**target, "kind": "snapshot", "title": "src"}, day)
-            self.assertEqual(first.relative_to(root).as_posix(), "antares/2026-11-11-01-pr-123-pagination.md")
-            self.assertEqual(second.name, "2026-11-11-02-src.md")
-            first.unlink()
-            self.assertEqual(store.report_path(root, target, day).name, "2026-11-11-03-pr-123-pagination.md")
-            other = store.report_path(root, {**target, "repository": "github.com/fork/antares"}, day)
-            self.assertEqual(other.relative_to(root).as_posix(), "fork-antares/2026-11-11-01-pr-123-pagination.md")
-            nxt = store.report_path(root, target, day + dt.timedelta(days=1))
-            self.assertEqual(nxt.name, "2026-11-12-01-pr-123-pagination.md")
-
-    def test_frontmatter_roundtrip_and_validation(self):
-        meta = {"schema_version": 1, "repository": "github.com/a/b", "finding_ids": ["F1"], "title": 'Quoted "title": value'}
-        body = "### F1: Regression\nEvidence.\n"
-        actual, result = store.decode(store.encode(meta, body))
-        self.assertEqual(actual, meta)
-        self.assertEqual(result.strip(), body.strip())
-        with self.assertRaisesRegex(store.StoreError, "unique"):
-            store.finding_ids("### F1: First\n### F1: Second\n")
-        with self.assertRaisesRegex(store.StoreError, "helper-generated"):
-            store.decode("---\ntitle: bare yaml\n---\nbody")
-
-
-class InstallationTests(unittest.TestCase):
-    def test_install_skills_installs_tools_and_working_library_links(self):
-        if not shutil.which("zsh") or not shutil.which("rsync"):
-            self.skipTest("zsh and rsync are required for installer checks")
-        with tempfile.TemporaryDirectory(prefix="install-skills-") as tmp:
-            home = Path(tmp).resolve()
-            env = dict(os.environ, GOERWIN_SKILLS_HOME=tmp, HOME=tmp, PYTHONDONTWRITEBYTECODE="1")
-            subprocess.run(["zsh", "bin/install-skills.zsh", "--no-update"], cwd=ROOT, env=env, check=True, capture_output=True)
-            for name in ("goerwin-wt", "goerwin-review"):
-                command = home / ".local/bin" / name
-                self.assertFalse(command.is_symlink())
-                subprocess.run([str(command), "--help"], check=True, env=env, capture_output=True)
-            self.assertFalse(list(home.glob(".agents/**/tests")))
-            for skill, args in (("goerwin-code-review", ["review_pr.py", "presets"]),
-                               ("goerwin-receiving-code-review", ["receiving.py", "--help"]),
-                               ("goerwin-review-loop", ["review_loop.py", "--help"])):
-                scripts = home / ".agents/skills" / skill / "scripts"
-                self.assertTrue((scripts / "goerwin_tools").is_symlink())
-                self.assertEqual((scripts / "goerwin_tools").resolve(), home / ".local/lib/goerwin_tools")
-                subprocess.run([sys.executable, str(scripts / args[0]), *args[1:]], check=True, env=env, capture_output=True)
