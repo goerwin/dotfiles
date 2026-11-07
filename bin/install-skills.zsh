@@ -52,26 +52,4 @@ for source in ./src/.agents/skills/*(/N); do
   fi
   print -r -- "Installed $skill"
 done
-# These skills are now modes of goerwin-review. Retire only the installer's own copies and links.
-retiredBackup=
-for skill in goerwin-code-review goerwin-receiving-code-review goerwin-review-loop goerwin-architecture-review; do
-  installed="$skillsInstallHome/.agents/skills/$skill"
-  if [[ -d "$installed" && ! -L "$installed" ]] && rg -q "^name: $skill\$" "$installed/SKILL.md" 2>/dev/null; then
-    mkdir -p "$skillsInstallHome/.local/state/goerwin-tools"
-    : ${retiredBackup:=$(mktemp -d "$skillsInstallHome/.local/state/goerwin-tools/retired-skills.XXXXXX")}
-    mv "$installed" "$retiredBackup/$skill"
-    print -r -- "Retired $skill into $retiredBackup (now part of goerwin-review)"
-  elif [[ -e "$installed" || -L "$installed" ]]; then
-    print -u2 -- "Left $installed untouched; it isn't an installed copy of $skill"
-  fi
-  for link in "$skillsInstallHome/.claude/skills/$skill" "$skillsInstallHome/.codex/skills/$skill"; do
-    [[ -e "$link" || -L "$link" ]] || continue
-    target=$(readlink "$link" || true)
-    if [[ ! -e "$installed" && ( "$target" == "../../.agents/skills/$skill" || "$target" == "${PWD:A}/src/.agents/skills/$skill" ) ]]; then
-      rm "$link"
-    else
-      print -u2 -- "Left $link untouched; remove it if it's an old copy of $skill"
-    fi
-  done
-done
 mkdir -p "$skillsInstallHome/goerwin-code-reviews"

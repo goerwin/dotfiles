@@ -121,12 +121,7 @@ starts with supplied task context rather than restoring an old conversation.
 Plain `switch`, `open`, and `list --herdr` never launch agents. General
 multi-agent orchestration is outside this workflow.
 
-## Presets and migration
+## Presets
 
 Model presets live in `~/.local/lib/goerwin_tools/presets.json`; the
-`goerwin-review` skill lists them with `review.py presets`. Saving review
-reports moved from `goerwin-review save` to that skill's `review.py save`;
-installation removes only the managed `goerwin-review` command and
-`~/.local/share/goerwin-tools` folder, and retires installed copies of the old
-review skills into `~/.local/state/goerwin-tools/retired-skills.*`. Unrelated
-commands, folders, and symlinks are not overwritten.
+`goerwin-review` skill lists them with `review.py presets`.
