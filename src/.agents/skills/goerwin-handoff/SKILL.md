@@ -39,6 +39,13 @@ For an implementation handoff, give the agent the authorized remaining work.
 Do not grant permission to publish, push, or start additional agents merely
 because this skill is being used.
 
+## Confirm
+
+Before launching, show a short summary and wait for confirmation: source
+repository, target branch or worktree (new or reused) and the base for a new
+branch, model and effort, tab name, a few lines on the handoff's objective and
+next action, and which actions the new agent may take.
+
 ## Launch visibly
 
 Use [scripts/launch.py](scripts/launch.py). It accepts a branch, PR number/URL,
