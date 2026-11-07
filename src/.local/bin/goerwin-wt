@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
 from goerwin_tools import herdr_adapter as herdr, removal, worktrees
 from goerwin_tools.runtime import CommandError
 
-REFERENCE = Path(__file__).resolve().parents[1] / "share/goerwin-tools/README.md"
+REFERENCE = Path(__file__).resolve().parents[1] / "lib/goerwin_tools/README.md"
 
 
 def common(parser, defaults=False):

@@ -74,11 +74,4 @@ for skill in goerwin-code-review goerwin-receiving-code-review goerwin-review-lo
     fi
   done
 done
-legacyShared="$skillsInstallHome/.agents/shared"
-if [[ -d "$legacyShared" && ! -L "$legacyShared" && -f "$legacyShared/.goerwin-tools-legacy-owned" ]]; then
-  mkdir -p "$skillsInstallHome/.local/state/goerwin-tools"
-  legacyBackup=$(mktemp -d "$skillsInstallHome/.local/state/goerwin-tools/legacy-shared.XXXXXX")
-  mv "$legacyShared" "$legacyBackup/shared"
-  print -r -- "Preserved legacy helpers in $legacyBackup/shared"
-fi
 mkdir -p "$skillsInstallHome/goerwin-code-reviews"

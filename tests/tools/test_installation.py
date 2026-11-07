@@ -25,24 +25,14 @@ class MigrationTests(unittest.TestCase):
         return subprocess.run(["zsh", str(ROOT / f"bin/install-{name}.zsh"), "--no-update"],
                               env=self.env, cwd=ROOT, text=True, capture_output=True, check=check)
 
-    def test_known_legacy_links_migrate_and_extra_files_are_preserved(self):
-        legacy = self.root / ".agents/shared"
-        legacy.mkdir(parents=True)
-        (legacy / "personal-extra").write_text("keep this")
-        for command in ("goerwin-wts", "goerwin-review"):
-            (legacy / command).write_text("old helper")
-            (self.bin / command).symlink_to(f"../../.agents/shared/{command}")
+    def test_installed_command_finds_its_reference(self):
         self.install()
-        self.assertFalse((self.bin / "goerwin-wts").is_symlink())
-        self.assertFalse((self.bin / "goerwin-review").is_symlink())
-        self.install("skills")
-        self.assertFalse(legacy.exists())
-        backups = list((self.root / ".local/state/goerwin-tools").glob("legacy-shared.*/shared/personal-extra"))
-        self.assertEqual(len(backups), 1)
-        self.assertEqual(backups[0].read_text(), "keep this")
         self.install()
-        self.assertFalse((self.bin / "goerwin-wt").is_symlink())
-        subprocess.run([str(self.bin / "goerwin-wt"), "--help"], env=self.env, check=True, capture_output=True)
+        result = subprocess.run([str(self.bin / "goerwin-wt"), "--help"], env=self.env, check=True,
+                                capture_output=True, text=True)
+        reference = self.root / ".local/lib/goerwin_tools/README.md"
+        self.assertIn(str(reference), result.stdout.replace("\n", ""))
+        self.assertTrue(reference.is_file())
 
     def test_unrelated_commands_are_not_replaced(self):
         foreign = self.root / "foreign"
@@ -63,10 +53,17 @@ class MigrationTests(unittest.TestCase):
         self.install()
         self.assertFalse((self.bin / "goerwin-review").exists())
 
-    def test_unrelated_legacy_name_is_left_untouched(self):
-        (self.bin / "goerwin-wts").write_text("personal unrelated command")
+    def test_only_the_managed_docs_folder_is_removed(self):
+        docs = self.root / ".local/share/goerwin-tools"
+        docs.mkdir(parents=True)
+        (docs / ".dotfiles-managed").write_text("goerwin-tools\n")
         self.install()
-        self.assertEqual((self.bin / "goerwin-wts").read_text(), "personal unrelated command")
+        self.assertFalse(docs.exists())
+        docs.mkdir()
+        (docs / "notes.md").write_text("keep this")
+        result = self.install()
+        self.assertIn("Left unmanaged", result.stderr)
+        self.assertEqual((docs / "notes.md").read_text(), "keep this")
 
     def test_install_skills_installs_working_review_skill_and_keeps_direct_links(self):
         direct = self.root / ".codex/skills/goerwin-handoff"
