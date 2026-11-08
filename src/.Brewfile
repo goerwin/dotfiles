@@ -1,4 +1,6 @@
 tap "cameroncooke/axe"
+# Native desktop automation CLI for AI agents
+brew "agent-desktop"
 # Official Amazon AWS command-line interface
 brew "awscli"
 # Incredibly fast JavaScript runtime, bundler, test runner, and package manager
