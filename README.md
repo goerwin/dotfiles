@@ -9,7 +9,8 @@ key remaps, VS Code / Cursor settings, and agent skills.
 make install                    # Dotfiles, editor settings, and agent skills
 make install-tools              # Personal CLI tools and their reference
 make install-skills             # Agent skills and supporting CLI tools
-make install-apps APP=mic-muter # Local apps; omit APP for all
+make install-apps APP=mic-muter             # Local apps; omit APP for all
+make install-apps APP=financer PLATFORM=ios # ios or mac installs only that platform
 ```
 
 These `git pull --ff-only` first. Add `NO_UPDATE=1` to install the local

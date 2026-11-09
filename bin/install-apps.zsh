@@ -1,36 +1,51 @@
 #!/bin/zsh
 # alfred-title: Install apps
-# alfred-subtitle: Pull and install all apps · Tab → an app name and/or --no-update
-# alfred-args: financer, noter, daylier, mic-muter, key-remapper (empty = all) · --no-update: skip git pull
+# alfred-subtitle: Pull and install apps · Tab → an app, ios or mac, and/or --no-update
+# alfred-args: financer, noter, daylier, mic-muter, key-remapper (empty = all) · ios or mac · --no-update: skip git pull
 set -euo pipefail
+
+# Keeps a step when no platform was requested, or it is the requested one.
+consider() {
+  local target=$1
+  [[ -z "$platform" || "$platform" == "$target" ]] || return 0
+  appInstalls+=("$2")
+  [[ "$target" == ios ]] && needsIOS=1
+  return 0
+}
 
 main() {
   local app needsIOS=0
-  local -a updates=() installs=()
+  local -a updates=() installs=() selected=() appInstalls=()
   for app in "${apps[@]}"; do
-    updates+=("$app|Updated|git -C ${(q)HOME}/Projects/$app pull --ff-only")
+    appInstalls=()
     case "$app" in
       financer)
-        needsIOS=1
-        installs+=(
-          "Financer (macOS)|Installed|make -C ${(q)HOME}/Projects/financer/ios install-mac"
-          "Financer (iOS)|Installed|zsh ${(q)HOME}/Projects/financer/ios/install.zsh"
-        ) ;;
+        consider mac "Financer (macOS)|Installed|make -C ${(q)HOME}/Projects/financer/ios install-mac"
+        consider ios "Financer (iOS)|Installed|zsh ${(q)HOME}/Projects/financer/ios/install.zsh"
+        ;;
       noter)
-        needsIOS=1
-        installs+=("Noter (iOS)|Installed|zsh ${(q)HOME}/Projects/noter/install.zsh") ;;
+        consider ios "Noter (iOS)|Installed|zsh ${(q)HOME}/Projects/noter/install.zsh" ;;
       daylier)
-        needsIOS=1
-        installs+=(
-          "Daylier (macOS)|Installed|make -C ${(q)HOME}/Projects/daylier/ios install-mac"
-          "Daylier (iOS)|Installed|make -C ${(q)HOME}/Projects/daylier/ios install"
-        ) ;;
+        consider mac "Daylier (macOS)|Installed|make -C ${(q)HOME}/Projects/daylier/ios install-mac"
+        consider ios "Daylier (iOS)|Installed|make -C ${(q)HOME}/Projects/daylier/ios install"
+        ;;
       mic-muter)
-        installs+=("Mic Muter|Installed|make -C ${(q)HOME}/Projects/mic-muter install") ;;
+        consider mac "Mic Muter|Installed|make -C ${(q)HOME}/Projects/mic-muter install" ;;
       key-remapper)
-        installs+=("Key Remapper|Installed|make -C ${(q)HOME}/Projects/key-remapper install") ;;
+        consider mac "Key Remapper|Installed|make -C ${(q)HOME}/Projects/key-remapper install" ;;
     esac
+    if (( ! ${#appInstalls} )); then
+      if [[ -n "$requestedApp" ]]; then
+        print -ru2 -- "$app has no $(platform_name) install."
+        exit 1
+      fi
+      continue
+    fi
+    selected+=("$app")
+    updates+=("$app|Updated|git -C ${(q)HOME}/Projects/$app pull --ff-only")
+    installs+=("${appInstalls[@]}")
   done
+  apps=("${selected[@]}")
 
   if (( update )); then
     print -r -- "Updating repos and installing: ${(j:, :)apps}. Logs: $logDir"
@@ -51,18 +66,32 @@ main() {
   printf '\n✅ Installed %s (%s).\n' "${(j:, :)apps}" "$(duration "$((SECONDS - startedAt))")"
 }
 
+platform_name() {
+  [[ "$platform" == ios ]] && print -r -- "iOS" || print -r -- "macOS"
+}
+
 usage() {
-  print -r -- "Usage: install-apps.zsh [--no-update] [app]"
+  print -r -- "Usage: install-apps.zsh [--no-update] [app] [ios|mac]"
   print -r -- "Apps: financer, noter, daylier, mic-muter, key-remapper"
-  print -r -- "Omit app to install all. Daylier installs both macOS and iOS apps."
+  print -r -- "Omit the app to install all. ios or mac installs only that platform."
   print -r -- "--no-update skips pulling the app repos, to install local changes."
 }
 
-# Alfred passes everything as one string, so the flag is matched as a word.
+# Alfred passes everything as one string, so each flag is matched as a word.
 update=1
+platform=
 words=()
 for word in ${=*}; do
-  if [[ "$word" == --no-update ]]; then update=0; else words+=("$word"); fi
+  case "${(L)word}" in
+    --no-update) update=0 ;;
+    ios|--ios)
+      [[ -z "$platform" ]] || { print -ru2 -- "Choose one platform: ios or mac."; exit 1; }
+      platform=ios ;;
+    mac|macos|--mac|--macos)
+      [[ -z "$platform" ]] || { print -ru2 -- "Choose one platform: ios or mac."; exit 1; }
+      platform=mac ;;
+    *) words+=("$word") ;;
+  esac
 done
 requestedApp="${(L)words[*]}"
 

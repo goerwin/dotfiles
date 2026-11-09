@@ -13,7 +13,7 @@ install:
 	zsh bin/install.zsh $(UPDATE_FLAG)
 
 install-apps:
-	@zsh bin/install-apps.zsh $(UPDATE_FLAG) "$(APP)"
+	@zsh bin/install-apps.zsh $(UPDATE_FLAG) "$(APP)" "$(PLATFORM)"
 
 brew-backup:
 	@./bin/brew-backup.zsh
