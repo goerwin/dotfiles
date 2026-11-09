@@ -16,7 +16,7 @@ toolsBin="$toolsInstallHome/.local/bin"
 toolsLibrary="$toolsInstallHome/.local/lib/goerwin_tools"
 wtCommand="$toolsBin/goerwin-wt"
 
-managedCommand() { [[ -f "$1" && ! -L "$1" ]] && rg -q '^# goerwin-tools entry point$' "$1" }
+managedCommand() { [[ -f "$1" && ! -L "$1" ]] && grep -q '^# goerwin-tools entry point$' "$1" }
 
 if [[ -L "$toolsLibrary" || ( -e "$toolsLibrary" && ! -f "$toolsLibrary/.dotfiles-managed" ) ]]; then
   print -ru2 -- "Refusing to replace an unmanaged tool directory: $toolsLibrary"
