@@ -26,8 +26,8 @@ main() {
       noter)
         consider ios "Noter (iOS)|Installed|zsh ${(q)HOME}/Projects/noter/install.zsh" ;;
       daylier)
-        consider mac "Daylier (macOS)|Installed|make -C ${(q)HOME}/Projects/daylier/ios install-mac"
-        consider ios "Daylier (iOS)|Installed|make -C ${(q)HOME}/Projects/daylier/ios install"
+        consider mac "Daylier (macOS)|Installed|make -C ${(q)HOME}/Projects/daylier install-mac"
+        consider ios "Daylier (iOS)|Installed|make -C ${(q)HOME}/Projects/daylier install"
         ;;
       mic-muter)
         consider mac "Mic Muter|Installed|make -C ${(q)HOME}/Projects/mic-muter install" ;;
