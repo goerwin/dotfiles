@@ -3,7 +3,7 @@
   "window.restoreWindows": "all",
   "window.confirmBeforeClose": "always",
   "window.newWindowDimensions": "maximized",
-  "window.zoomLevel": -1,
+  "window.zoomLevel": 0,
 
   "workbench.startupEditor": "newUntitledFile",
   "workbench.colorTheme": "GitHub Dark Default",
