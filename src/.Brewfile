@@ -21,6 +21,10 @@ brew "gh"
 brew "herdr"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
+# LLM inference in C/C++
+brew "llama.cpp"
+# Run LLMs with MLX
+brew "mlx-lm"
 # AI coding agent, built for the terminal
 brew "opencode"
 # Fast, disk space efficient package manager

@@ -4,6 +4,8 @@
 # export GOCODE_API_KEY="xxx"
 # export ANTHROPIC_BASE_URL="$GOCODE_BASE_URL"
 # export ANTHROPIC_AUTH_TOKEN="$GOCODE_API_KEY"
+# export OPENAI_BASE_URL="$GOCODE_BASE_URL"
+# export OPENAI_API_KEY="$GOCODE_API_KEY"
 
 # Include executables installed by tools such as Claude Code and Herdr.
 typeset -U path fpath
