@@ -1,5 +1,5 @@
 interface:
   display_name: "Goerwin Review"
-  short_description: "Review code, run a council, address feedback, or review architecture"
+  short_description: "Review code, run a council, address feedback, review architecture, or mutation-test a change"
 policy:
   allow_implicit_invocation: false

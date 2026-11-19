@@ -1,7 +1,7 @@
 ---
 name: goerwin-review
-description: Code review, multi-model council reviews, addressing review feedback, and architecture reviews, with saved reports. Use only when explicitly invoked.
-argument-hint: "[review | council … | address … | architecture [folder]]"
+description: Code review, multi-model council reviews, addressing review feedback, architecture reviews, and mutation testing of a change's tests, with saved reports. Use only when explicitly invoked.
+argument-hint: "[review | council … | address … | architecture [folder] | mutation]"
 disable-model-invocation: true
 ---
 
@@ -15,6 +15,7 @@ disable-model-invocation: true
 | "council", or a model to review with | Council |
 | "address", "feedback", "comments", pasted feedback, or a report path | Addressing feedback |
 | "architecture", optionally with a folder | Architecture: follow `references/architecture.md` |
+| "mutation", or whether the tests are useful | Mutation: follow `references/mutation.md` |
 
 Ask when the request matches several modes or none.
 
@@ -36,7 +37,7 @@ Ask when the request matches several modes or none.
 
 ## Reports
 
-Save every code review, council run, and architecture review to
+Save every code review, council run, architecture review, and mutation run to
 `~/goerwin-reviews/<project>/YYYY-MM-DD-<topic>.md`, where `<project>` is the
 repository folder name; add `-2`, `-3`, … if the name is taken. Start with the
 mode, repository, branch, HEAD SHA, base or scope, and each model with its
