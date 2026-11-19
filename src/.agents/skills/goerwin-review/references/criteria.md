@@ -18,6 +18,7 @@ These apply both when reviewing and when addressing feedback.
 - Adapt existing tests only when their original purpose and assertions remain;
   add tests only for uncovered behavior. Tests for new behavior must fail when
   that behavior is removed or reversed.
+- Refactors keep existing tests passing unchanged and don't add new ones.
 
 ## What to report
 
@@ -31,6 +32,12 @@ Report what the author would likely act on:
   simpler shape would do.
 - Workarounds that hide the cause, or tests changed only to force a pass.
 - Added comments that restate the code or describe previous implementations.
+- Over-documentation: READMEs or docs that note every fix or minor change,
+  explain internals, or over-explain. Docs stay high-level.
+- Test bloat: tests that duplicate existing coverage, check implementation
+  details, or were added for a refactor that doesn't change behavior. Prefer
+  extending an existing test; a test that wouldn't fail when its behavior
+  breaks is noise.
 - Missing regression coverage or repository-required release metadata.
 
 Skip formatting, pre-existing issues, speculation, praise, and generated

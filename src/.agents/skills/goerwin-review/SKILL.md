@@ -183,8 +183,8 @@ so replies can reference the fix. Confirm the posted URLs.
 
 ### PR threads
 
-List unresolved threads, skipping those whose last comment is from the
-signed-in account:
+List unresolved threads. Skip a thread only when the signed-in account
+replied after someone else's last comment; threads it started stay open:
 
 ```sh
 gh api graphql -f owner=OWNER -f repo=REPO -F number=N -f query='
