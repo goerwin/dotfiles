@@ -7,8 +7,7 @@ key remaps, VS Code / Cursor settings, and agent skills.
 
 ```sh
 make install                    # Dotfiles, editor settings, and agent skills
-make install-tools              # Personal CLI tools and their reference
-make install-skills             # Agent skills and supporting CLI tools
+make install-skills             # Agent skills
 make install-apps APP=mic-muter             # Local apps; omit APP for all
 make install-apps APP=financer PLATFORM=ios # ios or mac installs only that platform
 ```
@@ -33,14 +32,12 @@ it. It installs as `~/.Brewfile`, so `brew bundle --global` works anywhere.
 
 ```sh
 make lint # make fix to apply fixes
-make test-skills
 ```
 
-## Worktrees and reviews
+## Reviews and handoffs
 
-Use `goerwin-wt switch|list|open|remove` for Worktrunk-backed worktrees and
-explicit Herdr navigation/cleanup. See the
-[CLI reference](src/.local/lib/goerwin_tools/README.md) or `--help`.
-Invoke `$goerwin-review` for code review, receiving feedback, review loops, and
-architecture reviews, and `$goerwin-handoff` to launch a fresh visible agent
-session. Both are explicit-only and confirm a summary before acting.
+Invoke `$goerwin-review` for code review, multi-model council reviews,
+addressing feedback, and architecture reviews; reports are saved to
+`~/goerwin-reviews/`. Invoke `$goerwin-handoff` to launch a fresh visible agent
+in a Herdr tab. Both are explicit-only, use `wt` for worktrees, and ask before
+pushing or posting to GitHub.

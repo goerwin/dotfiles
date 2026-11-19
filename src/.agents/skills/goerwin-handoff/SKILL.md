@@ -1,110 +1,69 @@
 ---
 name: goerwin-handoff
-description: When explicitly invoked, create or reuse a Git worktree and hand off context to a fresh interactive Codex agent in a new focused Herdr tab.
+description: When explicitly invoked, hand off the current task to a fresh interactive agent in a new Herdr tab, in a new or existing Worktrunk worktree.
+disable-model-invocation: true
 ---
 
-# Herdr worktree handoff
+# Herdr handoff
 
-Invoke this skill only when the user explicitly requests it. Ordinary worktree
-creation or opening does not authorize an agent handoff.
+Use only when the user explicitly asks. The outcome is a visible tab in the
+Herdr app running a fresh interactive agent that received the handoff and keeps
+running after this session ends. An internal subagent, `codex exec`, or
+`claude -p` doesn't count. Never reuse an existing agent.
 
-Always create a fresh interactive agent in a new tab. Reuse the worktree and
-space when appropriate, never an existing agent, including idle sessions.
-The new session must remain running when the source agent exits; the launcher
-checks that it has no parent dependency.
+## Prepare
 
-The outcome is a worktree visible in Herdr's sidebar, a selected agent tab,
-and a running interactive Codex session that has received the task context.
-An internal subagent or an invisible terminal does not fulfill this skill.
-
-Default to GPT-6.1 Sol with high reasoning for this personal workflow. Honor
-an explicitly requested model and effort instead. If the user gives an alias,
-resolve it from `~/.local/lib/goerwin_tools/presets.json`; do not silently substitute models.
-
-## Prepare the handoff
-
-Use the branch, PR, or existing worktree the user specified. Reuse an existing
-worktree and its uncommitted changes. For a new branch, infer the base from the
-task when clear; ask only if choosing the wrong base would change the work.
-
-A new worktree runs setup hooks that can be slow. Create one only when the work
-needs another branch or must run alongside further edits in the source
-checkout. Otherwise target the source checkout's own path; the source agent
-then stops editing it.
-
-Write a UTF-8 handoff file outside the repository, preferably in a temporary
-task directory. Include the objective, user preferences, scope, relevant links
-and paths, investigation findings, changed files, checks already run, unresolved
-questions, and the next action. Separate confirmed findings from assumptions.
-Exclude credentials. State which external actions are already authorized.
-
-For a continuation handoff, tell the agent to inspect the worktree instructions
-and current diff, acknowledge the context, and await the user's next instruction.
-For an implementation handoff, give the agent the authorized remaining work.
-Do not grant permission to publish, push, or start additional agents merely
-because this skill is being used.
+- **Checkout:** use the branch, PR, or worktree the user named, keeping its
+  uncommitted changes. Create a new worktree only when the work needs another
+  branch or must run alongside further edits here; otherwise use this checkout
+  and stop editing it. Infer the base from the task; ask only if the wrong base
+  would change the work.
+- **Agent:** Codex with the latest frontier GPT Sol model at high effort,
+  unless the user names another model or Claude.
+- **Handoff file:** write it outside the repository (e.g.
+  `/tmp/handoff-NAME.md`): objective, user preferences, scope, links and
+  paths, findings (confirmed versus assumed), changed files, checks already
+  run, open questions, the next action, and which actions are authorized. No
+  credentials. For a continuation, tell the agent to inspect the current diff,
+  acknowledge, and wait for the user. Never grant push, publish, or starting
+  more agents just because of the handoff.
 
 ## Confirm
 
-Before launching, show a short summary and wait for confirmation: source
-repository, target branch or worktree (new or reused) and the base for a new
-branch, model and effort, tab name, a few lines on the handoff's objective and
-next action, and which actions the new agent may take.
+Show the repository, branch or worktree (new or reused, with the base for a new
+branch), the agent's exact model and effort, the tab name, a few lines on the
+objective and next action, and what the agent may do. Wait for confirmation.
 
-## Launch visibly
+## Launch
 
-Use [scripts/launch.py](scripts/launch.py). It accepts a branch, PR number/URL,
-or existing worktree directory. Pass `-C` for the source repository and an
-optional positional base when creating a branch. An existing branch is reused
-as-is; its base is ignored by goerwin-wt switch.
-
-```sh
-python3 /path/to/goerwin-handoff/scripts/launch.py fix/example origin/release-2400 \
-  -C /path/to/repo --task-file /tmp/task-handoff.md
-```
-
-For an existing worktree:
+Create worktrees only with `wt`, never `git worktree add`. Then open the agent
+in a tab of the Herdr space for that folder (find it in `herdr-app ls`), or in
+a new space if there is none. Unsetting `HC_TERMINAL_ID` keeps the agent from
+ending with this session.
 
 ```sh
-python3 /path/to/goerwin-handoff/scripts/launch.py /path/to/existing-worktree \
-  --task-file /tmp/task-handoff.md --tab-name 'Continue fix · 6.1 Sol High'
+wt switch --create BRANCH --base BASE --no-cd --format json   # existing branch: drop --create/--base
+env -u HC_TERMINAL_ID herdr-app do tab.new --space SPACE --name "TAB" --folder PATH \
+  --argv '["codex","--no-daemon","--model","MODEL","-c","model_reasoning_effort=\"high\""]' \
+  --task "Read /tmp/handoff-NAME.md and follow it."
+# no space yet: herdr-app do space.new --name BRANCH --folder PATH --tab "TAB" --argv … --task …
 ```
 
-Use `--model` and `--effort` for explicit overrides. The launcher uses
-`goerwin-wt switch TARGET --json` only to resolve/create the checkout without an
-extra shell tab. It then explicitly opens the agent tab, selects it, focuses
-its pane, and raises Herdr. Never stop after the worktree resolution step.
-Codex runs interactively with `--no-daemon`, never `codex exec`, so it stays
-watchable and available for follow-up input after the initial turn.
+For Claude, also unset `CLAUDECODE` and `CLAUDE_CODE_EFFORT_LEVEL`, and use
+`--argv '["claude","--model","MODEL","--effort","high"]'`.
 
-The tools are `goerwin-wt`, `herdr-app`, `hc`, and `codex`. Consult
-`herdr-app --skill` or `hc --skill` only if their behavior or schema needs
-investigation. Socket errors saying `Operation not permitted` require the
-normal sandbox escalation, not another worktree or another agent launch.
+The reply holds the new `terminal` ID. Confirm the agent with `hc get TERMINAL`
+(live, the right program and folder, no parent), `hc wait TERMINAL --timeout 20`
+while it starts, and `hc read TERMINAL` for its acknowledgment. If it shows a
+trust or approval prompt, leave it for the user and say so. A timeout doesn't
+prove failure: check `herdr-app ls` and `hc get` before doing anything else,
+and never launch a duplicate. Never kill unrelated terminals.
 
-## Verify and finish
+Report the worktree, tab, model and effort, and whether the agent acknowledged
+the handoff. After a continuation handoff, end your turn.
 
-The launcher prints a receipt path and records the worktree, model, effort,
-space, tab, and terminal IDs. It also checks Herdr's selected tab and reports
-the terminal's actual program and agent status. If `agent_started` is false
-but the terminal is live, inspect that terminal with `hc get` and `hc read`;
-use `hc wait TERMINAL --timeout 20` when startup/readiness is pending. A
-created tab alone is not proof the agent started or received the handoff.
-The handoff is supplied as Codex's initial prompt; confirm its acknowledgment
-in the terminal when practical.
+## Removing a worktree
 
-If the terminal reports a trust or approval prompt, preserve that decision
-for the user. Do not bypass it. Report the blocker and keep the tab visible.
-If launch times out or focus fails, inspect the receipt, `herdr-app ls`, and
-`hc get` before doing anything else. A timed-out request may have created the
-agent; do not rerun the launcher and create a duplicate. Recover by selecting
-the recorded tab and focusing its terminal. Never kill unrelated terminals.
-
-Confirm the worktree and tab name, the requested model/effort, and whether
-the agent acknowledged the handoff. After a successful continuation handoff,
-leave the interactive session running and end the source turn.
-
-Removing the worktree is a separate step the user asks for when the work is
-done. `goerwin-wt remove BRANCH -C REPO` runs from another checkout, refuses
-while agents are live unless given `--stop`, and closes the worktree's Herdr
-space.
+Only when the user asks. If `hc ls` shows an agent still running in it, stop
+and ask. Otherwise close its space (`herdr-app do space.close --id SPACE
+--confirmed true`), then run `wt remove BRANCH` from another checkout.

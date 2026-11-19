@@ -1,6 +1,6 @@
 #!/bin/zsh
 # alfred-title: Install skills
-# alfred-subtitle: Pull, then install agent skills and supporting CLI tools
+# alfred-subtitle: Pull, then install agent skills
 # alfred-args: --no-update: skip git pull and install the local skills as is
 
 set -euo pipefail
@@ -19,7 +19,6 @@ esac
 
 skillsInstallHome="${GOERWIN_SKILLS_HOME:-$HOME}"
 
-GOERWIN_TOOLS_HOME="$skillsInstallHome" zsh bin/install-tools.zsh --no-update
 mkdir -p "$skillsInstallHome/.agents/skills" "$skillsInstallHome/.claude/skills" "$skillsInstallHome/.codex/skills"
 for source in ./src/.agents/skills/*(/N); do
   [[ -f "$source/SKILL.md" ]] || continue
@@ -52,4 +51,4 @@ for source in ./src/.agents/skills/*(/N); do
   fi
   print -r -- "Installed $skill"
 done
-mkdir -p "$skillsInstallHome/goerwin-code-reviews"
+mkdir -p "$skillsInstallHome/goerwin-reviews"
