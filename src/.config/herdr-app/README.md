@@ -16,9 +16,8 @@ Personal shortcuts that use Herdr's native layout, tab bar, and Agents panel.
 
 The two small, invisible action mods call Herdr's native `tab.move` command
 and close immediately. Both use the implementation in
-`mods/move-tab-left/main.js` (the right mod links to it); install both folders
-together and preserve the symlink. No UI panels or
-layouts are copied, so Herdr continues to update its own interface.
+`mods/move-tab-left/main.js` (the right mod links to it). Install both folders
+together and preserve the symlink. The shortcuts work with Herdr's native layout.
 
 Cmd+, replaces the Settings shortcut. Settings is available in the sidebar
 and command palette.
@@ -42,6 +41,31 @@ Herdr remembers the layout and grouping; runtime state is not tracked here.
 
 The existing `confirm-close` and `open-cursor` mods remain separate shortcuts.
 
+## GoDaddy AI usage
+
+The `main-godaddy-ai` layout shows one status bar mod with the current spend and
+budget for Gocode and Cursor, for example `Gocode $366.49/$800 - Cursor $201/$500`.
+GoCode shows the key's spend and `max_budget` when the key has a budget.
+Otherwise it reads the key owner's spend and budget. Cursor uses the
+individual team usage limit. The mod uses the existing local
+`GOCODE_API_KEY` and `GOCODE_BASE_URL`.
+
+Set up Cursor in your local `~/.zshenv` using the usage dashboard in Chrome:
+
+```zsh
+# CURSOR_TEAM_ID: copy teamId from the usage-summary request in DevTools > Network.
+export CURSOR_TEAM_ID='…'
+# CURSOR_SESSION: copy WorkosCursorSessionToken from DevTools > Application > Cookies > cursor.com.
+export CURSOR_SESSION='…'
+```
+
+Keep the session cookie in your local shell configuration. After installing
+the dotfiles, select the layout to show the usage bar:
+
+```sh
+herdr-app do layout.switch --name main-godaddy-ai
+```
+
 ## Validate
 
 After installation:
@@ -49,5 +73,6 @@ After installation:
 ```sh
 herdr-app check ~/.config/herdr-app/mods/move-tab-left
 herdr-app check ~/.config/herdr-app/mods/move-tab-right
+herdr-app check ~/.config/herdr-app/mods/godaddy-ai
 herdr-app status
 ```
