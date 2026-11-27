@@ -30,8 +30,6 @@ Ask when the request matches several modes or none.
   comments, PR description edits). The request names the signed-in account
   (`gh api user --jq .login`) and where each item lands. Push only to the PR's
   branch, never the default branch.
-- **Worktrees:** create, switch, and remove them only with `wt`, never
-  `git worktree add`.
 - **Scope:** a PR URL must belong to the current checkout's repository; never
   clone.
 
@@ -75,8 +73,8 @@ plans or designs.
   latest frontier model of each (e.g. GPT Sol, Claude Opus, Gemini Pro) at high
   effort. Use the members the user names; one named model is a council of one.
 - Show the number of delegates and, for each, the provider, exact model
-  version, effort, and where it runs (internal subagent or Herdr tab), plus the
-  rubric and round limit. Wait for confirmation.
+  version, effort, and where it runs (internal subagent or separate agent),
+  plus the rubric and round limit. Wait for confirmation.
 
 ### Running delegates
 
@@ -86,23 +84,13 @@ For code reviews, ask each for findings in the criteria format and a score out
 of 10.
 
 Use the harness's own subagents when they support the model. Otherwise start
-the delegate as an interactive agent with `hc`, shown as a tab in the current
-Herdr space (`.space` from `herdr-app status`; drop the label if Herdr isn't
-open). Write its prompt to a file and have it write its findings to another:
+the delegate as a separate agent, the way your agent orchestrator documents.
+Write its prompt to a file (e.g. `/tmp/council/sol-prompt.md`) and have it
+write its findings to another.
 
-```sh
-hc run --bg --name council-sol --cwd "$PWD" --label herdr.space=SPACE \
-  codex --no-daemon --model MODEL -c 'model_reasoning_effort="high"' \
-  "Read /tmp/council/sol-prompt.md and follow it."
-env -u CLAUDECODE -u CLAUDE_CODE_EFFORT_LEVEL hc run --bg --name council-opus --cwd "$PWD" \
-  --label herdr.space=SPACE claude --model MODEL --effort high "Read /tmp/council/opus-prompt.md and follow it."
-hc wait --children any
-```
-
-Wait with `hc wait`, never sleep; a timeout is a check-in, not a failure. If a
-delegate stops without its findings file, read its screen (`hc read NAME`)
-before deciding anything, and never start a duplicate. When you have its
-results, `hc kill NAME; hc rm NAME`.
+Wait without sleeping; a timeout is a check-in, not a failure. If a delegate
+stops without its findings file, read its output before deciding anything, and
+never start a duplicate. Close separate agents once you have their results.
 
 While delegates run:
 

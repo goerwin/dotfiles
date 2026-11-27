@@ -38,6 +38,6 @@ make lint # make fix to apply fixes
 
 Invoke `$goerwin-review` for code review, multi-model council reviews,
 addressing feedback, and architecture reviews; reports are saved to
-`~/goerwin-reviews/`. Invoke `$goerwin-handoff` to launch a fresh visible agent
-in a Herdr tab. Both are explicit-only, use `wt` for worktrees, and ask before
-pushing or posting to GitHub.
+`~/goerwin-reviews/`. Invoke `$goerwin-handoff` to launch a fresh visible agent.
+Both are explicit-only and ask before pushing or posting to GitHub. Worktrees
+and agent sessions are left to the agent orchestrator's own instructions.

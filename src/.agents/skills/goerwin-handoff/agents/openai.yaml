@@ -1,6 +1,6 @@
 interface:
-  display_name: "Herdr Worktree Handoff"
-  short_description: "Open a worktree and hand off in a visible Herdr tab"
-  default_prompt: "Use $goerwin-handoff to open or create the worktree, focus it in Herdr, and hand off this task to a visible agent running the latest GPT Sol model with high reasoning."
+  display_name: "Goerwin Handoff"
+  short_description: "Hand off the current task to a fresh, visible agent"
+  default_prompt: "Use $goerwin-handoff to hand off this task to a visible agent running the latest GPT Sol model with high reasoning."
 policy:
   allow_implicit_invocation: false
