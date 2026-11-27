@@ -1,5 +1,5 @@
 import { div, View } from 'gpui-kit';
-import { closeOverlay, exec, notify, props, spaces } from 'herdr';
+import { closeOverlay, exec, focused, notify, props, spaces } from 'herdr';
 
 export default class OpenCursor extends View {
   init(_props, cx) {
@@ -7,8 +7,9 @@ export default class OpenCursor extends View {
     const overlay = props()?.overlay;
     if (!overlay) return;
 
-    // Capture the selected space before an asynchronous task can change selection.
-    const folder = spaces().find((space) => space.active)?.folder;
+    // Capture the current folder before starting the asynchronous launch.
+    const folder =
+      focused()?.cwd || spaces().find((space) => space.active)?.folder;
     cx.spawn(async () => {
       try {
         if (!folder) throw new Error('No selected space folder is available.');

@@ -1,6 +1,6 @@
 # Open the selected space in Cursor
 
-A Herdr App mod for macOS that opens the selected space/worktree's saved
+A Herdr App mod for macOS that opens the focused terminal's current
 folder in Cursor. Requires Cursor to be installed and the folder to be
 available on this Mac.
 
@@ -19,8 +19,9 @@ herdr-app do mod.open --name open-cursor
 
 ## Behavior
 
-The target is the selected space's saved folder. Changing directory in a
-terminal does not change the target, and Git is not involved.
+Press the shortcut after `cd` to open the folder you switched to. When Herdr
+has no current directory for the focused pane, the mod uses the selected
+space's starting folder.
 
 The mod loads on demand in a transparent window that preserves terminal
 focus and closes after the launch finishes. Failures appear as a notification.

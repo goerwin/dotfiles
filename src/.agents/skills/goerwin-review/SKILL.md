@@ -70,8 +70,7 @@ plans or designs.
 - Fix other known issues and run relevant checks, so the council reviews the
   current implementation. Don't defer known fixes until reviews return.
 - Pick the delegates: each a model from a different provider, by default the
-  latest frontier model of each (e.g. GPT Sol, Claude Opus, Gemini Pro) at high
-  effort. Use the members the user names; one named model is a council of one.
+  latest frontier model of each at high effort. Use the members the user names; one named model is a council of one.
 - Show the number of delegates and, for each, the provider, exact model
   version, effort, and where it runs (internal subagent or separate agent),
   plus the rubric and round limit. Wait for confirmation.
@@ -85,7 +84,7 @@ of 10.
 
 Use the harness's own subagents when they support the model. Otherwise start
 the delegate as a separate agent, the way your agent orchestrator documents.
-Write its prompt to a file (e.g. `/tmp/council/sol-prompt.md`) and have it
+Write its prompt to a file (e.g. `/tmp/council/DELEGATE-prompt.md`) and have it
 write its findings to another.
 
 Wait without sleeping; a timeout is a check-in, not a failure. If a delegate
@@ -120,8 +119,8 @@ Rounds: 2
 
 | Delegate | Round 1 | Round 2 |
 | --- | --- | --- |
-| Claude Opus | 7/10 | 9/10 |
-| GPT Sol | 8/10 | 10/10 |
+| Model A | 7/10 | 9/10 |
+| Model B | 8/10 | 10/10 |
 ```
 
 If a delegate gives no score, write `no score`; never invent one. The table

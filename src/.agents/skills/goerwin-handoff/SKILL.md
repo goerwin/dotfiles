@@ -8,8 +8,8 @@ disable-model-invocation: true
 
 Use only when the user explicitly asks. The outcome is a fresh interactive
 agent, visible to the user, that received the handoff and keeps running after
-this session ends. An internal subagent, `codex exec`, or `claude -p` doesn't
-count. Never reuse an existing agent.
+this session ends. An internal subagent or a one-shot, non-interactive run
+doesn't count. Never reuse an existing agent.
 
 ## Prepare
 
@@ -18,8 +18,8 @@ count. Never reuse an existing agent.
   must run alongside further edits here; otherwise use this checkout and stop
   editing it. Infer the base from the task; ask only if the wrong base would
   change the work.
-- **Agent:** Codex with the latest frontier GPT Sol model at high effort,
-  unless the user names another model or Claude.
+- **Agent:** the agent and model the user names; otherwise the same agent as
+  this session with its latest frontier model at high effort.
 - **Handoff file:** write it outside the repository (e.g.
   `/tmp/handoff-NAME.md`): objective, user preferences, scope, links and
   paths, findings (confirmed versus assumed), changed files, checks already
