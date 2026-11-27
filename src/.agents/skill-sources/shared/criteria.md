@@ -1,5 +1,3 @@
-# Review criteria
-
 ## Standards
 
 These apply both when reviewing and when addressing feedback.
@@ -54,13 +52,6 @@ Report what the author would likely act on:
 
 Skip formatting, pre-existing issues, speculation, praise, and generated
 snapshots. Severity: blocking or suggestion.
-
-**Adversarial rubric** (only when asked): assume the change is broken and try
-to break it. Probe invalid inputs, boundaries, unusual option combinations,
-repeated or out-of-order actions, races, partial failures, and cleanup; judge
-APIs as a consumer and code as the next maintainer. Each finding needs a
-concrete failure path or maintenance cost, plus a simpler alternative.
-Severity: critical, high, medium, or low.
 
 ## Findings format
 

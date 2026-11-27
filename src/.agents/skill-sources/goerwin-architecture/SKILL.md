@@ -1,4 +1,11 @@
-# Architecture review
+---
+name: goerwin-architecture
+description: Review a codebase or folder for structure, dependency direction, duplication, hacky or unused code, and other design risks, with a saved findings report. Use only when explicitly invoked.
+argument-hint: "[folder]"
+disable-model-invocation: true
+---
+
+# Goerwin Architecture
 
 Review the codebase for refactoring opportunities, duplication, hacky
 implementations, unused code, poor design decisions, and other risks that make
@@ -8,6 +15,8 @@ asks.
 For large codebases, ask for a scope (a folder, feature, or layer) or start
 with the highest-impact areas.
 
+<!-- include: rules.md -->
+
 ## Understand the codebase first
 
 Map the folder structure, entry points, and existing conventions before judging
@@ -16,7 +25,7 @@ replacing it with a different style.
 
 ## What to look for
 
-Everything under "What to report" in `criteria.md`, applied to existing code
+Everything under [What to report](#what-to-report), applied to existing code
 (pre-existing issues are in scope here), plus:
 
 - **Scope:** in a codebase organized by folder or feature, each folder holds only code for its scope. A `Signin` folder shouldn't contain unrelated code; a `Database` folder shouldn't contain business logic.
@@ -26,14 +35,15 @@ Everything under "What to report" in `criteria.md`, applied to existing code
 - **Unused code:** check indirect usages first (dynamic imports, config files, routes, public exports, scripts, tests).
 - **Stale docs:** docs for unrelated or unused features.
 
-## Report
-
-Use the findings format from `criteria.md` with severity high, medium, or low,
-listing every affected path. Save it like any other report, with the scope
-(`.` for the whole repository).
+Use severity high, medium, or low, list every affected path, and record the
+scope (`.` for the whole repository) in the report.
 
 ## Applying fixes
 
 When the user asks, make small, focused changes one finding at a time. Run type
 checks, linters, and tests after each change when appropriate; skip them for
 documentation-only changes unless the docs are covered by configured checks.
+
+<!-- include: criteria.md -->
+
+<!-- include: reports.md -->

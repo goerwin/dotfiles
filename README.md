@@ -31,13 +31,25 @@ it. It installs as `~/.Brewfile`, so `brew bundle --global` works anywhere.
 ## Development
 
 ```sh
-make lint # make fix to apply fixes
+make lint         # make fix to apply fixes
+make build-skills # Rebuild src/.agents/skills from src/.agents/skill-sources
 ```
 
-## Reviews and handoffs
+## Skills
 
-Invoke `$goerwin-review` for code review, multi-model council reviews,
-addressing feedback, and architecture reviews; reports are saved to
-`~/goerwin-reviews/`. Invoke `$goerwin-handoff` to launch a fresh visible agent.
-Both are explicit-only and ask before pushing or posting to GitHub. Worktrees
-and agent sessions are left to the agent orchestrator's own instructions.
+Skills are edited in `src/.agents/skill-sources/`. A
+`<!-- include: name.md -->` line pulls in `skill-sources/shared/name.md`, so
+each built skill in `src/.agents/skills/` is one self-contained file. Lint
+fails when the built skills are out of date.
+
+- `$goerwin-review`: review a branch, PR, or uncommitted work
+- `$goerwin-council`: multi-model review council with fix rounds
+- `$goerwin-ship`: take a finished branch through council rounds to a draft PR
+- `$goerwin-address`: address review feedback and draft replies
+- `$goerwin-architecture`: review a codebase or folder for design risks
+- `$goerwin-mutation`: mutation-test a change's tests
+- `$goerwin-handoff`: launch a fresh visible agent
+
+Reports are saved to `~/goerwin-reviews/`. All skills are explicit-only and
+ask before pushing or posting to GitHub. Worktrees and agent sessions are left
+to the agent orchestrator's own instructions.

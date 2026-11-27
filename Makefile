@@ -1,10 +1,14 @@
 BIOME := npm_config_registry=https://registry.npmjs.org npx @biomejs/biome@2.5.3
 UPDATE_FLAG := $(if $(NO_UPDATE),--no-update)
 
-.PHONY: lint fix install-skills install install-apps brew-backup install-brew install-brew-force
+.PHONY: lint fix build-skills install-skills install install-apps brew-backup install-brew install-brew-force
 
 lint:
 	$(BIOME) check .
+	node lib/build-skills.mjs --check
+
+build-skills:
+	node lib/build-skills.mjs
 
 fix:
 	$(BIOME) check --write .

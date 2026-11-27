@@ -1,0 +1,5 @@
+interface:
+  display_name: "Goerwin Architecture"
+  short_description: "Review a codebase or folder for structural and design risks"
+policy:
+  allow_implicit_invocation: false

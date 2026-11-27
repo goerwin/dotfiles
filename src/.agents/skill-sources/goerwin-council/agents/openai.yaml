@@ -1,0 +1,5 @@
+interface:
+  display_name: "Goerwin Council"
+  short_description: "Run a multi-model review council and fix findings between rounds"
+policy:
+  allow_implicit_invocation: false

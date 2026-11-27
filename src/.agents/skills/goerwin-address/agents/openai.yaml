@@ -1,0 +1,5 @@
+interface:
+  display_name: "Goerwin Address"
+  short_description: "Verify and address review feedback, then draft replies"
+policy:
+  allow_implicit_invocation: false
