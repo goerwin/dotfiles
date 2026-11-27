@@ -1,7 +1,7 @@
 ---
 name: goerwin-babysit
 description: Take work to a ready state in one run; implement the task if there's no work yet, address PR feedback, loop reviews by models from different providers with fixes, wait for CI, and finish with a draft PR or pushed replies. Use only when explicitly invoked.
-argument-hint: "[task | plan | PR URL] [models…]"
+argument-hint: "[task | plan | PR URL | address pr comments] [models…]"
 disable-model-invocation: true
 ---
 
@@ -22,6 +22,11 @@ Use what the user gave; with nothing given, use the current branch and its PR.
   the project's checks.
 - **Work on a branch without a PR:** start from it. If the work is on the
   default branch, ask for a branch name.
+- **Only PR feedback** (e.g. "address pr comments", "fix the Copilot
+  comments"): use the PR given, or the current branch's PR. Address its
+  [feedback](#pr-feedback), skip the review loop and the mutation check, run
+  the project's checks, then [finish](#finish). A finding that needs a
+  bigger change is a question, not a fix.
 - **A PR:** address its feedback first (see [PR feedback](#pr-feedback)).
 - **A plan or design without code:** run the review loop on the plan, then
   stop with the revised plan and the report.
