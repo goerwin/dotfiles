@@ -44,7 +44,7 @@ The existing `confirm-close` and `open-cursor` mods remain separate shortcuts.
 ## GoDaddy AI usage
 
 The `main-godaddy-ai` layout shows one status bar mod with the current spend and
-budget for Gocode and Cursor, for example `Gocode $366.49/$800 - Cursor $201/$500`.
+budget for GoCode and Cursor, for example `GoCode $366.49/$800 - Cursor $201/$500`.
 GoCode shows the key's spend and `max_budget` when the key has a budget.
 Otherwise it reads the key owner's spend and budget. Cursor uses the
 individual team usage limit. The mod uses the existing local

@@ -4,7 +4,7 @@ import { appHome, checking, exec, theme, window } from "herdr";
 
 const refreshInterval = 60_000;
 const providers = [
-  { id: "gocode", name: "Gocode", shellOptions: ["-f"], timeout: 20_000 },
+  { id: "gocode", name: "GoCode", shellOptions: ["-f"], timeout: 20_000 },
   { id: "cursor", name: "Cursor", shellOptions: [], timeout: 12_000 },
 ];
 
