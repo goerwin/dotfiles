@@ -39,6 +39,12 @@ Report what the author would likely act on:
 - Code that is needlessly complex, hard to follow, or poorly structured when a
   simpler shape would do.
 - Workarounds that hide the cause, or tests changed only to force a pass.
+- Hardcoded values that should adapt or come from one source: fixed sizes
+  where a fluid or responsive layout fits (an image width instead of
+  `max-width: 100%` or an aspect ratio), magic numbers repeated instead of
+  named, and literals that bypass the project's design tokens, theme, config,
+  or constants (colors, spacing, breakpoints, URLs, limits, timeouts). Leave
+  one-off values that are clear in place.
 - Added comments that restate the code or describe previous implementations.
 - AI slop: filler comments or code, and leftovers of an earlier pass such as
   compatibility shims, fallbacks, aliases, or dual paths with no real migration.
