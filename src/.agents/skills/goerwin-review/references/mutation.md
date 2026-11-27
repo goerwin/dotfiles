@@ -59,8 +59,8 @@ saved output exactly.
 
 ## Report
 
-Use the findings format from `criteria.md` with severity blocking or
-suggestion. Save it like any other report, after the findings add:
+Use the findings format from `criteria.md`. Save it like any other report,
+after the findings add:
 
 ~~~md
 ## Mutants

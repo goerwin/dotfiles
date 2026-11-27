@@ -71,12 +71,13 @@ plans or designs.
 
 - Make sure you have the intent, goal, and context. Ask for anything missing.
 - If there is a PR, read its unresolved review comments first (see
-  [PR threads](#pr-threads)). Fix the valid ones; for the rest, draft a short
-  pushback and show it. Posting follows the publishing rule.
+  [PR threads](#pr-threads)). Fix the ones that meet the feedback bar in
+  `criteria.md`; for the rest, draft a short pushback and show it.
 - Fix other known issues and run relevant checks, so the council reviews the
   current implementation. Don't defer known fixes until reviews return.
 - Pick the delegates: each a model from a different provider, by default the
-  latest frontier model of each at high effort. Use the members the user names; one named model is a council of one.
+  latest frontier model of each at high effort. Use the members the user
+  names; one named model is a council of one.
 - Show the number of delegates and, for each, the provider, exact model
   version, effort, and where it runs (internal subagent or separate agent),
   plus the rubric and round limit. Wait for confirmation.
@@ -108,10 +109,11 @@ While delegates run:
 ### Rounds
 
 Each full review pass is one round; a fresh review after fixes starts a new
-one. Apply the recommendations you agree with, then request a fresh review.
-Repeat until all delegates are satisfied, up to 5 rounds unless the user sets
-another limit. If findings remain at the limit, stop and list them. Don't let
-repeated reviews cause scope creep; keep the scope limited.
+one. Apply only the recommendations that meet the feedback bar in
+`criteria.md`, then request a fresh review. Repeat until all delegates are
+satisfied, up to 5 rounds unless the user sets another limit. If findings
+remain at the limit, stop and list them. Don't let repeated reviews cause
+scope creep.
 
 ### Finish
 
@@ -143,17 +145,15 @@ report for this branch; ask only if neither exists. For a PR, also read its
 conversation (`gh pr view URL --comments`) and treat only comments that ask for
 a change as findings.
 
-For each finding, establish the expected behavior, then verify the claim
-against current code, callers, and tests. Group duplicates by their real
-underlying issue; the same file and line alone isn't a duplicate. Give each one
-outcome:
+Verify each finding against current code, callers, and tests. Group
+duplicates by their real underlying issue; the same file and line alone isn't
+a duplicate. Give each one outcome:
 
-- **Applied:** correct and a concrete improvement. Make a focused root-cause
-  fix with existing patterns. An issue already fixed counts, with evidence.
-- **Pushed back:** incorrect, speculative, out of scope, preference without
-  benefit, a workaround, a test-only change that forces a pass, or a change of
-  intent. Explain with evidence; suggest a follow-up for valid out-of-scope
-  ideas.
+- **Applied:** meets the feedback bar in `criteria.md`. Make a focused fix. An
+  issue already fixed counts, with evidence.
+- **Pushed back:** below the feedback bar, incorrect, speculative, out of
+  scope, a change of intent, or a fix that `criteria.md` rules out. Explain
+  with evidence; suggest a follow-up for valid out-of-scope ideas.
 - **Waiting:** needs facts only the user or reviewer has. Ask a concrete
   question.
 
@@ -161,10 +161,10 @@ Reproduce bugs and run focused checks when practical, and preserve unrelated
 edits. Show the code changes and numbered outcomes in the reply, and append
 the outcomes to the report if the feedback came from one.
 
-For PR threads, draft one reply per thread, following the GitHub text rule. A
-waiting reply is the question for the reviewer. Each reply starts with its
-outcome label, `(applied)`, `(pushed back)`, or `(waiting)`, so reviewers see
-the position at a glance. Show them all before anything leaves the machine:
+For PR threads, draft one reply per thread. A waiting reply is the question
+for the reviewer. Each reply starts with its outcome label, `(applied)`,
+`(pushed back)`, or `(waiting)`, so reviewers see the position at a glance.
+Show them all before anything leaves the machine:
 
 ```text
 Posting as @<login>:

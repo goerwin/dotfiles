@@ -16,15 +16,15 @@ replacing it with a different style.
 
 ## What to look for
 
+Everything under "What to report" in `criteria.md`, applied to existing code
+(pre-existing issues are in scope here), plus:
+
 - **Scope:** in a codebase organized by folder or feature, each folder holds only code for its scope. A `Signin` folder shouldn't contain unrelated code; a `Database` folder shouldn't contain business logic.
 - **Dependency direction:** shared or lower-level code (e.g. `Database`, `UI`) must not import from features; features don't import each other's internals; flag circular imports.
 - **Shared code:** code used by two or more places lives in their closest common parent (in small projects, one shared folder). Code used in one place stays next to it, so the layout shows reach at a glance.
-- **Hacky implementations:** code that reimplements a platform, framework, or library feature; timeouts, retries, or flags that hide a bug; casts, suppressed errors, or disabled lint rules that silence real problems. Prefer the simpler, native, maintainable solution.
-- **Hardcoded values:** fixed sizes where a fluid or responsive layout fits, repeated magic numbers, and literals that bypass the project's design tokens, theme, config, or constants. Leave one-off values that are clear in place.
+- **Reimplemented features:** code that reimplements a platform, framework, or library feature. Prefer the native solution.
 - **Unused code:** check indirect usages first (dynamic imports, config files, routes, public exports, scripts, tests).
-- **Documentation:** flag docs for unrelated or unused features. READMEs and public docs stay high-level; fixes and minor changes are often over-explained.
-- **Comments** that restate self-explanatory code or narrate earlier implementations.
-- **AI slop:** filler comments or code, and leftovers of an earlier pass such as compatibility shims, fallbacks, aliases, or dual paths with no real migration.
+- **Stale docs:** docs for unrelated or unused features.
 
 ## Report
 
