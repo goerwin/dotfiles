@@ -26,7 +26,6 @@ export default class GoDaddyAI extends View {
     this.budgets = providers.map((provider) => ({
       ...provider,
       label: `${provider.name} checking…`,
-      lastBudget: "",
       failed: false,
     }));
     this.waiting = false;
@@ -46,23 +45,23 @@ export default class GoDaddyAI extends View {
     cx.spawn(async (cx) => {
       try {
         await Promise.all(this.budgets.map(async (budget) => {
-          let unavailable = `${budget.name} unavailable`;
+          let label = `${budget.name} unavailable`;
+          let failed = true;
           try {
             const result = await exec(
               "/bin/zsh",
               [...budget.shellOptions, script, budget.id],
               { timeout: budget.timeout },
             );
-            if (result.code === 78) unavailable = `${budget.name} credentials unavailable`;
-            if (result.code !== 0) throw new Error(unavailable);
-
-            budget.lastBudget = budgetLabel(budget.name, JSON.parse(result.stdout));
-            budget.label = budget.lastBudget;
-            budget.failed = false;
+            if (result.code === 0) {
+              label = budgetLabel(budget.name, JSON.parse(result.stdout));
+              failed = false;
+            }
           } catch {
-            budget.failed = true;
-            budget.label = budget.lastBudget ? `${budget.lastBudget} (stale)` : unavailable;
+            // Command and parsing errors leave this provider unavailable.
           }
+          budget.label = label;
+          budget.failed = failed;
           cx.notify();
         }));
       } finally {
