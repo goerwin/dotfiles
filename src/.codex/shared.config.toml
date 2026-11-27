@@ -4,6 +4,8 @@ model_reasoning_effort = "high"
 model_provider = "gocode"
 personality = "pragmatic"
 service_tier = "default"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
 
 [desktop]
 ambient-suggestions-enabled = false
