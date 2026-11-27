@@ -74,7 +74,7 @@ export default class GoDaddyAI extends View {
   render(cx) {
     this.refresh(cx);
     const colors = theme();
-    const label = this.budgets.map((budget) => budget.label).join(" - ");
+    const label = this.budgets.map((budget) => budget.label).join(" • ");
     return h_flex().size_full().justify_end().items_center().px(14)
       .bg(colors.chrome).border_t(1).border_color(colors.border)
       .child(div().id("budget").text_size(11.8)
