@@ -15,6 +15,11 @@ These apply both when reviewing and when addressing feedback.
   documentation (e.g. JSDoc). Comments that restate the code or narrate earlier
   implementations, rejected alternatives, or why the code changed are findings;
   fixes never add them.
+- No AI slop, as a hard rule: flag code or comments that add nothing or exist
+  only because of an earlier pass. This includes comments that explain the new
+  approach instead of letting the code show it, filler comments, and shims,
+  fallbacks, aliases, or dual paths for old behavior when the change isn't a
+  real migration. Fixes never add them.
 - Adapt existing tests only when their original purpose and assertions remain;
   add tests only for uncovered behavior. Tests for new behavior must fail when
   that behavior is removed or reversed.
@@ -32,6 +37,8 @@ Report what the author would likely act on:
   simpler shape would do.
 - Workarounds that hide the cause, or tests changed only to force a pass.
 - Added comments that restate the code or describe previous implementations.
+- AI slop: filler comments or code, and leftovers of an earlier pass such as
+  compatibility shims, fallbacks, aliases, or dual paths with no real migration.
 - Over-documentation: READMEs or docs that note every fix or minor change,
   explain internals, or over-explain. Docs stay high-level.
 - Test bloat: tests that duplicate existing coverage, check implementation

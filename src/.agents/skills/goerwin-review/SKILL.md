@@ -30,6 +30,12 @@ Ask when the request matches several modes or none.
   comments, PR description edits). The request names the signed-in account
   (`gh api user --jq .login`) and where each item lands. Push only to the PR's
   branch, never the default branch.
+- **GitHub text:** replies, comments, and PR descriptions sound like a person
+  wrote them: casual, direct, brief, no hedging, no em dashes. No praise
+  openers ("Good catch"), restating the comment, "I've updated X to Y"
+  narration, or lists and headers in short replies. When the fix speaks for
+  itself, "Fixed" or "Done" is the whole reply; add more only when it tells the
+  reviewer something the fix doesn't.
 - **Scope:** a PR URL must belong to the current checkout's repository; never
   clone.
 
@@ -155,15 +161,17 @@ Reproduce bugs and run focused checks when practical, and preserve unrelated
 edits. Show the code changes and numbered outcomes in the reply, and append
 the outcomes to the report if the feedback came from one.
 
-For PR threads, draft one reply per thread. Replies sound like a person:
-brief, direct, casual, no hedging, no em dashes. A waiting reply is the
-question for the reviewer. Show them all before anything leaves the machine:
+For PR threads, draft one reply per thread, following the GitHub text rule. A
+waiting reply is the question for the reviewer. Each reply starts with its
+outcome label, `(applied)`, `(pushed back)`, or `(waiting)`, so reviewers see
+the position at a glance. Show them all before anything leaves the machine:
 
 ```text
 Posting as @<login>:
-1. menu.tsx:62 (applied) Good catch, the playground now switches rows with the mode.
-2. menu.tsx:118 (pushed back) I'd keep this one. Splitting it would change the API this PR adds.
-3. menu.tsx:140 (waiting) Should multiple selection keep the order users clicked?
+1. menu.tsx:62 (applied) Fixed
+2. menu.tsx:95 (applied) Done, the playground had the same issue so it switches rows with the mode now too
+3. menu.tsx:118 (pushed back) I'd keep this one, splitting it would change the API this PR adds
+4. menu.tsx:140 (waiting) Should multiple selection keep the order users clicked?
 ```
 
 Then ask once: push, reply (all or some), both, or skip. Push before replying

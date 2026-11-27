@@ -23,6 +23,7 @@ replacing it with a different style.
 - **Unused code:** check indirect usages first (dynamic imports, config files, routes, public exports, scripts, tests).
 - **Documentation:** flag docs for unrelated or unused features. READMEs and public docs stay high-level; fixes and minor changes are often over-explained.
 - **Comments** that restate self-explanatory code or narrate earlier implementations.
+- **AI slop:** filler comments or code, and leftovers of an earlier pass such as compatibility shims, fallbacks, aliases, or dual paths with no real migration.
 
 ## Report
 
