@@ -23,6 +23,9 @@ These apply both when reviewing and when addressing feedback.
 - Adapt existing tests only when their original purpose and assertions remain;
   add tests only for uncovered behavior. Tests for new behavior must fail when
   that behavior is removed or reversed.
+- When you add or edit a test, verify it: briefly remove or reverse the
+  behavior it covers, confirm the test fails, then restore the code exactly.
+  Drop or rework a test that still passes.
 - Refactors keep existing tests passing unchanged and don't add new ones.
 
 ## What to report
