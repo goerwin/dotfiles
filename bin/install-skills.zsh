@@ -19,8 +19,9 @@ esac
 
 skillsInstallHome="${GOERWIN_SKILLS_HOME:-$HOME}"
 
+node lib/build-skills.mjs
 mkdir -p "$skillsInstallHome/.agents/skills" "$skillsInstallHome/.claude/skills" "$skillsInstallHome/.codex/skills"
-for source in ./src/.agents/skills/*(/N); do
+for source in ./build/skills/*(/N); do
   [[ -f "$source/SKILL.md" ]] || continue
   skill="${source:t}"
   destination="$skillsInstallHome/.agents/skills/$skill"
@@ -38,17 +39,14 @@ for source in ./src/.agents/skills/*(/N); do
     print -u2 -- "Refusing to replace a Codex skill directory: $codexLink"
     exit 1
   fi
-  if [[ -L "$codexLink" && "${codexLink:A}" != "${source:A}" && "${codexLink:A}" != "${destination:A}" ]]; then
+  if [[ -L "$codexLink" && "${codexLink:A}" != "${destination:A}" ]]; then
     print -u2 -- "Refusing to replace an unrelated Codex skill symlink: $codexLink"
     exit 1
   fi
   mkdir -p "$destination"
   rsync -a --delete --exclude='__pycache__' --exclude='*.pyc' --exclude='tests' "$source/" "$destination/"
   ln -sfn "../../.agents/skills/$skill" "$claudeLink"
-  # Preserve an existing direct link to this checkout, including in-progress skills.
-  if [[ ! -L "$codexLink" || "${codexLink:A}" != "${source:A}" ]]; then
-    ln -sfn "../../.agents/skills/$skill" "$codexLink"
-  fi
+  ln -sfn "../../.agents/skills/$skill" "$codexLink"
   print -r -- "Installed $skill"
 done
 mkdir -p "$skillsInstallHome/goerwin-reviews"

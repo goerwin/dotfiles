@@ -1,5 +1,0 @@
-interface:
-  display_name: "Goerwin Mutation"
-  short_description: "Mutation-test the tests a change adds or edits"
-policy:
-  allow_implicit_invocation: false

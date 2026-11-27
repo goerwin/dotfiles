@@ -1,0 +1,5 @@
+interface:
+  display_name: "Goerwin Babysit"
+  short_description: "Take work to a ready state: implement, address feedback, review loop, CI, draft PR"
+policy:
+  allow_implicit_invocation: false

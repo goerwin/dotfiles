@@ -1,5 +1,5 @@
 interface:
   display_name: "Goerwin Review"
-  short_description: "Review a branch, PR, or uncommitted work and save a findings report"
+  short_description: "Review work by this session or several models and save a findings report"
 policy:
   allow_implicit_invocation: false

@@ -32,20 +32,19 @@ it. It installs as `~/.Brewfile`, so `brew bundle --global` works anywhere.
 
 ```sh
 make lint         # make fix to apply fixes
-make build-skills # Rebuild src/.agents/skills from src/.agents/skill-sources
+make build-skills # Preview built skills in build/skills
 ```
 
 ## Skills
 
-Skills are edited in `src/.agents/skill-sources/`. A
-`<!-- include: name.md -->` line pulls in `skill-sources/shared/name.md`, so
-each built skill in `src/.agents/skills/` is one self-contained file. Lint
-fails when the built skills are out of date.
+Skills live in `src/.agents/skills/`. A `<!-- include: name.md -->` line pulls
+in `src/.agents/skills/shared/name.md`, and installing builds each skill into
+one self-contained file.
 
-- `$goerwin-review`: review a branch, PR, or uncommitted work
-- `$goerwin-council`: multi-model review council with fix rounds
-- `$goerwin-ship`: take a finished branch through council rounds to a draft PR
-- `$goerwin-address`: address review feedback and draft replies
+- `$goerwin-babysit`: take work to a ready state, from implementing and
+  addressing PR feedback through multi-model review rounds and CI to a draft PR
+- `$goerwin-review`: review work by this session or several models, without
+  fixing
 - `$goerwin-architecture`: review a codebase or folder for design risks
 - `$goerwin-mutation`: mutation-test a change's tests
 - `$goerwin-handoff`: launch a fresh visible agent

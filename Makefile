@@ -5,7 +5,6 @@ UPDATE_FLAG := $(if $(NO_UPDATE),--no-update)
 
 lint:
 	$(BIOME) check .
-	node lib/build-skills.mjs --check
 
 build-skills:
 	node lib/build-skills.mjs
