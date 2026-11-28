@@ -26,6 +26,8 @@ paths.
 
 <!-- include: criteria.md -->
 
+<!-- include: probes.md -->
+
 <!-- include: rubrics.md -->
 
 <!-- include: reports.md -->

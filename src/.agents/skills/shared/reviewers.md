@@ -11,7 +11,10 @@ Reviewers are models from different providers, each reviewing independently.
 
 Give each reviewer the request, intent, context, and review base, plus the
 [Standards](#standards), [What to report](#what-to-report),
-[Findings format](#findings-format), and the rubric copied into its prompt.
+[Findings format](#findings-format), [Probes](#probes), and the rubric copied
+into its prompt. Tell each to read the repository's `AGENTS.md`,
+`.github/copilot-instructions.md`, `.github/instructions/*`, and any docs or
+skills they reference; read these yourself too.
 Leave out the implementer's reasoning for its choices, so each judges the work
 fresh. Reviewers are read-only and don't start other agents. Ask each for
 findings in the findings format, a score out of 10, and any questions only the

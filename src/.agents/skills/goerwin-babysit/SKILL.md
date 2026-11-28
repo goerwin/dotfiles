@@ -25,8 +25,9 @@ Use what the user gave; with nothing given, use the current branch and its PR.
 - **Only PR feedback** (e.g. "address pr comments", "fix the Copilot
   comments"): use the PR given, or the current branch's PR. Address its
   [feedback](#pr-feedback), skip the review loop and the mutation check, run
-  the project's checks, then [finish](#finish). A finding that needs a
-  bigger change is a question, not a fix.
+  the project's checks, then [finish](#finish). Apply the [fix sweep](#standards)
+  before drafting replies. A finding that needs a bigger change is a
+  question, not a fix.
 - **A PR:** address its feedback first (see [PR feedback](#pr-feedback)).
 - **A plan or design without code:** run the review loop on the plan, then
   stop with the revised plan and the report.
@@ -51,8 +52,9 @@ query($owner: String!, $repo: String!, $number: Int!) {
 
 Also read the conversation (`gh pr view URL --comments`) and treat only
 comments that ask for a change as findings. Give each finding an
-[outcome](#outcomes) and draft its reply (see [Replies](#replies)); replies
-are posted at the [finish](#finish).
+[outcome](#outcomes). Apply fixes and sweep the shared contract before
+drafting replies (see [Replies](#replies)); replies are posted at the
+[finish](#finish).
 
 ## Outcomes
 
@@ -74,14 +76,22 @@ edits.
 ## Review loop
 
 1. Fix known issues and run relevant checks first, so reviewers see the
-   current implementation.
+   current implementation. For new code, list every promise in its docs and
+   types. Cover combinations with one or two stress fixtures and invariant
+   assertions (no overlap, every control reachable, nothing dangling); extend
+   existing tests without duplicate coverage. Run the [probes](#probes)
+   against the implementation before round 1.
 2. Pick and confirm the [reviewers](#reviewers), with the round limit.
-3. The first round uses the design rubric; later rounds use the criteria plus
-   the adversarial rubric.
+3. In round 1 with two or more reviewers, give one the design rubric and one
+   the adversarial rubric; alternate the rest. With one reviewer, use design
+   plus the probes. Later rounds use the criteria and adversarial rubric.
 4. Give each finding an [outcome](#outcomes), apply the applied ones, and
-   request a fresh round. Repeat until all reviewers are satisfied, up to 5
-   rounds unless the user sets another limit. If findings remain at the limit,
-   stop and list them. Don't let repeated reviews cause scope creep.
+   sweep each fix before the next round. Round 2 onward confirms fixes. Only
+   critical, high, or medium findings justify another full round; fix and
+   verify low findings locally or propose follow-ups. Blocking counts as high;
+   suggestion as low. Stop when no full round is needed, or after 5 rounds
+   unless the user sets another limit. List findings left at the limit. Don't
+   let repeated reviews cause scope creep.
 5. Answer questions from code, docs, and history when you can. Ask the user
    the rest in one batch per round, and keep fixing unrelated findings while
    you wait. A finding that would change the approach or the intent is a
@@ -95,7 +105,9 @@ edits.
 1. The project's type checks, linters, and tests pass.
 2. Save one report with the reviewers table, the outcomes, and any mutation
    tables.
-3. Show everything that would leave the machine, then ask once:
+3. Compare the current or draft PR description, changeset, and docs against
+   the final code.
+   Show everything that would leave the machine, then ask once:
    - **No PR:** push and open a draft PR (`gh pr create --draft`) with a
      short, precise description: what changed and why.
    - **A PR:** push, post the drafted replies (all or some), and update the
@@ -137,6 +149,8 @@ posted and retry only the rest.
 <!-- include: mutation.md -->
 
 <!-- include: criteria.md -->
+
+<!-- include: probes.md -->
 
 <!-- include: rubrics.md -->
 

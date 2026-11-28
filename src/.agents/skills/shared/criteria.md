@@ -12,6 +12,10 @@ These apply both when reviewing and when addressing feedback.
   suggestions, polish, and style preferences are pushed back.
 - Fix root causes with established patterns. Fixes never introduce an issue
   from [What to report](#what-to-report).
+- After each fix, sweep every branch, variant, slot, sibling, and shared base
+  type with the same contract. Fix them in the same commit, preferably at the
+  shared layer. Recheck combinations the fix touches, including interaction
+  ownership. Adding one more special case is a sign to fix the contract.
 - Adapt existing tests only when their original purpose and assertions remain.
   When you add or edit a test, briefly remove or reverse the behavior it
   covers, confirm the test fails, then restore the code exactly. Drop or rework
@@ -45,6 +49,8 @@ Report what the author would likely act on:
   for old behavior when the change isn't a real migration.
 - Over-documentation: READMEs or docs that note every fix or minor change,
   explain internals, or over-explain. Docs stay high-level.
+- A PR description, changeset, README, or JSDoc default that contradicts the
+  code, or omits removed or renamed exports or changed defaults.
 - Test bloat: tests that duplicate existing coverage, check implementation
   details, wouldn't fail when their behavior breaks, or were added for a
   refactor that doesn't change behavior. Prefer extending an existing test.
