@@ -1,38 +1,44 @@
 #!/bin/zsh
 # alfred-title: Install apps
 # alfred-subtitle: Pull and install apps · Tab → an app, ios or mac, and/or --no-update
-# alfred-args: financer, noter, daylier, mic-muter, key-remapper (empty = all) · ios or mac · --no-update: skip git pull
+# alfred-args: financer, noter, daylier, mic-muter, key-remapper, floater (empty = all) · ios or mac · --no-update: skip git pull
 set -euo pipefail
 
 # Keeps a step when no platform was requested, or it is the requested one.
+# The third argument is how the app signs, which picks the signing preflight:
+# "local" for the local certificate, or "apple" for apps that need an Apple
+# provisioning profile (see lib/signing.zsh).
 consider() {
   local target=$1
   [[ -z "$platform" || "$platform" == "$target" ]] || return 0
   appInstalls+=("$2")
   [[ "$target" == ios ]] && needsIOS=1
+  if [[ "$3" == apple ]]; then needsSigning=1; else needsLocalSigning=1; fi
   return 0
 }
 
 main() {
-  local app needsIOS=0
-  local -a updates=() installs=() selected=() appInstalls=()
+  local app needsIOS=0 needsSigning=0 needsLocalSigning=0
+  local -a updates=() installs=() selected=() appInstalls=() preflights=()
   for app in "${apps[@]}"; do
     appInstalls=()
     case "$app" in
       financer)
-        consider mac "Financer (macOS)|Installed|make -C ${(q)HOME}/Projects/financer/ios install-mac"
-        consider ios "Financer (iOS)|Installed|zsh ${(q)HOME}/Projects/financer/ios/install.zsh"
+        consider mac "Financer (macOS)|Installed|make -C ${(q)HOME}/Projects/financer/ios install-mac" apple
+        consider ios "Financer (iOS)|Installed|zsh ${(q)HOME}/Projects/financer/ios/install.zsh" apple
         ;;
       noter)
-        consider ios "Noter (iOS)|Installed|zsh ${(q)HOME}/Projects/noter/install.zsh" ;;
+        consider ios "Noter (iOS)|Installed|zsh ${(q)HOME}/Projects/noter/install.zsh" apple ;;
       daylier)
-        consider mac "Daylier (macOS)|Installed|make -C ${(q)HOME}/Projects/daylier install-mac"
-        consider ios "Daylier (iOS)|Installed|make -C ${(q)HOME}/Projects/daylier install"
+        consider mac "Daylier (macOS)|Installed|make -C ${(q)HOME}/Projects/daylier install-mac" apple
+        consider ios "Daylier (iOS)|Installed|make -C ${(q)HOME}/Projects/daylier install" apple
         ;;
       mic-muter)
-        consider mac "Mic Muter|Installed|make -C ${(q)HOME}/Projects/mic-muter install" ;;
+        consider mac "Mic Muter|Installed|make -C ${(q)HOME}/Projects/mic-muter install" local ;;
       key-remapper)
-        consider mac "Key Remapper|Installed|make -C ${(q)HOME}/Projects/key-remapper install" ;;
+        consider mac "Key Remapper|Installed|make -C ${(q)HOME}/Projects/key-remapper install" local ;;
+      floater)
+        consider mac "Floater|Installed|make -C ${(q)HOME}/Projects/floater install" local ;;
     esac
     if (( ! ${#appInstalls} )); then
       if [[ -n "$requestedApp" ]]; then
@@ -55,10 +61,12 @@ main() {
 
   if (( needsIOS )); then
     configure_ios
-    run_section "Preflight checks" \
-      "iPhone reachable|Checked|ios_check_device" \
-      "Signing credentials|Checked|ios_check_signing"
+    preflights+=("iPhone reachable|Checked|ios_check_device")
   fi
+  (( needsSigning || needsLocalSigning )) && source "$dotfilesDir/lib/signing.zsh"
+  (( needsSigning )) && preflights+=("Signing credentials|Checked|check_signing")
+  (( needsLocalSigning )) && preflights+=("Local signing certificate|Ready|local_signing_prepare")
+  (( ${#preflights} )) && run_section "Preflight checks" "${preflights[@]}"
 
   (( update )) && run_section "Updating repositories" "${updates[@]}"
   run_section "Installing apps" "${installs[@]}"
@@ -72,7 +80,7 @@ platform_name() {
 
 usage() {
   print -r -- "Usage: install-apps.zsh [--no-update] [app] [ios|mac]"
-  print -r -- "Apps: financer, noter, daylier, mic-muter, key-remapper"
+  print -r -- "Apps: financer, noter, daylier, mic-muter, key-remapper, floater"
   print -r -- "Omit the app to install all. ios or mac installs only that platform."
   print -r -- "--no-update skips pulling the app repos, to install local changes."
 }
@@ -95,7 +103,7 @@ for word in ${=*}; do
 done
 requestedApp="${(L)words[*]}"
 
-apps=(financer noter daylier mic-muter key-remapper)
+apps=(financer noter daylier mic-muter key-remapper floater)
 if [[ -n "$requestedApp" ]]; then
   case "${requestedApp//[-_[:space:]]/}" in
     help|h) usage; exit 0 ;;
@@ -104,6 +112,7 @@ if [[ -n "$requestedApp" ]]; then
     daylier) apps=(daylier) ;;
     micmuter) apps=(mic-muter) ;;
     keyremapper) apps=(key-remapper) ;;
+    floater) apps=(floater) ;;
     *) print -ru2 -- "Unknown app: ${words[*]}"; usage >&2; exit 1 ;;
   esac
 fi

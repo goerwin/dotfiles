@@ -1,5 +1,6 @@
 # Shared build and install flow for the personal-team iOS apps
-# (financer, noter, daylier) and for the preflight in dotfiles' install-apps.zsh.
+# (financer, noter, daylier) and for the device preflight in dotfiles'
+# install-apps.zsh. The signing preflight is in signing.zsh.
 #
 # Consumers set, before calling ios_install_app:
 #   APP_NAME        app name (also the .xcodeproj name), e.g. Financer
@@ -65,34 +66,6 @@ ios_check_device() {
   fi
   print -r -- "iPhone $deviceId ready ($state)"
 }
-
-# Preflight: Xcode account must have provisioning teams and the keychain must
-# contain at least one usable Apple Development identity.
-ios_check_signing() {
-  local identities teams usable
-  teams=$(defaults read com.apple.dt.Xcode IDEProvisioningTeams 2>/dev/null) || true
-  if [[ -n "$teams" ]] && ! grep -q teamID <<< "$teams"; then
-    teams=$(defaults read com.apple.dt.Xcode IDEProvisioningTeamByKeychainAccounts 2>/dev/null) || true
-  fi
-  if [[ -z "$teams" ]]; then
-    print -ru2 -- "No provisioning teams registered in Xcode."
-    print -ru2 -- "Open Xcode > Settings > Accounts, sign in with the Apple ID used by these projects,"
-    print -ru2 -- "and let Xcode download the team details, then run again."
-    return 1
-  fi
-  identities=$(security find-identity -v -p codesigning 2>/dev/null) || true
-  # find-identity -v still lists (and counts) revoked identities, flagged with CSSMERR_ codes.
-  usable=$(print -r -- "$identities" | grep -F '"Apple Development:' | grep -v CSSMERR_ | head -n 1) || true
-  if [[ -z "$usable" ]]; then
-    print -ru2 -- "No usable Apple Development identity in the keychain."
-    print -ru2 -- "Your Apple Development certificate may be revoked or expired."
-    print -ru2 -- "Open Xcode > Settings > Accounts, sign in again, and refresh certificates, then run again."
-    return 1
-  fi
-  usable=${usable#*\"}
-  print -r -- "Signing identity: ${usable%\"*}"
-}
-
 ios_install_app() {
   : "${APP_NAME:?APP_NAME must be set}"
   : "${PROJECT_ROOT:?PROJECT_ROOT must be set}"

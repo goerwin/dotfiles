@@ -1,4 +1,5 @@
-# Shared macOS install step for the daylier, financer, mic-muter and key-remapper apps.
+# Shared macOS install step for the daylier, financer, mic-muter, key-remapper and floater apps.
+# They all install the same way; Financer and Daylier keep their Apple signature.
 # The caller builds the app (each project has its own build specifics) and sets:
 #   MAC_APP_NAME      process and display name, e.g. "Mic Muter"
 #   MAC_SOURCE_APP    path of the freshly built "$MAC_APP_NAME.app"
@@ -6,10 +7,14 @@
 #   MAC_INSTALL_DIR   default /Applications
 #   MAC_QUIT_PATTERNS space-separated pgrep -f patterns that must be dead before
 #                     replacing anything besides the app itself (e.g. daemon)
+#   MAC_KEEP_SIGNATURE=1 keeps the build's signature; otherwise the app is
+#                     re-signed with the local certificate (see signing.zsh)
 # Installs without keeping a backup: the new app is staged inside the install
 # dir and verified, a running instance (if any) is quit, the old copy is removed
 # and the new one takes its place. Relaunches only when the app (or one of the
 # listed extra processes) was running before the install.
+
+source "${${(%):-%x}:A:h}/signing.zsh"
 
 # Returns 0 when the app and all extra quit patterns are gone.
 mac_processes_dead() {
@@ -42,6 +47,10 @@ mac_install_app() {
       print -u2 -- "Refusing to replace an unrelated app at: $target"
       return 1
     fi
+  fi
+
+  if [[ -z "${MAC_KEEP_SIGNATURE:-}" ]]; then
+    local_signing_sign "$MAC_SOURCE_APP" || return 1
   fi
 
   if [[ -n "$version" ]]; then
@@ -153,7 +162,9 @@ catalyst_install_app() {
   print -- "Building $APP_NAME for Mac Catalyst ($configuration)..."
   "${buildCommand[@]}" build || return 1
 
+  # Keychain sharing needs the provisioning profile from the Apple signature.
   MAC_APP_NAME="$APP_NAME"
   MAC_SOURCE_APP="$derivedData/Build/Products/$configuration-maccatalyst/$APP_NAME.app"
+  MAC_KEEP_SIGNATURE=1
   mac_install_app
 }
