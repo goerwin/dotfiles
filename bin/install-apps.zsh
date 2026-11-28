@@ -1,5 +1,5 @@
 #!/bin/zsh
-# alfred-title: Install apps
+# alfred-title: Install Apps
 # alfred-subtitle: Pull and install apps · Tab → an app, ios or mac, and/or --no-update
 # alfred-args: financer, noter, daylier, mic-muter, key-remapper, floater (empty = all) · ios or mac · --no-update: skip git pull
 set -euo pipefail

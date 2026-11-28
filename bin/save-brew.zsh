@@ -1,5 +1,5 @@
 #!/bin/zsh
-# alfred-title: Back up Homebrew packages
+# alfred-title: Save Homebrew packages in .Brewfile
 # alfred-subtitle: Rewrite src/.Brewfile from what's installed
 
 set -euo pipefail

@@ -19,7 +19,7 @@ checkout as is, uncommitted changes included (`--no-update` when running a
 ## Homebrew
 
 ```sh
-make brew-backup        # Rewrite src/.Brewfile from installed packages
+make save-brew          # Rewrite src/.Brewfile from installed packages
 make install-brew       # Install or upgrade listed packages; keep extras
 make install-brew-force # Same, then remove unlisted packages
 ```

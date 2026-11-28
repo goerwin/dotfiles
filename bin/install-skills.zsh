@@ -1,5 +1,5 @@
 #!/bin/zsh
-# alfred-title: Install skills
+# alfred-title: Install Skills
 # alfred-subtitle: Pull, then install agent skills
 # alfred-args: --no-update: skip git pull and install the local skills as is
 
