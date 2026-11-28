@@ -14,7 +14,8 @@ Give each reviewer the request, intent, context, and review base, plus the
 [Findings format](#findings-format), [Probes](#probes), and the rubric copied
 into its prompt. Tell each to read the repository's `AGENTS.md`,
 `.github/copilot-instructions.md`, `.github/instructions/*`, and any docs or
-skills they reference; read these yourself too.
+skills they reference; read these yourself too. When that guidance contradicts
+the code's established patterns, follow the code and note the conflict.
 Leave out the implementer's reasoning for its choices, so each judges the work
 fresh. Reviewers are read-only and don't start other agents. Ask each for
 findings in the findings format, a score out of 10, and any questions only the

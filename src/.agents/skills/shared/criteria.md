@@ -50,11 +50,15 @@ Report what the author would likely act on:
 - Over-documentation: READMEs or docs that note every fix or minor change,
   explain internals, or over-explain. Docs stay high-level.
 - A PR description, changeset, README, or JSDoc default that contradicts the
-  code, or omits removed or renamed exports or changed defaults.
+  code, or omits removed or renamed exports or changed defaults; a design
+  doc's claim about current code that the cited code doesn't support.
 - Test bloat: tests that duplicate existing coverage, check implementation
   details, wouldn't fail when their behavior breaks, or were added for a
   refactor that doesn't change behavior. Prefer extending an existing test.
-- Missing regression coverage or repository-required release metadata.
+- Tests that can't catch the bug: fixtures that match the library's defaults,
+  or assertions on a stand-in (a count, a class) instead of the outcome.
+- Missing regression coverage, including sibling implementations of the same
+  contract, or repository-required release metadata.
 
 Skip formatting, pre-existing issues, speculation, praise, and generated
 snapshots. Severity: blocking or suggestion.
